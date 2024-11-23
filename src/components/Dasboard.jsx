@@ -1,9 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user")); 
+  console.log("User on dashboard",user)
+
+
+
+  
+  
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -26,14 +32,12 @@ const Dashboard = () => {
             <div className="profile-image-container">
               {user?.picture ? (
                 <img 
-                  src={user.picture} 
+                  src={user?.picture} 
                   alt="Profile" 
                   className="profile-image"
                 />
               ) : (
-                <div className="profile-image-placeholder">
-                  {(user?.name?.[0] || "U").toUpperCase()}
-                </div>
+                <Navigate to="/"/>
               )}
             </div>
           </div>
