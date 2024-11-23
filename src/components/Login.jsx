@@ -1,10 +1,12 @@
-
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for user login status
 
   const decodeJWT = (token) => {
     const base64Url = token.split(".")[1];
@@ -22,12 +24,37 @@ const Login = () => {
     const user = decodeJWT(credentialResponse.credential);
     console.log("User Info:", user);
     localStorage.setItem("user", JSON.stringify(user));
+    setIsLoggedIn(true); // Update login status
     navigate("/dashboard");
   };
 
   const handleFailure = () => {
     console.error("Login Failed");
   };
+
+  const handleLogout = () => {
+    googleLogout();
+    localStorage.removeItem("user");
+    setIsLoggedIn(false); // Reset login status
+  };
+
+  // Show popup after 3 seconds
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowPopup(true);
+    }, 3000);
+
+    // Cleanup timeout on component unmount
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Check if user is already logged in on component load
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   return (
     <div className="login-container">
@@ -43,27 +70,24 @@ const Login = () => {
         </div>
 
         <div className="login-form">
-          <div className="google-btn-container">
-            <GoogleLogin 
-              onSuccess={handleSuccess} 
-              onError={handleFailure}
-            />
-          </div>
+          {!isLoggedIn ? (
+            <>
+              <div className="google-btn-container">
+                <GoogleLogin 
+                  onSuccess={handleSuccess} 
+                  onError={handleFailure} 
+                />
+              </div>
 
-          <div className="divider">
-            <span>Secure login powered by Google</span>
-          </div>
-
-          <div className="features-grid">
-            <div className="feature-item">
-              <h3>Secure</h3>
-              <p>End-to-end encryption</p>
-            </div>
-            <div className="feature-item">
-              <h3>Protected</h3>
-              <p>Two-factor authentication</p>
-            </div>
-          </div>
+              <div className="divider">
+                <span>Secure login powered by Google</span>
+              </div>
+            </>
+          ) : (
+            <button onClick={handleLogout} className="logout-button">
+              Logout
+            </button>
+          )}
         </div>
 
         <div className="login-footer">
@@ -74,6 +98,15 @@ const Login = () => {
           </p>
         </div>
       </div>
+
+      {showPopup && !isLoggedIn && (
+        <div className="google-popup">
+          <GoogleLogin 
+            onSuccess={handleSuccess} 
+            onError={handleFailure} 
+          />
+        </div>
+      )}
 
       <div className="help-text">
         <a href="#">Need help? Contact Support</a>
