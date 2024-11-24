@@ -6,8 +6,11 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: '#80c242',
+      },
       fontFamily: {
-        'prima': ['Prima Sans', 'sans-serif'], // Add Prima Sans font
+        'prima': ['Prima Sans', 'sans-serif'], 
       },
     },
   },

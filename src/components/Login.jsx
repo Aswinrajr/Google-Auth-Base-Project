@@ -24,7 +24,7 @@ const Login = () => {
     const user = decodeJWT(credentialResponse.credential);
     console.log("User Info:", user);
     localStorage.setItem("user", JSON.stringify(user));
-    setIsLoggedIn(true); // Update login status
+    setIsLoggedIn(true); 
     navigate("/dashboard");
   };
 

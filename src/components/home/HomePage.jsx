@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
-import { GoogleLogin} from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import capilary_logo from "../../assets/images/capilary_logo.png";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { verifyUser } from "../../api/service/axiosService";
 
 const HomePage = () => {
-  const [showSignInButton, setShowSignInButton] = useState(false); 
+  const [showSignInButton, setShowSignInButton] = useState(false);
   const navigate = useNavigate();
-
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setShowSignInButton(true); 
+      setShowSignInButton(true);
     }, 3000);
 
     return () => clearTimeout(timeout);
   }, []);
 
+  if (user) return <Navigate to="/dashboard" />;
 
   const decodeJWT = (token) => {
     const base64Url = token.split(".")[1];
@@ -29,25 +31,49 @@ const HomePage = () => {
     return JSON.parse(jsonPayload);
   };
 
-
-  const handleSuccess = (credentialResponse) => {
+  const handleSuccess = async (credentialResponse) => {
     const user = decodeJWT(credentialResponse.credential);
     console.log("User Info:", user);
-    localStorage.setItem("user", JSON.stringify(user)); 
-    navigate("/dashboard"); 
-  };
+    const { email } = user;
+    localStorage.setItem("email", email);
 
+
+    try {
+      const response = await verifyUser(email);
+      console.log("response", response);
+      const role = response?.data?.role;
+      console.log(response?.data?.data?._id);
+      localStorage.setItem("userId", response?.data?.data?._id);
+
+      localStorage.setItem("user", JSON.stringify({ ...user, role }));
+
+      if (role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (role === "user") {
+        navigate("/dashboard");
+      } else if (response.status === 401) {
+        navigate("/create-user");
+      }
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data?.message || "An unknown error occurred.";
+        console.log("error msg", errorMessage);
+      } else if (error.request) {
+        alert("Error: No response received from the server.");
+      } else {
+        alert(`Error: ${error.message}`);
+      }
+    }
+  };
 
   const handleFailure = () => {
     console.error("Login Failed");
   };
 
-  
-;
-
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      <div className="w-full md:w-2/5 bg-[#e91e63] p-8 md:p-16 flex flex-col relative">
+      <div className="w-full md:w-2/5 bg-primary p-8 md:p-16 flex flex-col relative">
         <div className="relative z-10 flex flex-col flex-grow">
           <div className="flex-grow flex flex-col justify-center">
             <div>
@@ -55,7 +81,9 @@ const HomePage = () => {
               <h1 className="text-white text-5xl font-prima font-bold">
                 Capillary Technologies
               </h1>
-              <p className="text-white opacity-80 mt-4">Please sign in to continue</p>
+              <p className="text-white opacity-80 mt-4">
+                Please sign in to continue
+              </p>
             </div>
           </div>
 
@@ -83,7 +111,6 @@ const HomePage = () => {
 
       <div className="w-full md:w-3/5 bg-white p-8 md:p-12 flex flex-col">
         <div className="flex justify-end mb-16">
-         
           {showSignInButton && (
             <GoogleLogin
               onSuccess={handleSuccess}

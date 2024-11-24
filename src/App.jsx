@@ -1,19 +1,47 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./components/Login";
+import "react-toastify/dist/ReactToastify.css";
+
+// import Login from "./components/Login";
 import Dashboard from "./components/Dasboard";
-import HomePage from "./components/home/HomePage"
+import HomePage from "./components/home/HomePage";
 
 
+import Dasboard from "./components/dashboard/dashboard/Dasboard";
+import SidebarLayout from "./components/dashboard/layout/SidebarLayout";
+import UserRegistartion from "./components/dashboard/createuser/UserRegistartion";
+import UserListTable from "./components/dashboard/createuser/UserListTable";
+import AddUser from "./components/dashboard/createuser/AddUser";
+import EditUser from "./components/dashboard/createuser/EditUser";
+import AllowDomainList from "./components/dashboard/admin/AllowDomainList";
+import DomainListTable from "./components/dashboard/admin/DomainListTable";
+import CreateRequest from "./components/dashboard/requestlist/CreateRequest";
+import ReqListTable from "./components/dashboard/requestlist/ReqListTable";
+import VendorRegistration from "./components/dashboard/vendor/VendorRegistration";
+import VendorListTable from "./components/dashboard/vendor/VendorListTable";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+  
+        {/* <Route path="/" element={<Login />} /> */}
+          <Route path="/" element={<HomePage />} />
 
-        <Route path="/home" element={<HomePage />} />
+     
+        <Route path="/" element={<SidebarLayout />}>
+          <Route path="/create-user" element={<UserRegistartion />} />
+
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard-page" element={<Dasboard />} />
+          <Route path="/users/list" element={<UserListTable />} />
+          <Route path="/users/adduser" element={<AddUser/>} />
+          <Route path="/users/edituser" element={<EditUser/>} />
+
+          <Route path="/create-request" element={<CreateRequest/>} />
+          <Route path="/req-list-table" element={<ReqListTable/>} />
+
+          <Route path="/vendor-registration" element={<VendorRegistration/>} />
+          <Route path="/vendor-list-table" element={<VendorListTable/>} />
 
 
 
@@ -22,6 +50,15 @@ function App() {
 
 
 
+          <Route path="/admin/domain" element={<AllowDomainList/>} />
+          <Route path="/admin/domain-table" element={<DomainListTable/>} />
+
+
+
+
+
+
+        </Route>
       </Routes>
     </Router>
   );

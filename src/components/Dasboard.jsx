@@ -3,13 +3,8 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")); 
-  console.log("User on dashboard",user)
-
-
-
-  
-  
+  const user = JSON.parse(localStorage.getItem("user"));
+  console.log("User on dashboard", user);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -24,34 +19,32 @@ const Dashboard = () => {
           Logout
         </button>
       </nav>
-      
+
       <main className="dashboard-main">
         <div className="profile-card">
           <div className="profile-header">
             <h1>Welcome, {user?.name || "User"}</h1>
             <div className="profile-image-container">
               {user?.picture ? (
-                <img 
-                  src={user?.picture} 
-                  alt="Profile" 
+                <img
+                  src={user?.picture}
+                  alt="Profile"
                   className="profile-image"
                 />
               ) : (
-                <Navigate to="/"/>
+                <Navigate to="/" />
               )}
             </div>
           </div>
-          
+
           <div className="profile-info">
             <div className="info-item">
               <label>Email</label>
               <p>{user?.email || "No email provided"}</p>
             </div>
-   
           </div>
         </div>
 
-      
         <div className="dashboard-widgets">
           <div className="widget">
             <h3>Recent Activity</h3>
