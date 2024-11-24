@@ -8,7 +8,6 @@ const EmployeeReg = () => {
   const [state, setState] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [loading, setLoading] = useState(false); // New loading state
 
   // Function to fetch city and state based on pincode
   const fetchCityState = async () => {
@@ -16,8 +15,6 @@ const EmployeeReg = () => {
       alert('Please enter a valid pincode.');
       return;
     }
-
-    setLoading(true); // Set loading to true when the request starts
 
     try {
       const response = await axios.get(
@@ -34,8 +31,6 @@ const EmployeeReg = () => {
     } catch (error) {
       console.error('Error fetching city and state:', error);
       alert('Failed to fetch city and state. Please try again later.');
-    } finally {
-      setLoading(false); // Set loading to false after the request is complete
     }
   };
 
@@ -169,30 +164,22 @@ const EmployeeReg = () => {
               />
             </div>
             <div>
-              {loading ? (
-                <div className="w-full p-2 border rounded bg-gray-100 text-center">Loading...</div>
-              ) : (
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={city}
-                  readOnly
-                  className="w-full p-2 border rounded bg-gray-100"
-                />
-              )}
+              <input
+                type="text"
+                placeholder="City"
+                value={city}
+                readOnly
+                className="w-full p-2 border rounded bg-gray-100"
+              />
             </div>
             <div>
-              {loading ? (
-                <div className="w-full p-2 border rounded bg-gray-100 text-center">Loading...</div>
-              ) : (
-                <input
-                  type="text"
-                  placeholder="State"
-                  value={state}
-                  readOnly
-                  className="w-full p-2 border rounded bg-gray-100"
-                />
-              )}
+              <input
+                type="text"
+                placeholder="State"
+                value={state}
+                readOnly
+                className="w-full p-2 border rounded bg-gray-100"
+              />
             </div>
             <div>
               <input

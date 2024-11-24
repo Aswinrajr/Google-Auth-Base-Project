@@ -56,3 +56,27 @@ export const createNewVendor = async (formData) => {
     return err;
   }
 };
+
+
+export const getVendorList = async () => {
+  try {
+    const response = await adminServices.get(
+      `/auth/vendor-list`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const deleteVendor = async (id) => {
+  try {
+    const response = await adminServices.delete(
+      `/auth/delete-vendor/${id}`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};

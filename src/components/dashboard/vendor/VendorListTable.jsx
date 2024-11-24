@@ -1,30 +1,47 @@
-
-import { Search, Download, Filter, Plus, Edit, Trash2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Search, Download, Filter, Plus, Edit, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { deleteVendor, getVendorList } from "../../../api/service/adminServices";
+import { toast, ToastContainer } from "react-toastify";
 
 const VendorListTable = () => {
-    const navigate = useNavigate()
-  const personalData = [
-    {
-      firstName: 'ASWINRAJ',
-      lastName: 'R',
-      streetAddress: 'MEETHALE KUTTILATT(HO) KURUNTHODI',
-      addressLine: '',
-      city: 'Kozhikode',
-      state: 'Kerala',
-      postalCode: '673105',
-      postOffice: 'Mandarathur',
-      phoneNumber: '07559889322',
-      email: 'aswinrajr07@gmail.com',
-      additionalInfo: 'haii'
+  const navigate = useNavigate();
+  const [personalData, setPersonalData] = useState([]);
+
+  useEffect(() => {
+    const fetchVendor = async () => {
+      const response = await getVendorList();
+      console.log(response);
+      try {
+        setPersonalData(response?.data?.data);
+      } catch (err) {
+        console.log("Error in fetching the data", err);
+      }
+    };
+    fetchVendor();
+  }, []);
+  const handleDelete = async(id)=>{
+    const response =await deleteVendor(id) 
+    console.log(response)
+    if(response.status===200){
+      setPersonalData(personalData?.filter((person) => person?._id !== id));
+      toast.success(response.data.message)
+    }else{
+      toast.error(response.data.message)
     }
-  ];
+
+  }
+  const handleEdit = (id)=>{
+
+  }
 
   return (
     <div className="p-8 bg-white rounded-lg shadow-sm h-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
-        
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Personal Information
+        </h2>
+
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="relative flex-1 min-w-[300px] max-w-md">
             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
@@ -46,9 +63,9 @@ const VendorListTable = () => {
               <Download className="h-4 w-4 mr-2" />
               Export
             </button>
-            <button className="inline-flex items-center px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
-            onClick={()=>navigate("/vendor-registration")}
-            
+            <button
+              className="inline-flex items-center px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
+              onClick={() => navigate("/vendor-registration")}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Vendor
@@ -64,34 +81,64 @@ const VendorListTable = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-primary">
                   <tr>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       First Name
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Last Name
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Street Address
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       City
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       State
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Postal Code
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Post Office
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Phone
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Email
                     </th>
-                    <th scope="col" className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Actions
                     </th>
                   </tr>
@@ -106,7 +153,7 @@ const VendorListTable = () => {
                         {person.lastName}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person.streetAddress || 'N/A'}
+                        {person.streetAddress || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {person.city}
@@ -128,10 +175,16 @@ const VendorListTable = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex space-x-4">
-                          <button className="text-primary hover:text-primary/80">
+                          <button
+                            className="text-primary hover:text-primary/80"
+                            onClick={()=>handleEdit(person._id)}
+                          >
                             <Edit className="h-5 w-5" />
                           </button>
-                          <button className="text-red-600 hover:text-red-800">
+                          <button
+                            className="text-red-600 hover:text-red-800"
+                            onClick={()=>handleDelete(person._id)}
+                          >
                             <Trash2 className="h-5 w-5" />
                           </button>
                         </div>
@@ -161,6 +214,15 @@ const VendorListTable = () => {
           </button>
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss
+      />
     </div>
   );
 };

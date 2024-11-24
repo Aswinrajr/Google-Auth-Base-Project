@@ -41,7 +41,7 @@ const SidebarLayout = ({ role }) => {
     { icon: Users, title: "Users", path: "/users" },
     { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
     { icon: Building2, title: "Vendors", path: "/vendor-list-table" },
-    { icon: FileEdit, title: "Supports", path: "/supports" },
+    { icon: FileEdit, title: "Supports", path: "/support" },
     { icon: FileEdit, title: "Entities", path: "/entities" },
     { icon: Users, title: "Employees", path: "/employees" },
     { icon: HelpCircle, title: "Question(s)", path: "/questions" },

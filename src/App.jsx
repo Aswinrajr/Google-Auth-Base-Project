@@ -18,6 +18,8 @@ import CreateRequest from "./components/dashboard/requestlist/CreateRequest";
 import ReqListTable from "./components/dashboard/requestlist/ReqListTable";
 import VendorRegistration from "./components/dashboard/vendor/VendorRegistration";
 import VendorListTable from "./components/dashboard/vendor/VendorListTable";
+import Support from "./components/dashboard/support/Support";
+import EmployeeReg from "./components/dashboard/employe/EmployeReg";
 
 function App() {
   return (
@@ -42,6 +44,11 @@ function App() {
 
           <Route path="/vendor-registration" element={<VendorRegistration/>} />
           <Route path="/vendor-list-table" element={<VendorListTable/>} />
+
+          <Route path="/support" element={<Support/>} />
+          <Route path="/employee-reg" element={<EmployeeReg/>} />
+
+
 
 
 

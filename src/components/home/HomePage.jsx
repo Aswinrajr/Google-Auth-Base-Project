@@ -52,6 +52,7 @@ const HomePage = () => {
       } else if (role === "user") {
         navigate("/dashboard");
       } else if (response.status === 401) {
+        console.log("not found")
         navigate("/create-user");
       }
     } catch (error) {
