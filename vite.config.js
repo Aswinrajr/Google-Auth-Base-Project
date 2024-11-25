@@ -5,6 +5,12 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    include: ["jwt-decode"], // Add CommonJS dependencies here
+    include: ["jwt-decode"],
+  },
+  server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups", 
+      "Cross-Origin-Embedder-Policy": "require-corp", 
+    },
   },
 });

@@ -100,6 +100,7 @@ const CreateRequest = () => {
      if(response.status===200){
         toast.success(response?.data?.message)
         setTimeout(() => {
+          naviga
             
         }, 1500);
      }

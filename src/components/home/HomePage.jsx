@@ -46,15 +46,16 @@ const HomePage = () => {
       localStorage.setItem("userId", response?.data?.data?._id);
 
       localStorage.setItem("user", JSON.stringify({ ...user, role }));
+      navigate("/dashboard");
 
-      if (role === "admin") {
-        navigate("/admin-dashboard");
-      } else if (role === "user") {
-        navigate("/dashboard");
-      } else if (response.status === 401) {
-        console.log("not found")
-        navigate("/create-user");
-      }
+      // if (role === "admin") {
+      //   navigate("/admin-dashboard");
+      // } else if (role === "user") {
+      // } else if (response.status === 401) {
+      //   console.log("not found")
+      //   navigate("/create-user");
+      // }
+
     } catch (error) {
       if (error.response) {
         const errorMessage =
