@@ -143,7 +143,7 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
         <div className="mt-8 flex justify-between">
           <button
             onClick={onBack}
-            className="px-6 py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out"
+            className="px-6 py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:bg-primary transition duration-300 ease-in-out"
           >
             Back
           </button>

@@ -1,5 +1,5 @@
 import { PlusCircle, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const Commercials = ({ formData, setFormData, onNext }) => {
   const [localFormData, setLocalFormData] = useState({
@@ -59,14 +59,28 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     setFormData(updatedFormData);
   };
 
+  const handleDeletePaymentTerm = (indexToRemove) => {
+    const updatedPaymentTerms = localFormData.paymentTerms.filter(
+      (_, index) => index !== indexToRemove
+    );
+  
+    const updatedFormData = {
+      ...localFormData,
+      paymentTerms: updatedPaymentTerms,
+    };
+  
+    setLocalFormData(updatedFormData);
+    setFormData(updatedFormData);
+  };
+
   const handleNextStep = () => {
-    // Validate form data before moving to next step
+
     onNext();
   };
 
   return (
-    <div className="w-full mx-auto  shadow-2xl rounded-2xl overflow-hidden">
-      <div className="bg-gradient-to-r from-primary to-primary p-6">
+    <div className="w-full mx-auto bg-gray-50  shadow-2xl rounded-2xl overflow-hidden ">
+      <div className="bg-gradient-to-r  from-primary to-primary p-6">
         <h2 className="text-3xl font-extrabold text-white text-center">
           Commercial Details
         </h2>
@@ -182,10 +196,10 @@ const Commercials = ({ formData, setFormData, onNext }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 ">
               Payment Mode
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mt-5">
               {["Bank Transfer", "Credit Card"].map((type) => (
                 <label key={type} className="inline-flex items-center">
                   <input
@@ -208,103 +222,120 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
         {/* Payment Terms Section */}
         <div className="space-y-4">
-  <div className="mb-4">
-    <h3 className="text-lg font-semibold text-gray-700 mb-2">Payment Terms</h3>
-  </div>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              Percentage Amount
+            </h3>
+          </div>
 
-  {/* Payment Terms Table */}
-  <div className="overflow-x-auto">
-    <table className="w-full table-auto border-collapse">
-      <thead>
-        <tr className="bg-gray-100 border-b-2 border-gray-200">
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Percentage Term</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Percentage Amount</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment Type</th>
-          <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {localFormData.paymentTerms.map((term, index) => (
-          <tr key={index} className="border-b hover:bg-gray-50 transition duration-200">
-            {/* Percentage Term */}
-            <td className="px-4 py-3">
-              <input
-                type="number"
-                name="percentageTerm"
-                value={term.percentageTerm}
-                onChange={(e) => handlePaymentTermChange(e, index)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-                placeholder="Enter Percentage Term"
-                style={{
-                  appearance: "none",
-                  MozAppearance: "textfield",
-                  WebkitAppearance: "none",
-                }}
-              />
-            </td>
+          {/* Payment Terms Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b-2 border-gray-200">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Percentage Amount
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Payment Term
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Payment Type
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {localFormData.paymentTerms.map((term, index) => (
+                  <tr
+                    key={index}
+                    className="border-b hover:bg-gray-50 transition duration-200"
+                  >
+                    {/* Percentage Term */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="number"
+                        name="percentageTerm"
+                        value={term.percentageTerm}
+                        onChange={(e) => handlePaymentTermChange(e, index)}
+                        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                        placeholder="Enter Percentage Term"
+                        style={{
+                          appearance: "none",
+                          MozAppearance: "textfield",
+                          WebkitAppearance: "none",
+                        }}
+                      />
+                    </td>
 
-            {/* Percentage Amount */}
-            <td className="px-4 py-3">
-              <input
-                type="number"
-                name="percentageAmount"
-                value={term.percentageAmount}
-                onChange={(e) => handlePaymentTermChange(e, index)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-                placeholder="Enter Percentage Amount"
-              />
-            </td>
+                    {/* Percentage Amount */}
+                    <td className="px-4 py-3">
+                      <select
+                        name="paymentTerm"
+                        value={term.paymentTerm}
+                        onChange={(e) => handlePaymentTermChange(e, index)}
+                        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                      >
+                        <option value="">Select Payment Term</option>
+                        <option value="immediate">Immediate</option>
+                        <option value="advance_30">30 days credit period</option>
+                        <option value="advance_45">45 days  credit period</option>
+                        <option value="advance_60">60 days  credit period</option>
+                      </select>
+                    </td>
 
-            {/* Payment Type */}
-            <td className="px-4 py-3">
-              <select
-                name="paymentType"
-                value={term.paymentType}
-                onChange={(e) => handlePaymentTermChange(e, index)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              >
-                <option value="">Select Payment Type</option>
-                <option value="fullPayment">Full Payment</option>
-                <option value="advancePayment">Advance Payment</option>
-                <option value="deliveryPayment">Delivery Payment</option>
-                <option value="partPayment">Part Payment</option>
-              </select>
-            </td>
+                    {/* Payment Type */}
+                    <td className="px-4 py-3">
+                      <select
+                        name="paymentType"
+                        value={term.paymentType}
+                        onChange={(e) => handlePaymentTermChange(e, index)}
+                        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                      >
+                        <option value="">Select Payment Type</option>
+                        <option value="fullPayment">Full Payment</option>
+                        <option value="advancePayment">Advance Payment</option>
+                        <option value="deliveryPayment">
+                          Delivery Payment
+                        </option>
+                        <option value="partPayment">Part Payment</option>
+                      </select>
+                    </td>
 
-            {/* Delete Button with Trash Icon */}
-            <td className="px-4 py-3 text-right">
-              <div className="flex justify-end space-x-2">
-                {/* Delete Button with Trash Icon */}
-                <button
-                  type="button"
-                  onClick={() => handleDeletePaymentTerm(index)}
-                  className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-300"
-                >
-                  <Trash2 size={16} className="mr-2" />
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+                    {/* Delete Button with Trash Icon */}
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end space-x-2">
+                        {/* Delete Button with Trash Icon */}
+                        <button
+                          type="button"
+                          onClick={() => handleDeletePaymentTerm(index)}
+                          className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-300"
+                        >
+                          <Trash2 size={16} className="mr-2" />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-  {/* Add New Payment Term Button (at the bottom) */}
-  <div className="mt-4 flex justify-start">
-    <button
-      type="button"
-      onClick={handleAddMorePaymentTerm}
-      className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition duration-300"
-    >
-      <PlusCircle size={16} className="mr-2" />
-      Add Payment Term
-    </button>
-  </div>
-</div>
-
-
+          {/* Add New Payment Term Button (at the bottom) */}
+          <div className="mt-4 flex justify-start">
+            <button
+              type="button"
+              onClick={handleAddMorePaymentTerm}
+              className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition duration-300"
+            >
+              <PlusCircle size={16} className="mr-2" />
+              Add Payment Term
+            </button>
+          </div>
+        </div>
 
         {/* Fourth Row: Bill To and Ship To */}
         <div className="grid grid-cols-2 gap-6">
@@ -342,7 +373,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
           <button
             type="button"
             onClick={handleNextStep}
-            className="px-10 py-3 bg-gradient-to-r from-primary to-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out"
+            className="px-10  py-3 bg-gradient-to-r from-primary to-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out"
           >
             Next
           </button>

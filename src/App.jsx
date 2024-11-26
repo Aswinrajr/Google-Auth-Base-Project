@@ -21,6 +21,7 @@ import VendorListTable from "./components/dashboard/vendor/VendorListTable";
 import Support from "./components/dashboard/support/Support";
 import EmployeeReg from "./components/dashboard/employe/EmployeReg";
 import AddEntity from "./components/dashboard/entity/AddEntity";
+import Invoice from "./components/dashboard/requestlist/Invoice";
 
 function App() {
   return (
@@ -57,6 +58,9 @@ function App() {
           <Route path="/support" element={<Support/>} />
           <Route path="/employee-reg" element={<EmployeeReg/>} />
           <Route path="/entities" element={<AddEntity/>} />
+
+          <Route path="/invoice" element={<Invoice/>} />
+
 
 
 

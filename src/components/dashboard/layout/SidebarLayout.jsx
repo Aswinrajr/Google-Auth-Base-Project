@@ -12,18 +12,14 @@ import {
 } from "lucide-react";
 import TopBar from "./TopBar";
 
+// SidebarItem component
 const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
   return (
     <Link to={path} className="cursor-pointer px-2">
       <div
         className={`aspect-square flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 ease-in-out
-          hover:bg-pink-50 hover:text-primary hover:border-primary
-          ${
-            isActive
-              ? "bg-pink-50 text-primary border-primary"
-              : "text-gray-600 border-transparent"
-          }
-          border-2`}
+          hover:bg-primary hover:text-white hover:border-primary
+          ${isActive ? "bg-primary text-white border-primary" : "text-gray-600 border-transparent"}`}
       >
         <Icon className="w-7 h-7 mb-2" />
         <span className="text-xs font-medium text-center leading-tight">
@@ -34,6 +30,7 @@ const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
   );
 };
 
+// SidebarLayout component
 const SidebarLayout = ({ role }) => {
   const location = useLocation();
 
