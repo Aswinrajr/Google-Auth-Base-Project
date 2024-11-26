@@ -41,7 +41,7 @@ const SidebarLayout = ({ role }) => {
     { icon: FileEdit, title: "Entities", path: "/entities" },
     { icon: Users, title: "Employees", path: "/employee-reg" },
     { icon: Building2, title: "Vendors", path: "/vendor-list-table" },
-    { icon: FileText, title: "Documents / File Manager", path: "/file-manager" }, // Added File Manager
+    { icon: FileText, title: "Documents / File Manager", path: "/invoice" }, // Added File Manager
     { icon: HelpCircle, title: "Questions", path: "/questions" },
     { icon: LogOut, title: "Logout", path: "/logout" }, // Added Logout
   ];

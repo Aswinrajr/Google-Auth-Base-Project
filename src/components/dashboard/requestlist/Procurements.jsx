@@ -140,7 +140,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Quotation Copy
+                Final Quotation
               </label>
               <input
                 type="file"
@@ -152,64 +152,105 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
           </div>
 
           {/* PO Expiry Date, Expected Delivery Date, Final Quote */}
-          <div className="grid grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                PO Expiry Date
-              </label>
-              <input
-                type="date"
-                name="poExpiryDate"
-                value={formData.poExpiryDate}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Expected Delivery Date
-              </label>
-              <input
-                type="date"
-                name="expectedDeliveryDate"
-                value={formData.expectedDeliveryDate}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Final Quote
-              </label>
-              <div className="relative w-full">
+          <div className="grid grid-cols-2 gap-6 items-start">
+            {/* Left Column: Stacked Fields */}
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  PO Expiry Date
+                </label>
                 <input
-                  type="number"
-                  name="amount"
-                  value={formData.amount}
+                  type="date"
+                  name="poExpiryDate"
+                  value={formData.poExpiryDate}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 pr-16 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Enter Amount"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
                 />
-                <select
-                  name="currency"
-                  value={formData.currency}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Expected Delivery Date
+                </label>
+                <input
+                  type="date"
+                  name="expectedDeliveryDate"
+                  value={formData.expectedDeliveryDate}
                   onChange={handleInputChange}
-                  className="absolute right-0 top-0 h-full px-4 py-3 bg-transparent border-0 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-                >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="INR">INR</option>
-                  <option value="GBP">GBP</option>
-                  <option value="AUD">AUD</option>
-                </select>
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                />
+              </div>
+              {/* <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Final Quote
+                </label>
+                <div className="relative w-full">
+                  <input
+                    type="number"
+                    name="amount"
+                    value={formData.amount}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 pr-16 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Enter Amount"
+                  />
+                  <select
+                    name="currency"
+                    value={formData.currency}
+                    onChange={handleInputChange}
+                    className="absolute right-0 top-0 h-full px-4 py-3 bg-transparent border-0 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
+                  >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="INR">INR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="AUD">AUD</option>
+                  </select>
+                </div>
+              </div> */}
+            </div>
+
+            {/* Right Column: Drag and Drop */}
+            <div className="flex-1 ">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Attach Compitative Quations
+              </label>
+              <div
+                className={`border-2 border-dashed rounded-xl p-4 w-full h-40 cursor-pointer transition-colors duration-300 ${
+                  isDragOver
+                    ? "border-primary bg-primary"
+                    : "border-primary hover:border-primary"
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                ref={uploadAreaRef}
+              >
+                <div className="flex items-center justify-center h-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-10 h-10 text-primary"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-18 0h18M7.5 12l4.5 4.5L16.5 12"
+                    />
+                  </svg>
+                  <p className="ml-2 text-lg text-primary mt-3">
+                    Drag and drop files here
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Drag and Drop */}
-          <div className="w-full flex flex-col items-center justify-center">
+          {/* <div className="grid grid-cols-3 gap-6"> */}
+
+          {/* </div> */}
+          {/* <div className="w-full flex flex-col">
             <div
               className={`border-2 border-dashed rounded-xl p-8 w-full max-w-2xl cursor-pointer transition-colors duration-300 ${
                 isDragOver
@@ -241,7 +282,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="mt-8 flex justify-between">
             <button
