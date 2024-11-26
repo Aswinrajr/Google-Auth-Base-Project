@@ -37,7 +37,6 @@ const HomePage = () => {
     const { email } = user;
     localStorage.setItem("email", email);
 
-
     try {
       const response = await verifyUser(email);
       console.log("response", response);
@@ -47,14 +46,6 @@ const HomePage = () => {
 
       localStorage.setItem("user", JSON.stringify({ ...user, role }));
       navigate("/dashboard");
-
-      // if (role === "admin") {
-      //   navigate("/admin-dashboard");
-      // } else if (role === "user") {
-      // } else if (response.status === 401) {
-      //   console.log("not found")
-      //   navigate("/create-user");
-      // }
 
     } catch (error) {
       if (error.response) {
@@ -118,6 +109,7 @@ const HomePage = () => {
               onSuccess={handleSuccess}
               onError={handleFailure}
               useOneTap
+              clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID} // Use the environment variable
             />
           )}
         </div>

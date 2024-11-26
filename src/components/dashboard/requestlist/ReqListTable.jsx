@@ -68,7 +68,7 @@ const ReqListTable = ({ onEdit, onDelete }) => {
               Export
             </button>
             <button className="inline-flex items-center px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
-               onClick={()=>navigate("/create-request")}  >
+               onClick={()=>navigate("/req-list-table/create-request")}  >
               <Plus className="h-4 w-4 mr-2" />
               Add Request
             </button>

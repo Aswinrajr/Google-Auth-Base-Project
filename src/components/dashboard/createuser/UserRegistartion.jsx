@@ -32,7 +32,7 @@ const UserRegistartion = () => {
   return (
     <div className="max-w-5xl mx-auto p-4">
  
-      <h1 className="text-2xl font-normal text-pink-600 mb-8">Add New User</h1>
+      <h1 className="text-2xl font-normal text-primary mb-8">Add New User</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -44,7 +44,7 @@ const UserRegistartion = () => {
               value={formData.name}
               onChange={handleChange}
               placeholder="Name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
             />
           </div>
 
@@ -56,7 +56,7 @@ const UserRegistartion = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
             />
           </div>
 
@@ -70,7 +70,7 @@ const UserRegistartion = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Phone Number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -82,7 +82,7 @@ const UserRegistartion = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               />
               <button
                 type="button"
@@ -112,7 +112,7 @@ const UserRegistartion = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+            className="px-6 py-2 bg-primary text-white rounded-md hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             SUBMIT
           </button>

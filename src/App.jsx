@@ -20,6 +20,7 @@ import VendorRegistration from "./components/dashboard/vendor/VendorRegistration
 import VendorListTable from "./components/dashboard/vendor/VendorListTable";
 import Support from "./components/dashboard/support/Support";
 import EmployeeReg from "./components/dashboard/employe/EmployeReg";
+import AddEntity from "./components/dashboard/entity/AddEntity";
 
 function App() {
   return (
@@ -30,7 +31,15 @@ function App() {
           <Route path="/" element={<HomePage />} />
 
      
-        <Route path="/" element={<SidebarLayout />}>
+          <Route path="/" element={<SidebarLayout />}>
+
+
+ 
+
+
+
+
+
           <Route path="/create-user" element={<UserRegistartion />} />
 
           <Route path="/dashboard" element={<Dashboard />} />
@@ -39,7 +48,7 @@ function App() {
           <Route path="/users/adduser" element={<AddUser/>} />
           <Route path="/users/edituser" element={<EditUser/>} />
 
-          <Route path="/create-request" element={<CreateRequest/>} />
+          <Route path="/req-list-table/create-request" element={<CreateRequest/>} />
           <Route path="/req-list-table" element={<ReqListTable/>} />
 
           <Route path="/vendor-registration" element={<VendorRegistration/>} />
@@ -47,6 +56,8 @@ function App() {
 
           <Route path="/support" element={<Support/>} />
           <Route path="/employee-reg" element={<EmployeeReg/>} />
+          <Route path="/entities" element={<AddEntity/>} />
+
 
 
 

@@ -1,309 +1,153 @@
-import { useState, useEffect } from 'react';
-import { UploadIcon } from 'lucide-react';
-import { submitRequest } from '../../../api/service/adminServices';
-import { toast } from 'react-toastify';
+import React, { useState } from 'react';
+import { 
+  CheckCircle2, 
+  ChevronRight, 
+  ChevronLeft, 
+  FileText, 
+  Truck, 
+  CreditCard, 
+  Check 
+} from 'lucide-react';
+import Supplies from './Supplies';
+import Procurements from './Procurements';
+import Commercials from './Commercials';
 
 const CreateRequest = () => {
-  const userId = localStorage.getItem("userId");
-  
-  // eslint-disable-next-line no-unused-vars
-  const [advancePayment, setAdvancePayment] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState([]);
   const [formData, setFormData] = useState({
-    vendor: '',
-    poEntityType: '',
-    quotationNumber: '',
-    quotationDate: '',
-    insuranceCopy: '',
-    comparativeStatement: '',
-    entity: '',
-    city: '',
-    site: '',
-    billTo: '',
-    advancePayment: false,
-    currency: ''
+    commercials: {},
+    procurements: {},
+    supplies: [],
+    remarks: '',
   });
 
-  const [vendors, setVendors] = useState([]);
+  const steps = [
+    {
+      title: 'Commercials',
+      icon: FileText,
+      content: (
+        <Commercials
+          formData={formData.commercials}
+          setFormData={(data) => setFormData(prev => ({
+            ...prev,
+            commercials: typeof data === 'function' 
+              ? data(prev.commercials) 
+              : data
+          }))}
+          onNext={() => handleStepComplete(0)}
+        />
+      ),
+    },
+    {
+      title: 'Procurements',
+      icon: CreditCard,
+      content: (
+        <Procurements
+          formData={formData.procurements}
+          setFormData={(data) => setFormData(prev => ({
+            ...prev,
+            procurements: typeof data === 'function' 
+              ? data(prev.procurements) 
+              : data
+          }))}
+          onNext={() => handleStepComplete(1)}
+          onBack={() => setCurrentStep(0)}
+        />
+      ),
+    },
+    {
+      title: 'Supplies',
+      icon: Truck,
+      content: (
+        <Supplies
+          formData={formData.supplies}
+          setFormData={(data) => setFormData(prev => ({
+            ...prev,
+            supplies: typeof data === 'function' 
+              ? data(prev.supplies) 
+              : data
+          }))}
+          remarks={formData.remarks}
+          onBack={() => setCurrentStep(1)}
+        />
+      ),
+    },
+  ];
 
-  useEffect(() => {
-    // Simulate fetching vendors from an API
-    const dummyVendors = [
-      { name: 'Vendor 1', entity: 'Entity 1', city: 'City 1', site: 'Site 1', billTo: 'BillTo 1' },
-      { name: 'Vendor 2', entity: 'Entity 2', city: 'City 2', site: 'Site 2', billTo: 'BillTo 2' },
-      { name: 'Vendor 3', entity: 'Entity 3', city: 'City 3', site: 'Site 3', billTo: 'BillTo 3' }
-    ];
-
-    setVendors(dummyVendors);
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleVendorChange = (e) => {
-    const selectedVendor = e.target.value;
-    setFormData(prevState => ({
-      ...prevState,
-      vendor: selectedVendor
-    }));
-
-    // Find the selected vendor from the vendors list
-    const vendor = vendors.find(v => v.name === selectedVendor);
-    if (vendor) {
-      setFormData(prevState => ({
-        ...prevState,
-        entity: vendor.entity || '',
-        city: vendor.city || '',
-        site: vendor.site || '',
-        billTo: vendor.billTo || ''
-      }));
+  const handleStepComplete = (stepIndex) => {
+    // Mark step as completed
+    if (!completedSteps.includes(stepIndex)) {
+      setCompletedSteps([...completedSteps, stepIndex]);
     }
-  };
-
-  const handleAdvancePaymentChange = (value) => {
-    setAdvancePayment(value);
-    setFormData(prevState => ({
-      ...prevState,
-      advancePayment: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const data = new FormData();
-    data.append('vendor', formData.vendor);
-    data.append('poEntityType', formData.poEntityType);
-    data.append('quotationNumber', formData.quotationNumber);
-    data.append('quotationDate', formData.quotationDate);
-    data.append('entity', formData.entity);
-    data.append('city', formData.city);
-    data.append('site', formData.site);
-    data.append('billTo', formData.billTo);
-    data.append('advancePayment', formData.advancePayment);
-    data.append('currency', formData.currency);
     
-    if (formData.insuranceCopy) {
-      data.append('insuranceCopy', formData.insuranceCopy);
+    // Move to next step
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
     }
-    if (formData.comparativeStatement) {
-      data.append('comparativeStatement', formData.comparativeStatement);
-    }
-  
-    try {
-      const response = await submitRequest(userId, data);
-      console.log('Request submitted:', response.data);
-     if(response.status===200){
-        toast.success(response?.data?.message)
-        setTimeout(() => {
-          naviga
-            
-        }, 1500);
-     }
-    } catch (error) {
-      console.error('Error submitting request:', error);
-      alert('Error submitting request. Please try again.');
-    }
+  };
+
+  const handleSubmit = () => {
+    console.log('Form Submitted:', formData);
+    // Implement submission logic
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      <form onSubmit={handleSubmit}  encType='multipart/form-data' >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Vendor Selection */}
-          <div className="relative">
-            <select
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-              name="vendor"
-              value={formData.vendor}
-              onChange={handleVendorChange}
+    <div className="w-full  mx-auto bg-white rounded-xl p-6">
+      {/* Improved Stepper Navigation */}
+      <div className="grid grid-cols-3 gap-4">
+        {steps.map((step, index) => {
+          const StepIcon = step.icon;
+          const isActive = currentStep === index;
+          const isCompleted = completedSteps.includes(index);
+
+          return (
+            <div 
+              key={index} 
+              className="flex flex-col items-center relative"
             >
-              <option value="">Choose Vendor</option>
-              {vendors.map((vendor, index) => (
-                <option key={index} value={vendor.name}>
-                  {vendor.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              {/* Step Connector */}
+              {index < steps.length - 1 && (
+                <div 
+                  className={`absolute top-6 left-1/2 w-full h-0.5 transform -translate-x-1/2 -z-10 
+                    ${isCompleted || isActive ? 'bg-green-500' : 'bg-gray-300'}`}
+                />
+              )}
 
-          {/* PO Entity Type */}
-          <div className="relative">
-            <select
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-              name="poEntityType"
-              value={formData.poEntityType}
-              onChange={handleInputChange}
-            >
-              <option value="">Choose PO Entity Type</option>
-              <option value="Type 1">Type 1</option>
-              <option value="Type 2">Type 2</option>
-              <option value="Type 3">Type 3</option>
-            </select>
-          </div>
+              {/* Step Indicator */}
+              <div 
+                className={`w-12 h-12 rounded-full flex items-center justify-center border-2 mb-2
+                  ${isActive ? 'border-primary bg-primary/10 text-primary' : 
+                    isCompleted ? 'border-green-500 bg-green-50 text-green-500' : 'border-gray-300 bg-gray-100 text-gray-400'}
+                  transition-all duration-300`}
+              >
+                {isCompleted && !isActive ? 
+                  <Check className="w-6 h-6" /> : 
+                  <StepIcon className="w-6 h-6" />
+                }
+              </div>
 
-          {/* Quotation Number */}
-          <div>
-            <input
-              type="text"
-              placeholder="Enter Quotation Number"
-              name="quotationNumber"
-              value={formData.quotationNumber}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-            />
-          </div>
-
-          {/* Quotation Date */}
-          <div>
-            <input
-              type="date"
-              name="quotationDate"
-              value={formData.quotationDate}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-            />
-          </div>
-
-          {/* Upload Insurance Copy */}
-          <div className="relative">
-            <div className="flex items-center w-full p-2 border rounded-md focus-within:ring-2 focus-within:ring-primary focus-within:border-primary">
-              <input
-                type="file"
-                placeholder="Upload Insurance Copy"
-                name="insuranceCopy"
-                onChange={handleInputChange}
-                className="flex-1 outline-none"
-              />
-              <UploadIcon className="w-5 h-5 text-gray-400" />
+              {/* Step Title */}
+              <h3 
+                className={`text-center font-semibold text-sm
+                  ${isActive ? 'text-primary' : 
+                    isCompleted ? 'text-green-600' : 'text-gray-500'}
+                  transition-colors duration-300`}
+              >
+                {step.title}
+              </h3>
             </div>
-          </div>
+          );
+        })}
+      </div>
 
-          {/* Upload Comparative Statement */}
-          <div className="relative">
-            <div className="flex items-center w-full p-2 border rounded-md focus-within:ring-2 focus-within:ring-primary focus-within:border-primary">
-              <input
-                type="file"
-                placeholder="Upload Comparative Statement"
-                name="comparativeStatement"
-                onChange={handleInputChange}
-                className="flex-1 outline-none"
-              />
-              <UploadIcon className="w-5 h-5 text-gray-400" />
-            </div>
-          </div>
+      {/* Form Content */}
+      <div className="bg-white borde rounded-lg p-6 shadow-sm ">
+        {steps[currentStep].content}
+      </div>
 
-          {/* Entity */}
-          <div className="relative">
-            <select
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-              name="entity"
-              value={formData.entity}
-              onChange={handleInputChange}
-            >
-              <option value="">Choose Entity</option>
-              <option value="Entity 1">Entity 1</option>
-              <option value="Entity 2">Entity 2</option>
-              <option value="Entity 3">Entity 3</option>
-            </select>
-          </div>
-
-          {/* City */}
-          <div className="relative">
-            <select
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-            >
-              <option value="">Choose City</option>
-              <option value="City 1">City 1</option>
-              <option value="City 2">City 2</option>
-              <option value="City 3">City 3</option>
-            </select>
-          </div>
-
-          {/* Site */}
-          <div className="relative">
-            <select
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-              name="site"
-              value={formData.site}
-              onChange={handleInputChange}
-            >
-              <option value="">Choose Site</option>
-              <option value="Site 1">Site 1</option>
-              <option value="Site 2">Site 2</option>
-              <option value="Site 3">Site 3</option>
-            </select>
-          </div>
-
-          {/* Bill To */}
-          <div className="relative">
-            <select
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-              name="billTo"
-              value={formData.billTo}
-              onChange={handleInputChange}
-            >
-              <option value="">Choose Bill To</option>
-              <option value="BillTo 1">BillTo 1</option>
-              <option value="BillTo 2">BillTo 2</option>
-              <option value="BillTo 3">BillTo 3</option>
-            </select>
-          </div>
-
-          {/* Advance Payment Radio */}
-          <div className="flex items-center space-x-4">
-            <label className="text-sm">Advance Payment</label>
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="yes"
-                name="advancePayment"
-                value="Yes"
-                onChange={() => handleAdvancePaymentChange(true)}
-                checked={formData.advancePayment === true}
-              />
-              <label htmlFor="yes" className="text-sm">Yes</label>
-              <input
-                type="radio"
-                id="no"
-                name="advancePayment"
-                value="No"
-                onChange={() => handleAdvancePaymentChange(false)}
-                checked={formData.advancePayment === false}
-              />
-              <label htmlFor="no" className="text-sm">No</label>
-            </div>
-          </div>
-
-          {/* Currency */}
-          <div>
-            <input
-              type="text"
-              placeholder="Enter Currency"
-              name="currency"
-              value={formData.currency}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-            />
-          </div>
-        </div>
-
-        <div className="mt-6 text-right">
-          <button
-            type="submit"
-            className="bg-primary text-white p-2 rounded-md"
-          >
-            Submit Request
-          </button>
-        </div>
-      </form>
+    
+      
     </div>
   );
 };

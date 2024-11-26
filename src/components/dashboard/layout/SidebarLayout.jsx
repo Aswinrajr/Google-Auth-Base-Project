@@ -7,8 +7,10 @@ import {
   Building2,
   FileEdit,
   HelpCircle,
-  Globe2, // Icon for "Domain"
+  FileText, // For Documents / File Manager
+  LogOut,   // For Logout
 } from "lucide-react";
+import TopBar from "./TopBar";
 
 const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
   return (
@@ -35,54 +37,54 @@ const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
 const SidebarLayout = ({ role }) => {
   const location = useLocation();
 
-  // Define all sidebar items
+  // Define sidebar items for Admin
   const allSidebarItems = [
-    { icon: Home, title: "Home", path: "/dashboard" },
-    { icon: Users, title: "Users", path: "/users" },
+    { icon: Home, title: "Dashboard", path: "/dashboard" },
     { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
-    { icon: Building2, title: "Vendors", path: "/vendor-list-table" },
-    { icon: FileEdit, title: "Supports", path: "/support" },
     { icon: FileEdit, title: "Entities", path: "/entities" },
-    { icon: Users, title: "Employees", path: "/employees" },
-    { icon: HelpCircle, title: "Question(s)", path: "/questions" },
-    { icon: Globe2, title: "Domain", path: "admin/domain-table" }, 
+    { icon: Users, title: "Employees", path: "/employee-reg" },
+    { icon: Building2, title: "Vendors", path: "/vendor-list-table" },
+    { icon: FileText, title: "Documents / File Manager", path: "/file-manager" }, // Added File Manager
+    { icon: HelpCircle, title: "Questions", path: "/questions" },
+    { icon: LogOut, title: "Logout", path: "/logout" }, // Added Logout
   ];
 
-  // Filter items based on role
-  const sidebarItems =
-    role === "user" || role === "employee"
-      ? allSidebarItems.filter((item) =>
-          ["Home", "Requests", "Supports", "Question(s)"].includes(item.title)
-        )
-      : allSidebarItems;
+  // Since this is for Admin, we don't need role-based filtering in this case.
+  const sidebarItems = allSidebarItems;
 
-  // Match the current route to highlight active items
-  const activeItem = sidebarItems.find((item) => item.path === location.pathname);
+  // Find the active item based on the current location
+  const activeItem = sidebarItems.find((item) => {
+    // Check if the current path starts with the sidebar item's path
+    return location.pathname.startsWith(item.path);
+  });
 
   return (
-    <div className="flex">
-      {/* Main Sidebar */}
-      <div className="w-32 h-screen bg-white border-r border-gray-200 flex flex-col py-6">
-        <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 gap-2">
-            {sidebarItems.map((item, index) => (
-              <SidebarItem
-                key={index}
-                icon={item.icon}
-                title={item.title}
-                path={item.path}
-                isActive={activeItem?.path === item.path}
-              />
-            ))}
+    <>
+      <TopBar />
+      <div className="flex flex-col sm:flex-row">
+        {/* Sidebar */}
+        <div className="w-full sm:w-32 h-16 sm:h-screen bg-white border-t sm:border-r border-gray-200 flex sm:flex-col sm:py-6">
+          <div className="flex-1 overflow-y-auto flex sm:flex-col justify-around sm:justify-start">
+            <div className="grid grid-cols-5 sm:grid-cols-1 gap-2">
+              {sidebarItems.map((item, index) => (
+                <SidebarItem
+                  key={index}
+                  icon={item.icon}
+                  title={item.title}
+                  path={item.path}
+                  isActive={activeItem?.path === item.path}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-  
-      <div className="flex-1 p-8">
-        <Outlet />
+        {/* Main Content */}
+        <div className="flex-1 p-4 sm:p-8 bg-gray-50">
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -43,6 +43,7 @@ const EmployeeReg = () => {
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Personal Information Section */}
       <div className="p-4 border rounded-lg border-green-200">
+     
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <input
@@ -67,7 +68,7 @@ const EmployeeReg = () => {
           </div>
           <div>
             <select className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
-              <option value="">Gender</option>
+              <option value="">Genders</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>

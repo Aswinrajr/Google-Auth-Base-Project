@@ -80,3 +80,15 @@ export const deleteVendor = async (id) => {
     return err;
   }
 };
+
+
+export const generateEmployeeUniqueId = async () => {
+  try {
+    const response = await adminServices.get(
+      `/employees/generate-empid`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};

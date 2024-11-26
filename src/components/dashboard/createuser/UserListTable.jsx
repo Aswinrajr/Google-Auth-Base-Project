@@ -59,10 +59,10 @@ const UserListTable = () => {
                 <td className="p-4">{user.password}</td>
                 <td className="p-4">
                   <div className="flex gap-2">
-                    <button className="text-pink-500 hover:text-pink-700">
+                    <button className="text-primary hover:text-primary">
                       <Pencil className="w-5 h-5" />
                     </button>
-                    <button className="text-pink-500 hover:text-pink-700">
+                    <button className="text-primary hover:text-primary">
                       <Trash className="w-5 h-5" />
                     </button>
                   </div>
