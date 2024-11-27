@@ -186,3 +186,38 @@ export const getReqListEmployee = async (id,role) => {
     return err;
   }
 };
+
+export const getAdminReqListEmployee = async () => {
+  try {
+    const response = await adminServices.get(
+      `/employees/get-all-req-admin`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const getReqListHR = async () => {
+  try {
+    const response = await adminServices.get(
+      `/employees/get-all-req-admin`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const deleteReq = async (id) => {
+  try {
+    const response = await adminServices.delete(
+      `/employees/delete-req/${id}`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};

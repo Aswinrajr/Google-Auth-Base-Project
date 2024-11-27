@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getReqListEmployee } from "../../../api/service/adminServices";
+import {
+  deleteReq,
+  getAdminReqListEmployee,
+  getReqListEmployee,
+  getReqListHR,
+} from "../../../api/service/adminServices";
 
-const ReqListTable = ({ onEdit, onDelete }) => {
+
+const ReqListTable = ({ onEdit}) => {
   const userId = localStorage.getItem("userId");
   const role = localStorage.getItem("role");
+  console.log(role)
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -15,14 +22,14 @@ const ReqListTable = ({ onEdit, onDelete }) => {
       let response;
 
       if (role === "Admin") {
-        // Uncomment and use API for Admin role
-        // response = await getReqListAdmin(userId);
-      } else if (role === "Employee") {
+        response = await getAdminReqListEmployee();
+        console.log(response)
+      } else if (role === "Employee") {  
         // Fetch data for Employee role
         response = await getReqListEmployee(userId);
       } else {
-        // Handle other roles if needed
-        // response = await getReqListOther(userId);
+        response = await getReqListHR();
+        
       }
 
       if (response && response.data) {
@@ -48,6 +55,12 @@ const ReqListTable = ({ onEdit, onDelete }) => {
       prev.includes(sno) ? prev.filter((id) => id !== sno) : [...prev, sno]
     );
   };
+  const onDelete = async(id)=>{
+    console.log("Delete")
+    const response = await deleteReq(id)
+    console.log(response)
+
+  }
 
   return (
     <div className="p-8 bg-white rounded-lg shadow-sm h-full">
@@ -206,7 +219,7 @@ const ReqListTable = ({ onEdit, onDelete }) => {
                           {user.supplies.totalValue}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">
-                          {user.requestor||"Employee"}
+                          {user.requestor || "Employee"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.commercials.department}
@@ -218,26 +231,26 @@ const ReqListTable = ({ onEdit, onDelete }) => {
                           {user.supplies.totalValue}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">
-                          {user.status||"Pending"}
+                          {user.status || "Pending"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 text-center">
                           <button
                             className="text-blue-500 hover:text-blue-700"
-                            onClick={() => onEdit(user.sno)}
+                            onClick={() => onEdit(user._id)}
                           >
                             View
                           </button>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center space-x-2 mt-4">
+                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center space-x-2">
                           <button
                             className="text-blue-500 hover:text-blue-700"
-                            onClick={() => onEdit(user.sno)}
+                            onClick={() =>navigate(`/req-list-table/preview-one-req/${user._id}`)}
                           >
                             <Edit className="h-5 w-5" />
                           </button>
                           <button
                             className="text-red-500 hover:text-red-700"
-                            onClick={() => onDelete(user.sno)}
+                            onClick={() => onDelete(user._id)}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
@@ -246,7 +259,10 @@ const ReqListTable = ({ onEdit, onDelete }) => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="13" className="px-6 py-4 text-center text-gray-500">
+                      <td
+                        colSpan="13"
+                        className="px-6 py-4 text-center text-gray-500"
+                      >
                         No data available.
                       </td>
                     </tr>
