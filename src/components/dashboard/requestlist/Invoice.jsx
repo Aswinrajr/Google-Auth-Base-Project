@@ -1,126 +1,124 @@
-import React from 'react';
-import logo from '../../../assets/images/capilary_logo.png'; // Replace with your company logo image
+import { format } from "date-fns";
+import capilary_logo from "../../../assets/images/capilary_logo.png";
 
-const Invoice = () => {
-  // Sample invoice data
-  const invoiceData = {
-    invoiceNo: '001',
-    date: 'Feb 15th, 2023',
+const Invoice = ({ formData, onSubmit }) => {
+  const invoice = {
+    number: "INV-001",
+    date: new Date(),
+    dueDate: new Date(),
     from: {
-      name: 'Soldo Apps',
-      address: '123 Main St, Chicago, USA',
-      email: 'info@soldoapps.com',
-      phone: '(626) 5767667',
+      name: "Soldo Apps",
+      email: "info@soldoapps.com",
+      address: "123 Tech Park, Silicon Valley, CA",
     },
-    to: {
-      name: 'Shepard Corp.',
-      address: 'North st, 32, Chicago, USA',
-      email: 'shepard@gmail.com',
-      phone: '(626) 7689767',
+    billTo: {
+      name: "John Doe",
+      email: "johndoe@example.com",
+      address: "456 Elm Street, New York, NY",
+    },
+    shipTo: {
+      name: "Jane Doe",
+      email: "janedoe@example.com",
+      address: "789 Oak Avenue, Los Angeles, CA",
     },
     items: [
       {
-        description: 'Prototype',
-        quantity: 2000,
-        rate: 20.5,
-        tax: 20.5,
-        amount: 20230.4,
+        description: "Delivery of Package A",
+        rate: 50,
+        quantity: 2,
+        tax: 5,
+        amount: 110,
       },
       {
-        description: 'Design',
-        quantity: 2000,
-        rate: 20.5,
-        tax: 20.5,
-        amount: 20230.4,
+        description: "Delivery of Package B",
+        rate: 30,
+        quantity: 3,
+        tax: 4.5,
+        amount: 94.5,
       },
     ],
-    subtotal: 40460.8,
-    discount: 0.2,
-    shippingCost: 50.0,
-    salesTax: 450.0,
-    total: 6480.0,
+    subtotal: 204.5,
+    discount: 20.45,
+    shippingCost: 15,
+    salesTax: 10.23,
+    total: 209.28,
+    paymentInstruction: "Please pay via bank transfer to account #123456789.",
+    notes: "Thank you for using our service!",
   };
 
   return (
-    <div className="max-w-5xl mx-auto bg-white shadow-2xl rounded-lg p-8">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-12">
-        <div className="flex items-center space-x-4">
-          <img src={logo} alt="Company Logo" className="h-16" />
-          <h1 className="text-4xl font-semibold text-blue-700">Invoice</h1>
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
+      <header className="py-6 px-6 flex justify-between items-center">
+        <div className="flex items-center ">
+          <img src={capilary_logo} alt="Soldo Apps" className="h-40 w-full" />
         </div>
         <div className="text-right">
-          <div className="text-xl font-medium text-gray-700">Invoice No: {invoiceData.invoiceNo}</div>
-          <div className="text-sm text-gray-500">Date: {invoiceData.date}</div>
+          <h1 className="text-2xl font-bold">Delivery Service Invoice</h1>
+          <span className="font-medium block">
+            Invoice No. {invoice.number}
+          </span>
+          <p className="text-sm mt-2">
+            Issued on {format(invoice.date, "MMMM d, yyyy")}
+          </p>
+          <p className="text-sm">
+            Due Date: {format(invoice.dueDate, "MMMM d, yyyy")}
+          </p>
+        </div>
+      </header>
+
+      <div className="p-6 grid grid-cols-2 gap-6 mb-3">
+        <div>
+          <h2 className="text-lg font-medium mb-2">Bill to</h2>
+          <address className="not-italic">
+            <div className="font-medium">{invoice.billTo.name}</div>
+            <div>{invoice.billTo.email}</div>
+            <div>{invoice.billTo.address}</div>
+          </address>
+        </div>
+
+        <div className="text-right">
+          {" "}
+          <h2 className="text-lg font-medium mb-2">Ship To</h2>
+          <address className="not-italic">
+            <div className="font-medium">{invoice.shipTo.name}</div>
+            <div>{invoice.shipTo.email}</div>
+            <div>{invoice.shipTo.address}</div>
+          </address>
         </div>
       </div>
 
-      {/* From and To Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">From:</h3>
-          <p className="text-gray-600">{invoiceData.from.name}</p>
-          <p className="text-gray-600">{invoiceData.from.address}</p>
-          <p className="text-gray-600">{invoiceData.from.email}</p>
-          <p className="text-gray-600">{invoiceData.from.phone}</p>
+      <div className="bg-gray-100 rounded-lg p-4 space-y-4">
+        <div className="grid grid-cols-5 text-gray-600 font-medium">
+          <p>Name</p>
+          <p className="text-right">RATE</p>
+          <p className="text-right">QTY</p>
+          <p className="text-right"></p>
+          <p className="text-right">AMOUNT</p>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">Bill to:</h3>
-          <p className="text-gray-600">{invoiceData.to.name}</p>
-          <p className="text-gray-600">{invoiceData.to.address}</p>
-          <p className="text-gray-600">{invoiceData.to.email}</p>
-          <p className="text-gray-600">{invoiceData.to.phone}</p>
-        </div>
-      </div>
-
-      {/* Item List Table */}
-      <table className="min-w-full table-auto mb-12">
-        <thead className="bg-blue-50 text-left">
-          <tr>
-            <th className="py-3 px-6 text-sm text-gray-700">Description</th>
-            <th className="py-3 px-6 text-sm text-gray-700">Qty</th>
-            <th className="py-3 px-6 text-sm text-gray-700">Rate</th>
-            <th className="py-3 px-6 text-sm text-gray-700">Tax</th>
-            <th className="py-3 px-6 text-sm text-gray-700">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {invoiceData.items.map((item, index) => (
-            <tr key={index} className="border-t hover:bg-gray-50">
-              <td className="py-4 px-6 text-sm text-gray-700">{item.description}</td>
-              <td className="py-4 px-6 text-sm text-gray-700">{item.quantity}</td>
-              <td className="py-4 px-6 text-sm text-gray-700">${item.rate.toFixed(2)}</td>
-              <td className="py-4 px-6 text-sm text-gray-700">${item.tax.toFixed(2)}</td>
-              <td className="py-4 px-6 text-sm text-gray-700">${item.amount.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Total Section */}
-      <div className="flex justify-between items-center mb-12">
-        <div className="text-sm text-gray-600">
-          <p>Thank you for your business! If you have any questions, feel free to contact us.</p>
-        </div>
-        <div className="text-right">
-          <div className="grid grid-cols-2 gap-6 text-sm text-gray-700">
-            <div>Subtotal:</div>
-            <div className="font-semibold">${invoiceData.subtotal.toFixed(2)}</div>
-            <div>Discount:</div>
-            <div className="font-semibold">-${(invoiceData.subtotal * invoiceData.discount).toFixed(2)}</div>
-            <div>Shipping:</div>
-            <div className="font-semibold">${invoiceData.shippingCost.toFixed(2)}</div>
-            <div>Sales Tax:</div>
-            <div className="font-semibold">${invoiceData.salesTax.toFixed(2)}</div>
-            <div className="text-lg font-semibold">Total:</div>
-            <div className="text-lg font-semibold">${invoiceData.total.toFixed(2)}</div>
+        {invoice.items.map((item, index) => (
+          <div key={index} className="grid grid-cols-5 items-center">
+            <p>{item.description}</p>
+            <p className="text-right">${item.rate.toFixed(2)}</p>
+            <p className="text-right">{item.quantity}</p>
+            <p className="text-right"></p>
+            <p className="text-right">${item.amount.toFixed(2)}</p>
           </div>
+        ))}
+      </div>
+
+      <div className="p-6 space-y-2">
+        <div className="flex justify-between border-t pt-4">
+          <p className="text-gray-600 font-medium">Total</p>
+          <p className="font-bold text-2xl">${invoice.total.toFixed(2)}</p>
         </div>
       </div>
 
-      {/* Footer Notes */}
-      <div className="text-sm text-center text-gray-600 mt-8">
-        <p>Prototype-based programming is a style of object-oriented programming in which behavior reuse is achieved by cloning, not by inheritance.</p>
+      <div className="border-t pt-6 px-6 pb-6 space-y-2">
+        <p className="text-gray-600 font-medium">Payment Instruction</p>
+        <p>{invoice.paymentInstruction}</p>
+
+        <p className="text-gray-600 font-medium">Notes</p>
+        <p>{invoice.notes}</p>
       </div>
     </div>
   );

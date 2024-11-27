@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Trash2, PlusCircle, CheckCircle2 } from 'lucide-react';
 
-const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
+const Supplies = ({ formData, setFormData, onBack, onSubmit,handleSubmited,onNext }) => {
+  console.log("fist",formData)
   // Dummy data for the Supplies table
   const dummyServices = [
     { productName: "Product A", quantity: "10", price: "1000" },
@@ -11,6 +12,9 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
 
   // Initialize the state with dummy data
   const [services, setServices] = useState(dummyServices);
+  
+  // New state to manage submission display
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleServiceChange = (e, index) => {
     const { name, value } = e.target;
@@ -31,6 +35,39 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
   // Calculate total value
   const totalValue = services.reduce((acc, service) => 
     acc + (parseFloat(service.quantity || 0) * parseFloat(service.price || 0)), 0);
+
+  // Handle form submission
+  const handleSubmit = () => {
+    handleSubmited
+    // Prepare the final form data
+    console.log("Prevoiues home data",formData)
+    const submissionData = {
+      ...formData,
+      services: services,
+      totalValue: totalValue
+    };
+
+    // Update the formData state to include the services and total value
+    setFormData(prevFormData => ({
+      ...prevFormData,    // Spread the previous state
+      ...submissionData,  // Add the new data
+    }));
+    
+
+    // Log the submission data
+    console.log("Submission Data:", formData);
+
+    // Set submitted state to true to show submission details
+    setIsSubmitted(true);
+
+    // Call onSubmit if provided
+    if (onSubmit) {
+      onSubmit(submissionData);
+    }
+    onNext()
+  };
+
+  
 
   return (
     <div className="mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
@@ -148,7 +185,7 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
             Back
           </button>
           <button
-           
+            onClick={handleSubmit}
             className="bg-primary text-white px-6 py-2 rounded-md 
               hover:bg-primary transition-colors flex items-center"
           >
