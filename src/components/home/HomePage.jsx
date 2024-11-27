@@ -40,11 +40,13 @@ const HomePage = () => {
     try {
       const response = await verifyUser(email);
       console.log("response", response);
-      const role = response?.data?.role;
-      console.log(response?.data?.data?._id);
+   
       localStorage.setItem("userId", response?.data?.data?._id);
+      localStorage.setItem("role", response?.data?.data?.role);
+     
 
-      localStorage.setItem("user", JSON.stringify({ ...user, role }));
+
+      localStorage.setItem("user", JSON.stringify({ ...user }));
       navigate("/dashboard");
 
     } catch (error) {

@@ -63,7 +63,7 @@ const Preview = ({ formData, onSubmit, onBack }) => {
     switch (activeSection) {
       case 'commercials':
         return (
-          <div className="p-6 space-y-6">
+          <div className="p-6 space-y-6 ">
             <h2 className="text-2xl font-bold text-primary border-b pb-3">
               Commercials Details
             </h2>
@@ -84,7 +84,7 @@ const Preview = ({ formData, onSubmit, onBack }) => {
                     .map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between p-3 bg-gray-50 rounded-lg"
+                        className="flex justify-between p-3  rounded-lg"
                       >
                         <span className="text-gray-600 font-medium">
                           {item.label}
@@ -187,7 +187,68 @@ const Preview = ({ formData, onSubmit, onBack }) => {
           </div>
         );
   
-      // Add similar conditions for 'supplies' and other sections...
+        case 'supplies':
+          return (
+            <div className="p-6 space-y-6">
+              <h2 className="text-2xl font-bold text-primary border-b pb-3">
+                Supplies Details
+              </h2>
+        
+              {/* Total Value */}
+              {formData.supplies?.totalValue !== undefined && (
+                <div className="p-3 bg-gray-50 rounded-lg flex justify-between">
+                  <span className="text-gray-600 font-medium">Total Value</span>
+                  <span className="text-gray-800 font-semibold">
+                    {formData.supplies.totalValue}
+                  </span>
+                </div>
+              )}
+        
+              {/* Services Table */}
+              {formData.supplies?.services?.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-xl font-semibold text-primary mb-4">Services</h3>
+                  <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-primary/10">
+                        <tr>
+                          <th className="p-3 text-left text-primary">Product Name</th>
+                          <th className="p-3 text-left text-primary">Quantity</th>
+                          <th className="p-3 text-left text-primary">Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {formData.supplies.services.map((service, index) => (
+                          <tr key={index} className="border-b hover:bg-gray-50">
+                            <td className="p-3">
+                              {service.productName || 'N/A'}
+                            </td>
+                            <td className="p-3">
+                              {service.quantity || 'N/A'}
+                            </td>
+                            <td className="p-3">
+                              {service.price || 'N/A'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+        
+              {/* Remarks */}
+              {formData.supplies?.remarks && (
+                <div className="mt-6">
+                  <h3 className="text-xl font-semibold text-primary mb-4">Remarks</h3>
+                  <p className="p-3 bg-gray-50 rounded-lg text-gray-800">
+                    {formData.supplies.remarks}
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        
   
       default:
         return null;
@@ -195,7 +256,7 @@ const Preview = ({ formData, onSubmit, onBack }) => {
   };
   
   return (
-    <div className=" flex flex-col bg-gray-50">
+    <div className=" flex flex-col bg-white">
       {/* Header */}
       <div className="bg-primary text-white p-4 text-center shadow-md">
         <h1 className="text-2xl font-bold">Purchase Order Preview</h1>

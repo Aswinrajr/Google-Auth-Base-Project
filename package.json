@@ -12,11 +12,7 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.7.7",
-<<<<<<< HEAD
-    "date-fns": "^4.1.0",
-=======
     "formik": "^2.4.6",
->>>>>>> 00e7b1ef18b275090fc23969867dbf2d1074b0e4
     "gapi-script": "^1.2.0",
     "google-auth": "file:",
     "jwt-decode": "^4.0.0",

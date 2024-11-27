@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -12,13 +12,30 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const [showModal, setShowModal] = useState(false);
   const [newVendor, setNewVendor] = useState({ name: "", email: "" });
   const uploadAreaRef = useRef(null);
+  const [minDate, setMinDate] = useState("");
+  const [maxDate, setMaxDate] = useState("");
 
+
+  useEffect(() => {
+    if (!formData.quotationDate) {
+      const today = new Date().toISOString().split("T")[0];
+      setFormData((prevState) => ({
+        ...prevState,
+        quotationDate: today,
+      }));
+    }
+  }, [setFormData, formData.quotationDate]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+  };
+  const getMinDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 15); // Subtract 15 days
+    return date.toISOString().split("T")[0];
   };
 
   const handleFileChange = (e) => {
@@ -62,16 +79,25 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
 
   const handleAddVendor = () => {
     if (newVendor.name && newVendor.email) {
+      // Add the vendor name with brackets
+      const vendorWithBrackets = `${newVendor.name} -(New Vendor)`;
+  
       setVendors([
         ...vendors,
-        { id: vendors.length + 1, name: newVendor.name },
+        { id: vendors.length + 1, name: vendorWithBrackets },
       ]);
       setShowModal(false);
       setNewVendor({ name: "", email: "" });
+      // Update the formData with the new vendor
+      setFormData((prevState) => ({
+        ...prevState,
+        vendor: vendorWithBrackets,
+      }));
     } else {
       alert("Please fill in all fields.");
     }
   };
+  
 
   const handleSubmit = () => {
     console.log("formData", formData)
@@ -119,18 +145,19 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
           </div>
 
           <div className="grid grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Quotation Date
-              </label>
-              <input
-                type="date"
-                name="quotationDate"
-                value={formData.quotationDate}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Quotation Date
+            </label>
+            <input
+              type="date"
+              name="quotationDate"
+              value={formData.quotationDate}
+              onChange={handleInputChange}
+              min={getMinDate()}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+            />
+          </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Quotation Number

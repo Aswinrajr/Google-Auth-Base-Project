@@ -18,7 +18,7 @@ const VendorListTable = (onEdit, onDelete) => {
         setPersonalData(response.data);
       } catch (err) {
         console.log("Error in fetching the vendor data", err);
-        setError('Failed to load vendor data');
+
       }
     };
     fetchVendor();
@@ -104,7 +104,7 @@ const VendorListTable = (onEdit, onDelete) => {
                     >
                       <input
                         type="checkbox"
-                        checked={personalData.length === vendor.length}
+                        checked={personalData?.length === vendor?.length}
                         onChange={handleSelectAll}
                         className="h-4 w-4 rounded border-gray-300"
                       />
@@ -184,7 +184,7 @@ const VendorListTable = (onEdit, onDelete) => {
 
                     <th
                       scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-center text-white uppercase tracking-wider"
+                      className="sticky top-0 px-6 py-4 text-xs font-medium text-center text-white uppercase tracking-wider"
                     >
                       ViewMore
                     </th>
@@ -286,7 +286,7 @@ const VendorListTable = (onEdit, onDelete) => {
 
       <div className="flex items-center justify-between mt-6 px-2">
         <div className="flex items-center text-sm text-gray-500">
-          Showing 1 to {personalData.length} of {personalData.length} entries
+          Showing 1 to {personalData?.length} of {personalData?.length} entries
         </div>
         <div className="flex gap-3">
           <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm disabled:opacity-50">

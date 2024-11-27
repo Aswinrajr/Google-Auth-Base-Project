@@ -5,8 +5,13 @@ import Procurements from "./Procurements";
 import Commercials from "./Commercials";
 import Preview from "./Preview";
 import Invoice from "./Invoice";
+import { createNewRequest } from "../../../api/service/adminServices";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 const CreateRequest = () => {
+  const navigate = useNavigate();
+  const empId = localStorage.getItem("userId");
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [formData, setFormData] = useState({
@@ -17,9 +22,21 @@ const CreateRequest = () => {
   });
   const [submittedData, setSubmittedData] = useState(null); // State for submitted data
 
-  const handleSubmit = () => {
-    setSubmittedData(formData);
-    console.log("Form Submitted:", formData);
+  const handleSubmit = async () => {
+    try {
+      setSubmittedData(formData);
+      console.log("Form Submitted:", formData);
+      const response = await createNewRequest(empId, formData);
+      console.log(response);
+      if (response.status === 201) {
+        toast.success("New Request is created");
+        setTimeout(() => {
+          navigate("/req-list-table");
+        }, 1500);
+      }
+    } catch (err) {
+      console.log("Error in submit req", err);
+    }
   };
 
   const steps = [
@@ -78,7 +95,7 @@ const CreateRequest = () => {
     },
     {
       content: (
-        <Invoice
+        <Preview
           formData={formData} // Pass the entire form data here
           onSubmit={handleSubmit}
           onBack={() => setCurrentStep(2)}
@@ -113,16 +130,20 @@ const CreateRequest = () => {
               {index < steps.length - 1 && (
                 <div
                   className={`absolute top-6 left-1/2 w-full h-0.5 transform -translate-x-1/2 -z-10 
-                    ${isCompleted || isActive ? "bg-green-500" : "bg-gray-300"}`}
+                    ${
+                      isCompleted || isActive ? "bg-green-500" : "bg-gray-300"
+                    }`}
                 />
               )}
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center border-2 mb-2
-                  ${isActive
-                    ? "border-primary bg-primary/10 text-primary"
-                    : isCompleted
-                    ? "border-green-500 bg-green-50 text-green-500"
-                    : "border-gray-300 bg-gray-100 text-gray-400"}
+                  ${
+                    isActive
+                      ? "border-primary bg-primary/10 text-primary"
+                      : isCompleted
+                      ? "border-green-500 bg-green-50 text-green-500"
+                      : "border-gray-300 bg-gray-100 text-gray-400"
+                  }
                   transition-all duration-300`}
               >
                 {isCompleted && !isActive ? (
@@ -133,11 +154,13 @@ const CreateRequest = () => {
               </div>
               <h3
                 className={`text-center font-semibold text-sm
-                  ${isActive
-                    ? "text-primary"
-                    : isCompleted
-                    ? "text-green-600"
-                    : "text-gray-500"}
+                  ${
+                    isActive
+                      ? "text-primary"
+                      : isCompleted
+                      ? "text-green-600"
+                      : "text-gray-500"
+                  }
                   transition-colors duration-300`}
               >
                 {step.title}
@@ -146,6 +169,15 @@ const CreateRequest = () => {
           );
         })}
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss
+      />
 
       <div className="mt-6">{steps[currentStep].content}</div>
     </div>

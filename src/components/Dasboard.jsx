@@ -42,6 +42,14 @@ const Dashboard = () => {
               <label>Email</label>
               <p>{user?.email || "No email provided"}</p>
             </div>
+            <div className="info-item">
+              <label>Department</label>
+              <p>IT Web development</p>
+            </div>
+            <div className="info-item">
+              <label>Cost Center</label>
+              <p>CT-ITDT-02</p>
+            </div>
           </div>
         </div>
 

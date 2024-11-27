@@ -1,15 +1,16 @@
 import { PlusCircle, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAllEntityData } from "../../../api/service/adminServices";
 
 const Commercials = ({ formData, setFormData, onNext }) => {
   const [localFormData, setLocalFormData] = useState({
     entity: "",
     city: "",
     site: "",
-    department: "",
+    department: "IT Web development",
     amount: "",
     currency: "USD",
-    costCentre: "",
+    costCentre: "CT-ITDT-02",
     paymentType: "",
     paymentTerms: [
       { percentageTerm: "", percentageAmount: "", paymentType: "" },
@@ -17,9 +18,26 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     billTo: "",
     shipTo: "",
   });
+  const [entities, setEntities] = useState([]);
+  const [selectedEntityDetails, setSelectedEntityDetails] = useState(null);
+
+  useEffect(() => {
+    const fetchEntity = async () => {
+      try {
+        const response = await getAllEntityData();
+        if (response.status === 200) {
+          setEntities(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching entities:", error);
+      }
+    };
+    fetchEntity();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(name,value)
     const updatedFormData = {
       ...localFormData,
       [name]: value,
@@ -27,6 +45,40 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
     setLocalFormData(updatedFormData);
     setFormData(updatedFormData);
+  };
+
+  const handleEntityChange = (e) => {
+    const selectedEntityId = e.target.value;
+    console.log("Selected Entity ID:", selectedEntityId);
+
+    // Find all entities that match the selected entity name
+    const matchingEntities = entities.filter(
+      (entity) => entity.entityName === selectedEntityId
+    );
+    console.log("Matching Entities:", matchingEntities);
+
+
+
+    if (matchingEntities.length > 0) {
+   
+      const selectedEntity = matchingEntities[0]; 
+      setSelectedEntityDetails(selectedEntity);
+
+
+      const updatedFormData = {
+        ...localFormData,
+        entity: selectedEntityId,
+        city: selectedEntity ? selectedEntity.city : "",
+        site: selectedEntity ? selectedEntity.area : "",
+        billTo: selectedEntity ? selectedEntity.addressLine : "",
+        shipTo: selectedEntity ? selectedEntity.addressLine : "",
+      };
+
+      setLocalFormData(updatedFormData);
+      setFormData(updatedFormData);
+    } else {
+      console.log("No matching entities found");
+    }
   };
 
   const handlePaymentTermChange = (e, index) => {
@@ -63,18 +115,17 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     const updatedPaymentTerms = localFormData.paymentTerms.filter(
       (_, index) => index !== indexToRemove
     );
-  
+
     const updatedFormData = {
       ...localFormData,
       paymentTerms: updatedPaymentTerms,
     };
-  
+
     setLocalFormData(updatedFormData);
     setFormData(updatedFormData);
   };
 
   const handleNextStep = () => {
-
     onNext();
   };
 
@@ -96,12 +147,18 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             <select
               name="entity"
               value={localFormData.entity}
-              onChange={handleInputChange}
+              onChange={handleEntityChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
             >
               <option value="">Select Entity</option>
-              <option value="entity1">Entity 1</option>
-              <option value="entity2">Entity 2</option>
+              {/* Use Set to filter unique entity names */}
+              {[...new Set(entities.map((entity) => entity.entityName))].map(
+                (entityName, index) => (
+                  <option key={index} value={entityName}>
+                    {entityName}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
@@ -147,6 +204,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               onChange={handleInputChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
               placeholder="Enter Department"
+              disabled
             />
           </div>
         </div>
@@ -192,6 +250,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               onChange={handleInputChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
               placeholder="Enter Cost Centre"
+              disabled
             />
           </div>
 
@@ -280,9 +339,15 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                       >
                         <option value="">Select Payment Term</option>
                         <option value="immediate">Immediate</option>
-                        <option value="advance_30">30 days credit period</option>
-                        <option value="advance_45">45 days  credit period</option>
-                        <option value="advance_60">60 days  credit period</option>
+                        <option value="advance_30">
+                          30 days credit period
+                        </option>
+                        <option value="advance_45">
+                          45 days credit period
+                        </option>
+                        <option value="advance_60">
+                          60 days credit period
+                        </option>
                       </select>
                     </td>
 
@@ -373,7 +438,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
           <button
             type="button"
             onClick={handleNextStep}
-            className="px-10  py-3 bg-gradient-to-r from-primary to-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out"
+            className="px-10 py-3 bg-gradient-to-r from-primary to-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out"
           >
             Next
           </button>

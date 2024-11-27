@@ -115,3 +115,74 @@ export const getEmployeeList = async () => {
     return err;
   }
 };
+
+
+export const getAllEntityData = async () => {
+  try {
+    const response = await adminServices.get(
+      `/entity/get-all`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const addEntityData = async (data) => {
+  try {
+    const response = await adminServices.post(
+      `/entity/create`,{data}
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const deleteEntity = async (id) => {
+  try {
+    const response = await adminServices.delete(
+      `/entity/delete/${id}`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const createNewRequest = async (id,formData) => {
+  try {
+    console.log(id,formData)
+    const response = await adminServices.post(
+      `/employees/create-newrequest/${id}`,formData
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const regNewEmployee = async (formData) => {
+  try {
+    const response = await adminServices.post(
+      `/employees/create-new-employee`,formData
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const getReqListEmployee = async (id,role) => {
+  try {
+    const response = await adminServices.get(
+      `/employees/get-all-req/${id}`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};

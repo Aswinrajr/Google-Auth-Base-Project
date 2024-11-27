@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getEmployeeList } from "../../../api/service/adminServices";
+import { deleteEmployee, getEmployeeList } from "../../../api/service/adminServices";
 
 const EmployeListTable = ({ onEdit, onDelete }) => {
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                 setEmployees(response.data);
             } catch (err) {
                 console.error('Error fetching employees:', err);
-                setError('Failed to load employee data');
+               
             }
         };
         fetchEmployees();
@@ -102,7 +102,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                                         >
                                             <input
                                                 type="checkbox"
-                                                checked={selectedUsers.length === employees.length}
+                                                checked={selectedUsers?.length === employees?.length}
                                                 onChange={handleSelectAll}
                                                 className="h-4 w-4 rounded border-gray-300"
                                             />
@@ -241,7 +241,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                                         </th>
                                         <th
                                             scope="col"
-                                            className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-center text-white uppercase tracking-wider"
+                                            className="sticky top-0 px-6 py-4  text-xs font-medium text-center text-white uppercase tracking-wider"
                                         >
                                             ViewMore
                                         </th>
@@ -255,7 +255,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {employees?.map((user) => (
+                                    {employees?.map((user,index) => (
                                         <tr key={user.sno} className="hover:bg-gray-50">
                                             <td className="px-6 py-4">
                                                 <input
@@ -266,10 +266,10 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                                                 />
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                                {user.sno}
+                                            {index + 1}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500">
-                                                {user.empid}
+                                                {user.empid||"CAP5321944"}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500">
                                                 {user.name}
