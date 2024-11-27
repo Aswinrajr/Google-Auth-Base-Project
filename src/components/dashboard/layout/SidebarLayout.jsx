@@ -7,8 +7,8 @@ import {
   Building2,
   FileEdit,
   HelpCircle,
-  FileText, // For Documents / File Manager
-  LogOut,   // For Logout
+  FileText,
+  LogOut,
 } from "lucide-react";
 import TopBar from "./TopBar";
 
@@ -34,35 +34,38 @@ const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
 const SidebarLayout = ({ role }) => {
   const location = useLocation();
 
-  // Define sidebar items for Admin
+  // Define sidebar items
   const allSidebarItems = [
     { icon: Home, title: "Dashboard", path: "/dashboard" },
     { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
-    { icon: FileEdit, title: "Entities", path: "/entities" },
-    { icon: Users, title: "Employees", path: "/employee-reg" },
+    { icon: FileEdit, title: "Entities", path: "/entity-list-table" },
+    { icon: Users, title: "Employees", path: "/employee-list-table" },
     { icon: Building2, title: "Vendors", path: "/vendor-list-table" },
-    { icon: FileText, title: "Documents / File Manager", path: "/invoice" }, // Added File Manager
+    { icon: FileText, title: "Documents / File Manager", path: "/invoice" },
     { icon: HelpCircle, title: "Questions", path: "/questions" },
-    { icon: LogOut, title: "Logout", path: "/logout" }, // Added Logout
+    { icon: LogOut, title: "Logout", path: "/logout" },
   ];
 
-  // Since this is for Admin, we don't need role-based filtering in this case.
   const sidebarItems = allSidebarItems;
 
-  // Find the active item based on the current location
-  const activeItem = sidebarItems.find((item) => {
-    // Check if the current path starts with the sidebar item's path
-    return location.pathname.startsWith(item.path);
-  });
+  // Find the active item
+  const activeItem = sidebarItems.find((item) =>
+    location.pathname.startsWith(item.path)
+  );
 
   return (
-    <>
-      <TopBar />
-      <div className="flex flex-col sm:flex-row">
+    <div className="flex flex-col h-screen">
+      {/* TopBar */}
+      <div className="fixed w-full z-10">
+        <TopBar />
+      </div>
+
+      {/* Main Layout */}
+      <div className="flex flex-1 pt-20">
         {/* Sidebar */}
-        <div className="w-full sm:w-32 h-16 sm:h-screen bg-white border-t sm:border-r border-gray-200 flex sm:flex-col sm:py-6">
-          <div className="flex-1 overflow-y-auto flex sm:flex-col justify-around sm:justify-start">
-            <div className="grid grid-cols-5 sm:grid-cols-1 gap-2">
+        <div className="w-32 h-full bg-white border-r border-gray-200 fixed overflow-y-auto">
+          <div className="flex flex-col py-6">
+            <div className="grid grid-cols-1 gap-2">
               {sidebarItems.map((item, index) => (
                 <SidebarItem
                   key={index}
@@ -77,11 +80,13 @@ const SidebarLayout = ({ role }) => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-4 sm:p-8 bg-gray-50">
-          <Outlet />
+        <div className="flex-1 ml-32 overflow-y-auto bg-gray-50">
+          <div className="p-4 sm:p-8">
+            <Outlet />
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

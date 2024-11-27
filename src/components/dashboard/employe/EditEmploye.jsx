@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { generateEmployeeUniqueId } from "../../../api/service/adminServices";
 
-const EmployeeReg = () => {
+const EditEmploye = () => {
   const [empid, setEmpId] = useState();
   const [name, setName] = useState();
   const [contact, setContact] = useState();
@@ -67,8 +67,10 @@ const EmployeeReg = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-       <h2 className="text-2xl font-bold text-gray-900 mb-6">Add Employee</h2>
       {/* Personal Information Section */}
+      <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Edit Employee</h2>
+      </div>
       <div className="p-4 border rounded-lg border-primary">
           <div>
             <input
@@ -310,4 +312,4 @@ const EmployeeReg = () => {
   );
 };
 
-export default EmployeeReg;
+export default EditEmploye;

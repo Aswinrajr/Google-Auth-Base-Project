@@ -1,53 +1,70 @@
-import { Search, Download, Filter, Plus, Edit, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+/* eslint-disable react/prop-types */
+import { useState } from "react";
+import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { deleteVendor, getVendorList } from "../../../api/service/adminServices";
-import { toast, ToastContainer } from "react-toastify";
 
-const VendorListTable = (onEdit, onDelete) => {
+const EntityListTable = ({ onEdit, onDelete }) => {
   const navigate = useNavigate();
-  const [personalData, setPersonalData] = useState([]);
-  const [vendor, setVendor] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
-  useEffect(() => {
-    const fetchVendor = async () => {
-      try {
-        // setPersonalData(response?.data?.data);
-        const response = await getVendorList()
-        console.log(response);
-        setPersonalData(response.data);
-      } catch (err) {
-        console.log("Error in fetching the vendor data", err);
-        setError('Failed to load vendor data');
-      }
-    };
-    fetchVendor();
-  }, []);
-  const handleDelete = async (id) => {
-    const response = await deleteVendor(id)
-    console.log(response)
-    if (response.status === 200) {
-      setPersonalData(personalData?.filter((person) => person?._id !== id));
-      toast.success(response.data.message)
-    } else {
-      toast.error(response.data.message)
-    }
-
-  }
-  const handleEdit = (id) => {
-
-  }
+  const users = [
+    {
+      sno: 1,
+      entityName: "Entity 1",
+      category: "Category 1",
+      addressLine: "123 Main St",
+      area: "Area 1",
+      city: "City 1",
+      state: "State 1",
+      pincode: "123456",
+      country: "Country 1",
+      landmark: "Landmark 1",
+      latitude: "12.3456",
+      longitude: "78.9101",
+      status: "Pending",
+    },
+    {
+      sno: 2,
+      entityName: "Entity 2",
+      category: "Category 2",
+      addressLine: "456 Market Ave",
+      area: "Area 2",
+      city: "City 2",
+      state: "State 2",
+      pincode: "654321",
+      country: "Country 2",
+      landmark: "Landmark 2",
+      latitude: "21.5432",
+      longitude: "89.0123",
+      status: "Approved",
+    },
+    {
+      sno: 3,
+      entityName: "Entity 3",
+      category: "Category 3",
+      addressLine: "789 Park Blvd",
+      area: "Area 3",
+      city: "City 3",
+      state: "State 3",
+      pincode: "789123",
+      country: "Country 3",
+      landmark: "Landmark 3",
+      latitude: "34.5678",
+      longitude: "90.1234",
+      status: "Rejected",
+    },
+  ];
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setPersonalData(users.map((user) => user.sno));
+      setSelectedUsers(users.map((user) => user.sno));
     } else {
-      setPersonalData([]);
+      setSelectedUsers([]);
     }
   };
 
   const handleSelectUser = (sno) => {
-    setPersonalData((prev) =>
+    setSelectedUsers((prev) =>
       prev.includes(sno) ? prev.filter((id) => id !== sno) : [...prev, sno]
     );
   };
@@ -55,9 +72,7 @@ const VendorListTable = (onEdit, onDelete) => {
   return (
     <div className="p-8 bg-white rounded-lg shadow-sm h-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Personal Information
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Entity List</h2>
 
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="relative flex-1 min-w-[300px] max-w-md">
@@ -66,7 +81,7 @@ const VendorListTable = (onEdit, onDelete) => {
             </div>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search requests..."
               className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
@@ -82,10 +97,10 @@ const VendorListTable = (onEdit, onDelete) => {
             </button>
             <button
               className="inline-flex items-center px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
-              onClick={() => navigate("/vendor-list-table/vendor-registration")}
+              onClick={() => navigate("/entity-list-table/entities")}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Vendor
+              Add Entity
             </button>
           </div>
         </div>
@@ -104,7 +119,7 @@ const VendorListTable = (onEdit, onDelete) => {
                     >
                       <input
                         type="checkbox"
-                        checked={personalData.length === vendor.length}
+                        checked={selectedUsers.length === users.length}
                         onChange={handleSelectAll}
                         className="h-4 w-4 rounded border-gray-300"
                       />
@@ -119,75 +134,81 @@ const VendorListTable = (onEdit, onDelete) => {
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      First_Name
+                      entityName
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Last_Name
+                      category
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Phone_Number
+                      addressLine
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Email
+                      area
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Street_Address
+                      city
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Street_Address2
+                      state
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Postal_Code
+                      pincode
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      City
+                      country
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      State
+                      landmark
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Country
+                      latitude
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Additional_Notes
+                      longitude
                     </th>
-
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-center text-white uppercase tracking-wider"
                     >
-                      ViewMore
+                      View More
                     </th>
+
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
@@ -197,51 +218,54 @@ const VendorListTable = (onEdit, onDelete) => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {personalData?.length > 0 && personalData?.map((person) => (
-                    <tr key={person.sno} className="hover:bg-gray-50">
+                  {users.map((user) => (
+                    <tr key={user.sno} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
-                          checked={personalData.includes(person.sno)}
-                          onChange={() => handleSelectUser(person.sno)}
+                          checked={selectedUsers.includes(user.sno)}
+                          onChange={() => handleSelectUser(user.sno)}
                           className="h-4 w-4 rounded border-gray-300"
                         />
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {person.sno}
+                        {user.sno}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.firstName}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.entityName}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.lastName}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.category}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.phoneNumber}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.addressLine}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.email}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.area}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.streetAddress || "N/A"}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.city}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.streetAddress2 || "N/A"}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.state}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.postalCode}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.pincode}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.city}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.country}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.state}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.landmark}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.country}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.latitude}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person?.textarea}
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.longitude}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {user.status}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
                         <div className="flex space-x-4">
@@ -259,17 +283,18 @@ const VendorListTable = (onEdit, onDelete) => {
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 text-sm text-gray-500">
                         <div className="flex space-x-4">
                           <button
+                            // onClick={() => onEdit(user)}
                             className="text-primary hover:text-primary/80"
-                            onClick={() => handleEdit(person?._id)}
+                            onClick={() => navigate("/entity-list-table/edit-entities")}
                           >
                             <Edit className="h-5 w-5" />
                           </button>
                           <button
+                            onClick={() => onDelete(user)}
                             className="text-red-600 hover:text-red-800"
-                            onClick={() => handleDelete(person?._id)}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
@@ -283,34 +308,8 @@ const VendorListTable = (onEdit, onDelete) => {
           </div>
         </div>
       </div>
-
-      <div className="flex items-center justify-between mt-6 px-2">
-        <div className="flex items-center text-sm text-gray-500">
-          Showing 1 to {personalData.length} of {personalData.length} entries
-        </div>
-        <div className="flex gap-3">
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm disabled:opacity-50">
-            Previous
-          </button>
-          <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm">
-            1
-          </button>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm disabled:opacity-50">
-            Next
-          </button>
-        </div>
-      </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        pauseOnFocusLoss
-      />
     </div>
   );
 };
 
-export default VendorListTable;
+export default EntityListTable;
