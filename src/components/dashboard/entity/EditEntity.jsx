@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 
 
-function AddEntity() {
+function EditEntity() {
   const formik = useFormik({
     initialValues: {
       entityName: '',
@@ -26,7 +26,7 @@ function AddEntity() {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
       <form onSubmit={formik.handleSubmit}>
-        <h2 className="text-2xl font-bold text-green-600 mb-6">Entity Form</h2>
+        <h2 className="text-2xl font-bold text-green-600 mb-6">Edit Entity</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -245,4 +245,4 @@ function AddEntity() {
   );
 }
 
-export default AddEntity;
+export default EditEntity;

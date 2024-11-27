@@ -61,7 +61,7 @@ export const createNewVendor = async (formData) => {
 export const getVendorList = async () => {
   try {
     const response = await adminServices.get(
-      `/auth/vendor-list`
+      `/vendors/get-all`
     );
     return response;
   } catch (err) {
@@ -73,7 +73,18 @@ export const getVendorList = async () => {
 export const deleteVendor = async (id) => {
   try {
     const response = await adminServices.delete(
-      `/auth/delete-vendor/${id}`
+      `/vendors/delete/${id}`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const deleteEmployee = async (id) => {
+  try {
+    const response = await adminServices.delete(
+      `/employees/delete/${id}`
     );
     return response;
   } catch (err) {
@@ -86,6 +97,18 @@ export const generateEmployeeUniqueId = async () => {
   try {
     const response = await adminServices.get(
       `/employees/generate-empid`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const getEmployeeList = async () => {
+  try {
+    const response = await adminServices.get(
+      `/employees/get-all`
     );
     return response;
   } catch (err) {

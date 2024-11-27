@@ -2,7 +2,7 @@ import { Calendar } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
 
-const EmployeeReg = () => {
+const EditVendor = () => {
   const [pincode, setPincode] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
@@ -160,4 +160,4 @@ const EmployeeReg = () => {
   );
 };
 
-export default EmployeeReg;
+export default EditVendor;
