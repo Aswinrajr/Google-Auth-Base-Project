@@ -4,6 +4,7 @@ import { UserCircle2, MapPin, Mail, Briefcase } from "lucide-react";
 const Dashboard = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+  const role = localStorage.getItem("role")
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -74,7 +75,7 @@ const Dashboard = () => {
               <UserCircle2 className="text-primary w-6 h-6" />
               <div>
                 <p className="text-sm text-gray-500">Role</p>
-                <p className="font-semibold">{user?.role || "Employee"}</p>
+                <p className="font-semibold">{role || "Employee"}</p>
               </div>
             </div>
           </div>

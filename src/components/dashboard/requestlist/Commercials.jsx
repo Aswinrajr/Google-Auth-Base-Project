@@ -130,7 +130,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
   };
 
   return (
-    <div className="w-full mx-auto bg-gray-50  shadow-2xl rounded-2xl overflow-hidden ">
+    <div className="w-full mx-auto bg-white  shadow-2xl rounded-2xl overflow-hidden ">
       <div className="bg-gradient-to-r  from-primary to-primary p-6">
         <h2 className="text-3xl font-extrabold text-white text-center">
           Commercial Details

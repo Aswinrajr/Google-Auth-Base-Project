@@ -72,7 +72,7 @@ function AddEntity() {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
       <form onSubmit={formik.handleSubmit}>
-        <h2 className="text-2xl font-bold text-green-600 mb-6">Entity Form</h2>
+        <h2 className="text-2xl font-bold text-primary mb-6">Entity Form</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Entity Name */}
@@ -220,7 +220,7 @@ function AddEntity() {
         <div className="mt-6 flex justify-end gap-4">
           <button
             type="submit"
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary"
           >
             Submit
           </button>

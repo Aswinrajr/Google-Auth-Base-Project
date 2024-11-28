@@ -1,284 +1,506 @@
-import { useState } from "react";
-import profile from "../../../assets/images/capilary_logo.png";
-import {
-  FileText,
-  MapPin,
-  DollarSign,
-  Building2,
-  CalendarDays,
-  Users,
-  MessageCircle,
-  Send,
+import { useEffect, useState } from 'react';
+import { 
+  CheckCircle2, 
+  Edit2, 
+  Package, 
+  DollarSign, 
+  ClipboardList,
   CheckCircle,
   XCircle,
   PauseCircle,
-} from "lucide-react";
-
-const request = {
-  reqid: "REQ-12345",
-  status: "Pending",
-  commercials: {
-    site: "New York Office",
-    amount: "1,200",
-    currency: "USD",
-    department: "Finance",
-    entity: "XYZ Corporation",
-    costCentre: "CC-101",
-  },
-  procurements: {
-    vendor: "ABC Supplies",
-    expectedDeliveryDate: "2024-12-15T00:00:00Z",
-  },
-  commentLogs: [
-    {
-      senderId: "user-1",
-      senderName: "John Doe",
-      senderPic: profile,
-      message: "Please review the details.",
-      timestamp: "2024-11-20T10:30:00Z",
-    },
-    {
-      senderId: "user-2",
-      senderName: "Jane Smith",
-      senderPic: profile,
-      message: "All looks good to me!",
-      timestamp: "2024-11-21T15:45:00Z",
-    },
-  ],
-};
+  Send,
+  UserCircle2
+} from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { fetchIndividualReq } from "../../../api/service/adminServices";
 
 const PreviewTheReq = () => {
-  const role = localStorage.getItem("role");
-  const [comments, setComments] = useState(request.commentLogs || []);
-  const [newComment, setNewComment] = useState("");
-
-  const handleSendComment = () => {
-    if (newComment.trim()) {
-      const mockComment = {
-        senderId: "current-user-id",
-        senderName: "Current User",
-        senderPic: "path/to/current/user/pic",
-        message: newComment,
-        timestamp: new Date().toISOString(),
-      };
-      setComments([...comments, mockComment]);
-      setNewComment("");
+  const params = useParams();
+  const [request, setRequest] = useState(null);
+  const [activeSection, setActiveSection] = useState('commercials');
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 1,
+      username: 'John Doe',
+      userImage: null,
+      message: 'Can we discuss the payment terms for this request?',
+      timestamp: new Date('2024-02-15T10:30:00'),
+      topic: 'Payment Discussion'
+    },
+    {
+      id: 2,
+      username: 'Jane Smith',
+      userImage: null,
+      message: 'I have some questions about the competitive quotations.',
+      timestamp: new Date('2024-02-15T11:15:00'),
+      topic: 'Quotation Inquiry'
     }
-  };
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+  const [activeChatTopic, setActiveChatTopic] = useState(null);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "Approved":
-        return "bg-green-100 text-green-800";
-      case "Rejected":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  // Fetch request details
+  useEffect(() => {
+    const fetchReq = async () => {
+      try {
+        const response = await fetchIndividualReq(params.id);
+        if (response.status === 200) {
+          setRequest(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching request:", error);
+      }
+    };
+    fetchReq();
+  }, [params.id]);
 
-  return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className=" mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-primary to-primary p-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-white">Request Details</h1>
-            <div
-              className={`px-4 py-1 rounded-full font-semibold ${getStatusColor(
-                request.status
-              )}`}
-            >
-              {request.status}
-            </div>
+  // Chat Section Component
+  const ChatSection = () => {
+    // Extract unique topics from chat messages
+    const chatTopics = [...new Set(chatMessages.map(msg => msg.topic))];
+
+    const filteredMessages = activeChatTopic 
+      ? chatMessages.filter(msg => msg.topic === activeChatTopic)
+      : chatMessages;
+
+    const handleSendMessage = () => {
+      if (newMessage.trim()) {
+        const newMsg = {
+          id: chatMessages.length + 1,
+          username: 'Current User', // Replace with actual username
+          userImage: null,
+          message: newMessage,
+          timestamp: new Date(),
+          topic: activeChatTopic || 'General Discussion'
+        };
+        setChatMessages([...chatMessages, newMsg]);
+        setNewMessage('');
+      }
+    };
+
+    return (
+      <div className="flex h-full">
+        {/* Topics Sidebar */}
+        <div className="w-1/4 bg-gray-100 border-r p-4 space-y-2">
+          <h3 className="text-xl font-semibold text-primary mb-4">
+            Chat Topics
+          </h3>
+          <div 
+            onClick={() => setActiveChatTopic(null)}
+            className={`
+              p-3 rounded-lg cursor-pointer 
+              ${activeChatTopic === null 
+                ? 'bg-primary text-white' 
+                : 'hover:bg-gray-200'}
+            `}
+          >
+            All Discussions
           </div>
+          {chatTopics.map((topic, index) => (
+            <div 
+              key={index}
+              onClick={() => setActiveChatTopic(topic)}
+              className={`
+                p-3 rounded-lg cursor-pointer 
+                ${activeChatTopic === topic 
+                  ? 'bg-primary text-white' 
+                  : 'hover:bg-gray-200'}
+              `}
+            >
+              {topic}
+            </div>
+          ))}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 p-8">
-          <div className="md:col-span-2 space-y-6">
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-3">
-                Request Information
-              </h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-4">
-                  <FileText className="text-primary w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Request ID</p>
-                    <p className="font-semibold text-gray-800">
-                      {request.reqid}
-                    </p>
+        {/* Chat Messages Area */}
+        <div className="w-3/4 flex flex-col">
+          {/* Messages Container */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {filteredMessages.map((msg) => (
+              <div 
+                key={msg.id} 
+                className="flex items-start space-x-3"
+              >
+                {msg.userImage ? (
+                  <img 
+                    src={msg.userImage} 
+                    alt={msg.username} 
+                    className="w-10 h-10 rounded-full"
+                  />
+                ) : (
+                  <UserCircle2 className="w-10 h-10 text-gray-400" />
+                )}
+                <div className="flex-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">{msg.username}</span>
+                    <span className="text-xs text-gray-500">
+                      {msg.timestamp.toLocaleString()}
+                    </span>
                   </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <MapPin className="text-primary w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Site</p>
-                    <p className="font-semibold text-gray-800">
-                      {request.commercials.site}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Commercials Section */}
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-3">
-                Commercials
-              </h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-4">
-                  <DollarSign className="text-green-600 w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Amount</p>
-                    <p className="font-semibold text-gray-800">
-                      {request.commercials.currency}{" "}
-                      {request.commercials.amount}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Building2 className="text-purple-600 w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Department</p>
-                    <p className="font-semibold text-gray-800">
-                      {request.commercials.department}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Users className="text-indigo-600 w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Entity</p>
-                    <p className="font-semibold text-gray-800">
-                      {request.commercials.entity}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <CalendarDays className="text-teal-600 w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Cost Centre</p>
-                    <p className="font-semibold text-gray-800">
-                      {request.commercials.costCentre}
-                    </p>
+                  <div className="bg-gray-100 p-3 rounded-lg mt-1">
+                    <p>{msg.message}</p>
+                    {msg.topic && (
+                      <span className="text-xs text-primary mt-1 block">
+                        Topic: {msg.topic}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Procurement Details */}
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800 border-b pb-3">
-                Procurement Details
-              </h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-4">
-                  <Users className="text-orange-600 w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Vendor</p>
-                    <p className="font-semibold text-gray-800">
-                      {request.procurements.vendor}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <CalendarDays className="text-red-600 w-6 h-6" />
-                  <div>
-                    <p className="text-sm text-gray-500">Expected Delivery</p>
-                    <p className="font-semibold text-gray-800">
-                      {new Date(
-                        request.procurements.expectedDeliveryDate
-                      ).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Right Column - Comments Section */}
-          <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-            <div className="flex items-center justify-between mb-4 border-b pb-3">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                <MessageCircle className="mr-2 text-primary w-6 h-6" />
-                Comments
-              </h2>
-              <span className="text-sm text-gray-500">
-                {comments.length} comments
-              </span>
-            </div>
+          {/* Message Input */}
+          <div className="border-t p-4 flex items-center space-x-3">
+            <input 
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type your message..."
+              className="flex-1 p-2 border rounded-lg"
+            />
+            <select 
+              value={activeChatTopic || ''}
+              onChange={(e) => setActiveChatTopic(e.target.value || null)}
+              className="p-2 border rounded-lg"
+            >
+              <option value="">Select Subject</option>
+              {chatTopics.map((topic, index) => (
+                <option key={index} value={topic}>{topic}</option>
+              ))}
+              <option value="">New Topic</option>
+            </select>
+            <button 
+              onClick={handleSendMessage}
+              className="bg-primary text-white p-2 rounded-lg hover:bg-primary/90"
+            >
+              <Send size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
-            {/* Comments List */}
-            <div className="space-y-4 max-h-[500px] overflow-y-auto mb-6">
-              {comments.length === 0 ? (
-                <div className="text-center text-gray-500 py-4">
-                  <MessageCircle className="mx-auto mb-2 w-12 h-12 text-gray-300" />
-                  <p>No comments yet</p>
-                </div>
-              ) : (
-                comments.map((comment, index) => (
+  // Section Navigation Component
+  const SectionNavigation = () => {
+    const sections = [
+      { 
+        key: 'commercials', 
+        icon: DollarSign, 
+        label: 'Commercials', 
+        color: 'text-primary hover:bg-primary/10' 
+      },
+      { 
+        key: 'procurements', 
+        icon: Package, 
+        label: 'Procurements', 
+        color: 'text-primary hover:bg-primary/10' 
+      },
+      { 
+        key: 'supplies', 
+        icon: ClipboardList, 
+        label: 'Supplies', 
+        color: 'text-primary hover:bg-primary/10' 
+      },
+      { 
+        key: 'chat', 
+        icon: Send, 
+        label: 'Discussions', 
+        color: 'text-primary hover:bg-primary/10' 
+      }
+    ];
+
+    return (
+      <div className="flex border-b">
+        {sections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <button
+              key={section.key}
+              onClick={() => setActiveSection(section.key)}
+              className={`
+                flex-1 p-4 flex items-center justify-center 
+                ${activeSection === section.key 
+                  ? 'bg-primary/10 border-b-2 border-primary' 
+                  : 'hover:bg-gray-100'}
+                ${section.color} 
+                transition-all duration-300
+              `}
+            >
+              <Icon className="mr-2" size={20} />
+              <span className="font-semibold">{section.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // Render Section Content
+  const renderSectionContent = () => {
+    if (!request) return null;
+
+    switch (activeSection) {
+      case 'chat':
+        return <ChatSection />;
+
+      case 'commercials':
+        return (
+          <div className="p-6 space-y-6">
+            <h2 className="text-2xl font-bold text-primary border-b pb-3">
+              Commercials Details
+            </h2>
+            {request.commercials && (
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { label: 'Amount', value: `${request.commercials.currency} ${request.commercials.amount}` },
+                  { label: 'Bill To', value: request.commercials.billTo },
+                  { label: 'City', value: request.commercials.city },
+                  { label: 'Cost Centre', value: request.commercials.costCentre },
+                  { label: 'Currency', value: request.commercials.currency },
+                  { label: 'Department', value: request.commercials.department },
+                  { label: 'Entity', value: request.commercials.entity },
+                  { label: 'Payment Type', value: request.commercials.paymentType },
+                ]
+                .filter((item) => item.value)
+                .map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-start space-x-3 bg-white p-3 rounded-lg shadow-sm"
+                    className="flex justify-between p-3 rounded-lg"
                   >
-                    <img
-                      src={comment.senderPic || "/default-avatar.png"}
-                      alt={comment.senderName}
-                      className="w-10 h-10 rounded-full border-2 border-gray-200"
-                    />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <p className="font-semibold text-sm text-gray-800">
-                          {comment.senderName}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(comment.timestamp).toLocaleString()}
-                        </p>
-                      </div>
-                      <p className="text-sm text-gray-700 bg-gray-100 p-2 rounded-lg">
-                        {comment.message}
-                      </p>
-                    </div>
+                    <span className="text-gray-600 font-medium">
+                      {item.label}
+                    </span>
+                    <span className="text-gray-800 font-semibold">
+                      {item.value}
+                    </span>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
 
-            {/* Comment Input */}
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Type a comment..."
-                className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none transition duration-300"
-              />
-              <button
-                onClick={handleSendComment}
-                className="bg-primary text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center"
-              >
-                <Send className="mr-2" /> Send
-              </button>
-            </div>
+            {request.commercials?.paymentTerms?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-primary mb-4">
+                  Payment Terms
+                </h3>
+                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-primary/10">
+                      <tr>
+                        <th className="p-3 text-left text-primary">
+                          Payment Term
+                        </th>
+                        <th className="p-3 text-left text-primary">Type</th>
+                        <th className="p-3 text-right text-primary">
+                          Percentage
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {request.commercials.paymentTerms.map((term, index) => (
+                        <tr
+                          key={index}
+                          className="border-b hover:bg-gray-50"
+                        >
+                          <td className="p-3">{term.paymentTerm}</td>
+                          <td className="p-3">{term.paymentType}</td>
+                          <td className="p-3 text-right">{term.percentageTerm}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
+        );
+
+      case 'procurements':
+        return (
+          <div className="p-6 space-y-6">
+            <h2 className="text-2xl font-bold text-primary border-b pb-3">
+              Procurements Details
+            </h2>
+            {request.procurements && (
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { label: 'Vendor', value: request.procurements.vendor },
+                  { 
+                    label: 'Quotation Number', 
+                    value: request.procurements.quotationNumber 
+                  },
+                  { 
+                    label: 'Quotation Date', 
+                    value: request.procurements.quotationDate 
+                      ? new Date(request.procurements.quotationDate).toLocaleDateString() 
+                      : 'N/A' 
+                  },
+                  { 
+                    label: 'Expected Delivery', 
+                    value: request.procurements.expectedDeliveryDate 
+                      ? new Date(request.procurements.expectedDeliveryDate).toLocaleDateString() 
+                      : 'N/A' 
+                  },
+                  { 
+                    label: 'PO Expiry Date', 
+                    value: request.procurements.poExpiryDate 
+                      ? new Date(request.procurements.poExpiryDate).toLocaleDateString() 
+                      : 'N/A' 
+                  },
+                ]
+                .filter((item) => item.value)
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <span className="text-gray-600 font-medium">
+                      {item.label}
+                    </span>
+                    <span className="text-gray-800 font-semibold">
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {request.procurements?.competitiveQuotations?.length > 0 ? (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-primary mb-4">
+                  Competitive Quotations
+                </h3>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <div className="text-green-600 flex items-center">
+                    <CheckCircle2 className="mr-2" size={20} />
+                    Files uploaded successfully
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-500 flex items-center">
+                No files uploaded
+              </div>
+            )}
+          </div>
+        );
+
+      case 'supplies':
+        return (
+          <div className="p-6 space-y-6">
+            <h2 className="text-2xl font-bold text-primary border-b pb-3">
+              Supplies Details
+            </h2>
+      
+            {request.supplies?.totalValue !== undefined && (
+              <div className="p-3 bg-gray-50 rounded-lg flex justify-between">
+                <span className="text-gray-600 font-medium">Total Value</span>
+                <span className="text-gray-800 font-semibold">
+                  {request.supplies.totalValue}
+                </span>
+              </div>
+            )}
+      
+            {request.supplies?.services?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-primary mb-4">Services</h3>
+                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-primary/10">
+                      <tr>
+                        <th className="p-3 text-left text-primary">Product Name</th>
+                        <th className="p-3 text-left text-primary">Quantity</th>
+                        <th className="p-3 text-left text-primary">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {request.supplies.services.map((service, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="p-3">
+                            {service.productName || 'N/A'}
+                          </td>
+                          <td className="p-3">
+                            {service.quantity || 'N/A'}
+                          </td>
+                          <td className="p-3">
+                            {service.price || 'N/A'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+      
+            {request.supplies?.remarks && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-primary mb-4">Remarks</h3>
+                <p className="p-3 bg-gray-50 rounded-lg text-gray-800">
+                  {request.supplies.remarks}
+                </p>
+              </div>
+            )}
+          </div>
+        );
+  
+      default:
+        return null;
+    }
+  };
+
+  if (!request) {
+    return <div className="text-center py-10">Loading...</div>;
+  }
+
+  return (
+    <div className="flex flex-col bg-white">
+      {/* Header */}
+      <div className="bg-primary text-white p-4 text-center shadow-md">
+        <h1 className="text-2xl font-bold">Purchase Order Preview</h1>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Section Navigation */}
+        <SectionNavigation />
+
+        {/* Section Content */}
+        <div className="flex-1 overflow-y-auto">
+          {renderSectionContent()}
         </div>
+      </div>
 
-        {role === "HR" && (
-          <div className="bg-gray-100 p-6 flex justify-end space-x-4 border-t">
-            <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center">
-              <XCircle className="mr-2" /> Reject
-            </button>
-            <button className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 flex items-center">
-              <PauseCircle className="mr-2" /> Hold
-            </button>
-            <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
-              <CheckCircle className="mr-2" /> Approve
-            </button>
-          </div>
-        )}
+      {/* Footer Actions */}
+      <div className="bg-white p-4 flex justify-between items-center border-t shadow-md">
+        <button 
+          onClick={() => {/* Handle back/edit logic */}} 
+          className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+        >
+          <Edit2 className="mr-2 inline-block" size={20} /> 
+          Edit
+        </button>
+        <div className="flex space-x-4">
+          <button 
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center"
+          >
+            <XCircle className="mr-2" /> Reject
+          </button>
+          <button 
+            className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 flex items-center"
+          >
+            <PauseCircle className="mr-2" /> Hold
+          </button>
+          <button 
+            onClick={() => {/* Handle submit logic */}} 
+            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center"
+          >
+            <CheckCircle2 className="mr-2" /> 
+            Submit
+          </button>
+        </div>
       </div>
     </div>
   );

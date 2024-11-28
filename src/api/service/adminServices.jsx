@@ -221,3 +221,29 @@ export const deleteReq = async (id) => {
     return err;
   }
 };
+
+export const fetchIndividualReq = async (id) => {
+  try {
+    console.log(id)
+    const response = await adminServices.get(
+      `/employees/get-individual-req/${id}`
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const RegVendorData = async (formData) => {
+  try {
+
+    const response = await adminServices.post(
+      `/vendors/create`,formData
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+

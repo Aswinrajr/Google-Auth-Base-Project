@@ -1,16 +1,38 @@
 import { Calendar } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
+import { RegVendorData } from '../../../api/service/adminServices';
 
 const EmployeeReg = () => {
-  const [pincode, setPincode] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
+  // State for form fields
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    email: '',
+    streetAddress1: '',
+    streetAddress2: '',
+    postalCode: '',
+    city: '',
+    state: '',
+    country: '',
+    additionalNotes: ''
+  });
+
   const [loading, setLoading] = useState(false);
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
 
   // Function to fetch city and state based on postal code
   const fetchCityState = async () => {
-    if (!pincode) {
+    if (!formData.postalCode) {
       alert('Please enter a valid postal code.');
       return;
     }
@@ -19,13 +41,16 @@ const EmployeeReg = () => {
 
     try {
       const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${pincode}` // Replace with your API if needed
+        `https://api.postalpincode.in/pincode/${formData.postalCode}`
       );
 
       if (response.data && response.data[0].Status === 'Success') {
         const { District, State } = response.data[0].PostOffice[0];
-        setCity(District);
-        setState(State);
+        setFormData(prevState => ({
+          ...prevState,
+          city: District,
+          state: State
+        }));
       } else {
         alert('Invalid postal code or data not found!');
       }
@@ -37,8 +62,43 @@ const EmployeeReg = () => {
     }
   };
 
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic validation
+    if (!formData.firstName || !formData.lastName || !formData.email) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      console.log(formData)
+
+      const response = await RegVendorData(formData)
+      console.log(response)
+      
+      setFormData({
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        email: '',
+        streetAddress1: '',
+        streetAddress2: '',
+        postalCode: '',
+        city: '',
+        state: '',
+        country: '',
+        additionalNotes: ''
+      });
+    } catch (error) {
+      console.error('Registration failed:', error);
+      alert('Registration failed. Please try again.');
+    }
+  };
+
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-6xl mx-auto p-6 space-y-6">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Vendor Registration</h2>
 
       {/* Personal Information Section */}
@@ -47,29 +107,44 @@ const EmployeeReg = () => {
           <div>
             <input
               type="text"
+              name="firstName"
               placeholder="First Name"
+              value={formData.firstName}
+              onChange={handleInputChange}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              required
             />
           </div>
           <div>
             <input
               type="text"
+              name="lastName"
               placeholder="Last Name"
+              value={formData.lastName}
+              onChange={handleInputChange}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              required
             />
           </div>
           <div>
             <input
-              type="text"
+              type="tel"
+              name="phoneNumber"
               placeholder="Phone Number"
+              value={formData.phoneNumber}
+              onChange={handleInputChange}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
           <div>
             <input
               type="email"
+              name="email"
               placeholder="Email"
+              value={formData.email}
+              onChange={handleInputChange}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              required
             />
           </div>
         </div>
@@ -83,23 +158,30 @@ const EmployeeReg = () => {
             <div>
               <input
                 type="text"
+                name="streetAddress1"
                 placeholder="Street Address"
+                value={formData.streetAddress1}
+                onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <div>
               <input
                 type="text"
+                name="streetAddress2"
                 placeholder="Street Address 2"
+                value={formData.streetAddress2}
+                onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <div>
               <input
                 type="text"
+                name="postalCode"
                 placeholder="Postal Code"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
+                value={formData.postalCode}
+                onChange={handleInputChange}
                 onBlur={fetchCityState}
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -110,8 +192,9 @@ const EmployeeReg = () => {
               ) : (
                 <input
                   type="text"
+                  name="city"
                   placeholder="City"
-                  value={city}
+                  value={formData.city}
                   readOnly
                   className="w-full p-2 border rounded bg-gray-100"
                 />
@@ -123,8 +206,9 @@ const EmployeeReg = () => {
               ) : (
                 <input
                   type="text"
+                  name="state"
                   placeholder="State"
-                  value={state}
+                  value={formData.state}
                   readOnly
                   className="w-full p-2 border rounded bg-gray-100"
                 />
@@ -133,7 +217,10 @@ const EmployeeReg = () => {
             <div>
               <input
                 type="text"
+                name="country"
                 placeholder="Country"
+                value={formData.country}
+                onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
@@ -144,19 +231,25 @@ const EmployeeReg = () => {
       {/* Additional Notes */}
       <div>
         <textarea
+          name="additionalNotes"
           placeholder="Additional Notes"
           rows="4"
+          value={formData.additionalNotes}
+          onChange={handleInputChange}
           className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
         ></textarea>
       </div>
 
       {/* Submit Button */}
       <div className="flex justify-end">
-        <button className="px-6 py-2 bg-primary text-white rounded hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+        <button 
+          type="submit"
+          className="px-6 py-2 bg-primary text-white rounded hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        >
           SUBMIT
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 

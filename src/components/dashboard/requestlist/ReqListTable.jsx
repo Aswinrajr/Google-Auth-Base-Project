@@ -117,11 +117,18 @@ const ReqListTable = ({ onEdit}) => {
                         className="h-4 w-4 rounded border-gray-300"
                       />
                     </th>
+                    
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
                       SL No
+                    </th>
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      ReqId
                     </th>
                     <th
                       scope="col"
@@ -206,6 +213,12 @@ const ReqListTable = ({ onEdit}) => {
                         <td className="px-6 py-4 text-sm font-medium text-gray-900">
                           {index + 1}
                         </td>
+
+                        <td className="px-6 py-4 text-sm text-gray-500">
+                          {user.reqid}
+                        </td>
+
+
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.commercials.entity}
                         </td>
@@ -230,21 +243,25 @@ const ReqListTable = ({ onEdit}) => {
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.supplies.totalValue}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
+                        <td  className="px-6 py-4 text-sm text-gray-500" onClick={() =>navigate(`/req-list-table/preview-one-req/${user._id}`)} >
                           {user.status || "Pending"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 text-center">
                           <button
                             className="text-blue-500 hover:text-blue-700"
-                            onClick={() => onEdit(user._id)}
+                            onClick={() =>
+                              navigate(
+                                `/req-list-table/preview-one-req/${user._id}`
+                              )
+                            }
                           >
                             View
                           </button>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center space-x-2">
+                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center space-x-2 mt-2">
                           <button
                             className="text-blue-500 hover:text-blue-700"
-                            onClick={() =>navigate(`/req-list-table/preview-one-req/${user._id}`)}
+                            
                           >
                             <Edit className="h-5 w-5" />
                           </button>
