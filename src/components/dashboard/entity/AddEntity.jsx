@@ -1,18 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
+import Select from "react-select";
 import { addEntityData } from "../../../api/service/adminServices";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 function AddEntity() {
+  const [currencies, setCurrencies] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Fetch currencies from API
+  const fetchCurrencies = async () => {
+    try {
+      const response = await axios.get("https://openexchangerates.org/api/currencies.json"); // Replace with actual endpoint
+      const currencyOptions = Object.entries(response.data).map(([key, value]) => ({
+        value: key,
+        label: `${value} (${key})`,
+      }));
+      setCurrencies(currencyOptions);
+    } catch (error) {
+      console.error("Error fetching currencies:", error);
+      toast.error("Failed to load currencies");
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrencies();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
       entityName: "",
-      category: "",
+      currency: "",
       addressLine: "",
       area: "",
       city: "",
@@ -52,7 +73,6 @@ function AddEntity() {
       const response = await axios.get(
         `https://api.postalpincode.in/pincode/${pincode}`
       );
-      console.log("pincide response", response);
 
       if (response.data && response.data[0].Status === "Success") {
         const { District, State, Country } = response.data[0].PostOffice[0];
@@ -69,13 +89,16 @@ function AddEntity() {
     }
   };
 
+  const handleCurrencyChange = (selectedOption) => {
+    formik.setFieldValue("currency", selectedOption?.value || "");
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
       <form onSubmit={formik.handleSubmit}>
         <h2 className="text-2xl font-bold text-primary mb-6">Entity Form</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Entity Name */}
           <div>
             <label className="block text-gray-700">Entity Name</label>
             <input
@@ -89,23 +112,18 @@ function AddEntity() {
             />
           </div>
 
-          {/* Category */}
+          {/* Dynamic Searchable Currency Dropdown */}
           <div>
-            <label className="block text-gray-700">Category</label>
-            <select
-              name="category"
-              value={formik.values.category}
-              onChange={formik.handleChange}
-              className="mt-1 w-full p-2 border border-gray-300 rounded"
-            >
-              <option value="">Select</option>
-              <option value="Retail">Retail</option>
-              <option value="IT">IT</option>
-              <option value="Manufacturing">Manufacturing</option>
-            </select>
+            <label className="block text-gray-700">Currency</label>
+            <Select
+              options={currencies}
+              isLoading={loading}
+              onChange={handleCurrencyChange}
+              placeholder="Select a currency"
+              className="mt-1"
+            />
           </div>
 
-          {/* Address Line */}
           <div className="sm:col-span-2">
             <label className="block text-gray-700">Address Line</label>
             <textarea
@@ -116,7 +134,6 @@ function AddEntity() {
             />
           </div>
 
-          {/* Area */}
           <div>
             <label className="block text-gray-700">Area</label>
             <input
@@ -127,8 +144,6 @@ function AddEntity() {
               className="mt-1 w-full p-2 border border-gray-300 rounded"
             />
           </div>
-
-          {/* City */}
 
           <div>
             <label className="block text-gray-700">Pincode</label>
@@ -151,68 +166,6 @@ function AddEntity() {
               onChange={formik.handleChange}
               readOnly
               className="mt-1 w-full p-2 border border-gray-300 bg-gray-100 rounded"
-            />
-          </div>
-
-          {/* State */}
-          <div>
-            <label className="block text-gray-700">State</label>
-            <input
-              type="text"
-              name="state"
-              value={formik.values.state}
-              onChange={formik.handleChange}
-              readOnly
-              className="mt-1 w-full p-2 border border-gray-300 bg-gray-100 rounded"
-            />
-          </div>
-
-          {/* Country */}
-          <div>
-            <label className="block text-gray-700">Country</label>
-            <input
-              type="text"
-              name="country"
-              value={formik.values.country}
-              onChange={formik.handleChange}
-              readOnly
-              className="mt-1 w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-
-          {/* Landmark */}
-          <div>
-            <label className="block text-gray-700">Landmark</label>
-            <input
-              type="text"
-              name="landmark"
-              value={formik.values.landmark}
-              onChange={formik.handleChange}
-              className="mt-1 w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-
-          {/* Latitude */}
-          <div>
-            <label className="block text-gray-700">Latitude</label>
-            <input
-              type="number"
-              name="latitude"
-              value={formik.values.latitude}
-              onChange={formik.handleChange}
-              className="mt-1 w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-
-          {/* Longitude */}
-          <div>
-            <label className="block text-gray-700">Longitude</label>
-            <input
-              type="number"
-              name="longitude"
-              value={formik.values.longitude}
-              onChange={formik.handleChange}
-              className="mt-1 w-full p-2 border border-gray-300 rounded"
             />
           </div>
         </div>

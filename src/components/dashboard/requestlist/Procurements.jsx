@@ -1,20 +1,26 @@
 import { useState, useRef, useEffect } from "react";
+import { fetchAllVendorData } from "../../../api/service/adminServices";
 
 const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const [isDragOver, setIsDragOver] = useState(false);
-  const [vendors, setVendors] = useState([
-    { id: 1, name: "Vendor 1" },
-    { id: 2, name: "Vendor 2" },
-    { id: 3, name: "Vendor 3" },
-  ]);
+  const [vendors, setVendors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newVendor, setNewVendor] = useState({ name: "", email: "" });
   const uploadAreaRef = useRef(null);
-  const [minDate, setMinDate] = useState("");
-  const [maxDate, setMaxDate] = useState("");
 
+  useEffect(() => {
+    const fetchVendor = async () => {
+      const response = await fetchAllVendorData();
+      console.log(response);
+      if(response.status===200){
+        setVendors(response.data)
+      }
+    };
+
+    fetchVendor();
+  }, []);
 
   useEffect(() => {
     if (!formData.quotationDate) {
@@ -42,7 +48,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     const files = e.target.files;
     const updatedFiles = [...selectedFiles, ...files];
     setSelectedFiles(updatedFiles);
-    
+
     // Add files to formData
     setFormData((prevState) => ({
       ...prevState,
@@ -65,7 +71,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     const files = e.dataTransfer.files;
     const updatedFiles = [...selectedFiles, ...files];
     setSelectedFiles(updatedFiles);
-    
+
     // Add files to formData
     setFormData((prevState) => ({
       ...prevState,
@@ -81,7 +87,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     if (newVendor.name && newVendor.email) {
       // Add the vendor name with brackets
       const vendorWithBrackets = `${newVendor.name} -(New Vendor)`;
-  
+
       setVendors([
         ...vendors,
         { id: vendors.length + 1, name: vendorWithBrackets },
@@ -97,13 +103,12 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
       alert("Please fill in all fields.");
     }
   };
-  
 
   const handleSubmit = () => {
-    console.log("formData", formData)
-    console.log("Selectedfile", selectedFiles)
-    onNext()
-  }
+    console.log("formData", formData);
+    console.log("Selectedfile", selectedFiles);
+    onNext();
+  };
 
   return (
     <div className="mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
@@ -135,8 +140,8 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               >
                 <option value="">Select Vendor</option>
                 {vendors.map((vendor) => (
-                  <option key={vendor.id} value={vendor.name}>
-                    {vendor.name}
+                  <option key={vendor._id} value={vendor.firstName}>
+                    {vendor.firstName}
                   </option>
                 ))}
                 <option value="newVendor">+ New Vendor</option>
@@ -145,19 +150,19 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
           </div>
 
           <div className="grid grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Quotation Date
-            </label>
-            <input
-              type="date"
-              name="quotationDate"
-              value={formData.quotationDate}
-              onChange={handleInputChange}
-              min={getMinDate()}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Quotation Date
+              </label>
+              <input
+                type="date"
+                name="quotationDate"
+                value={formData.quotationDate}
+                onChange={handleInputChange}
+                min={getMinDate()}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+              />
+            </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Quotation Number
@@ -250,11 +255,13 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                   </p>
                 </div>
               </div>
-              
+
               {/* Display selected files */}
               {selectedFiles.length > 0 && (
                 <div className="mt-4">
-                  <p className="text-sm font-semibold text-gray-700">Selected Files:</p>
+                  <p className="text-sm font-semibold text-gray-700">
+                    Selected Files:
+                  </p>
                   <ul className="list-disc pl-5">
                     {selectedFiles.map((file, index) => (
                       <li key={index} className="text-sm text-gray-600">

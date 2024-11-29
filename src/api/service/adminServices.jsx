@@ -33,48 +33,42 @@ export const deleteDomain = async (id) => {
   }
 };
 
-
-export const submitRequest = async (id,formData) => {
+export const submitRequest = async (id, formData) => {
   try {
     const response = await adminServices.post(
-      `/auth/create-request/${id}`,formData
+      `/auth/create-request/${id}`,
+      formData
     );
     return response;
   } catch (err) {
     return err;
   }
 };
-
 
 export const createNewVendor = async (formData) => {
   try {
     const response = await adminServices.post(
-      `/auth/create-newvendor`,formData
+      `/auth/create-newvendor`,
+      formData
     );
     return response;
   } catch (err) {
     return err;
   }
 };
-
 
 export const getVendorList = async () => {
   try {
-    const response = await adminServices.get(
-      `/vendors/get-all`
-    );
+    const response = await adminServices.get(`/vendors/get-all`);
     return response;
   } catch (err) {
     return err;
   }
 };
 
-
 export const deleteVendor = async (id) => {
   try {
-    const response = await adminServices.delete(
-      `/vendors/delete/${id}`
-    );
+    const response = await adminServices.delete(`/vendors/delete/${id}`);
     return response;
   } catch (err) {
     return err;
@@ -83,45 +77,34 @@ export const deleteVendor = async (id) => {
 
 export const deleteEmployee = async (id) => {
   try {
-    const response = await adminServices.delete(
-      `/employees/delete/${id}`
-    );
+    const response = await adminServices.delete(`/employees/delete/${id}`);
     return response;
   } catch (err) {
     return err;
   }
 };
-
 
 export const generateEmployeeUniqueId = async () => {
   try {
-    const response = await adminServices.get(
-      `/employees/generate-empid`
-    );
+    const response = await adminServices.get(`/employees/generate-empid`);
     return response;
   } catch (err) {
     return err;
   }
 };
-
 
 export const getEmployeeList = async () => {
   try {
-    const response = await adminServices.get(
-      `/employees/get-all`
-    );
+    const response = await adminServices.get(`/employees/get-all`);
     return response;
   } catch (err) {
     return err;
   }
 };
 
-
 export const getAllEntityData = async () => {
   try {
-    const response = await adminServices.get(
-      `/entity/get-all`
-    );
+    const response = await adminServices.get(`/entity/get-all`);
     return response;
   } catch (err) {
     return err;
@@ -130,9 +113,7 @@ export const getAllEntityData = async () => {
 
 export const addEntityData = async (data) => {
   try {
-    const response = await adminServices.post(
-      `/entity/create`,{data}
-    );
+    const response = await adminServices.post(`/entity/create`, { data });
     return response;
   } catch (err) {
     return err;
@@ -141,33 +122,31 @@ export const addEntityData = async (data) => {
 
 export const deleteEntity = async (id) => {
   try {
-    const response = await adminServices.delete(
-      `/entity/delete/${id}`
-    );
+    const response = await adminServices.delete(`/entity/delete/${id}`);
     return response;
   } catch (err) {
     return err;
   }
 };
 
-
-export const createNewRequest = async (id,formData) => {
+export const createNewRequest = async (id, formData) => {
   try {
-    console.log(id,formData)
+    console.log(id, formData);
     const response = await adminServices.post(
-      `/employees/create-newrequest/${id}`,formData
+      `/employees/create-newrequest/${id}`,
+      formData
     );
     return response;
   } catch (err) {
     return err;
   }
 };
-
 
 export const regNewEmployee = async (formData) => {
   try {
     const response = await adminServices.post(
-      `/employees/create-new-employee`,formData
+      `/employees/create-new-employee`,
+      formData
     );
     return response;
   } catch (err) {
@@ -175,12 +154,9 @@ export const regNewEmployee = async (formData) => {
   }
 };
 
-
-export const getReqListEmployee = async (id,role) => {
+export const getReqListEmployee = async (id, role) => {
   try {
-    const response = await adminServices.get(
-      `/employees/get-all-req/${id}`
-    );
+    const response = await adminServices.get(`/employees/get-all-req/${id}`);
     return response;
   } catch (err) {
     return err;
@@ -189,33 +165,25 @@ export const getReqListEmployee = async (id,role) => {
 
 export const getAdminReqListEmployee = async () => {
   try {
-    const response = await adminServices.get(
-      `/employees/get-all-req-admin`
-    );
+    const response = await adminServices.get(`/employees/get-all-req-admin`);
     return response;
   } catch (err) {
     return err;
   }
 };
-
 
 export const getReqListHR = async () => {
   try {
-    const response = await adminServices.get(
-      `/employees/get-all-req-admin`
-    );
+    const response = await adminServices.get(`/employees/get-all-req-admin`);
     return response;
   } catch (err) {
     return err;
   }
 };
 
-
 export const deleteReq = async (id) => {
   try {
-    const response = await adminServices.delete(
-      `/employees/delete-req/${id}`
-    );
+    const response = await adminServices.delete(`/employees/delete-req/${id}`);
     return response;
   } catch (err) {
     return err;
@@ -224,7 +192,7 @@ export const deleteReq = async (id) => {
 
 export const fetchIndividualReq = async (id) => {
   try {
-    console.log(id)
+    console.log(id);
     const response = await adminServices.get(
       `/employees/get-individual-req/${id}`
     );
@@ -234,16 +202,20 @@ export const fetchIndividualReq = async (id) => {
   }
 };
 
-
 export const RegVendorData = async (formData) => {
   try {
-
-    const response = await adminServices.post(
-      `/vendors/create`,formData
-    );
+    const response = await adminServices.post(`/vendors/create`, formData);
     return response;
   } catch (err) {
     return err;
   }
 };
 
+export const fetchAllVendorData = async () => {
+  try {
+    const response = await adminServices.get(`/vendors/get-all`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
