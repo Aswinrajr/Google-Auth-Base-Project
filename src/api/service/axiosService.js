@@ -2,7 +2,7 @@ import { userInstance } from "../axiosInstance/userInstance";
 
 export const verifyUser = async (email) => {
   try {
-    const response = await userInstance.post(`/auth/verify-person`, { email });
+    const response = await userInstance.post(`/employees/verify-person`, { email:email });
     return response;
   } catch (err) {
     return err;

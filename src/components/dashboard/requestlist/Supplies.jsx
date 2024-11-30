@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
+import  { useState } from "react";
 import { Trash2, PlusCircle, CheckCircle2 } from 'lucide-react';
 
-const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
-  // Dummy data for the Supplies table
-  const dummyServices = [
-    { productName: "Product A", quantity: "10", price: "1000" },
-    { productName: "Product B", quantity: "5", price: "2000" },
-    { productName: "Product C", quantity: "15", price: "500" },
-  ];
+const Supplies = ({ formData, setFormData, onBack, onSubmit, handleSubmited, onNext }) => {
+  // Initialize with a single default row
+  const initialService = { productName: "", quantity: "", price: "" };
+  const [services, setServices] = useState([initialService]);
 
-  // Initialize the state with dummy data
-  const [services, setServices] = useState(dummyServices);
+  // New state to manage submission display
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleServiceChange = (e, index) => {
     const { name, value } = e.target;
@@ -20,33 +19,62 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
   };
 
   const handleAddService = () => {
-    setServices([...services, { productName: "", quantity: "", price: "" }]);
+    setServices([...services, { ...initialService }]);
   };
 
   const handleRemoveService = (index) => {
-    const updatedServices = services.filter((_, i) => i !== index);
-    setServices(updatedServices);
+    if (services.length > 1) {
+      const updatedServices = services.filter((_, i) => i !== index);
+      setServices(updatedServices);
+    }
   };
 
   // Calculate total value
-  const totalValue = services.reduce((acc, service) => 
+  const totalValue = services.reduce((acc, service) =>
     acc + (parseFloat(service.quantity || 0) * parseFloat(service.price || 0)), 0);
+
+  // Handle form submission
+  const handleSubmit = () => {
+    const submissionData = {
+      ...formData,
+      services,
+      totalValue,
+    };
+
+    // Update the formData state
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      ...submissionData,
+    }));
+
+    // Log the submission data
+    console.log("Submission Data:", submissionData);
+
+    // Set submitted state to true to show submission details
+    setIsSubmitted(true);
+
+    // Call onSubmit if provided
+    if (onSubmit) {
+      onSubmit(submissionData);
+    }
+
+    onNext();
+  };
 
   return (
     <div className="mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
       <div className="bg-gradient-to-r from-primary to-primary p-6">
         <h2 className="text-3xl font-extrabold text-white text-center">Supplies Management</h2>
       </div>
-      
+
       <div className="p-8 space-y-6">
-        {/* Supplies Table */}
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100 border-b-2 border-gray-200">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Product Name</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Quantity</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Price</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -89,7 +117,8 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
                     <button
                       type="button"
                       onClick={() => handleRemoveService(index)}
-                      className="text-red-500 hover:text-red-700 transition duration-300"
+                      className={`text-red-500 hover:text-red-700 transition duration-300 ${services.length === 1 ? "cursor-not-allowed opacity-50" : ""}`}
+                      disabled={services.length === 1}
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
@@ -100,17 +129,16 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
             <tfoot>
               <tr className="bg-gray-100">
                 <td colSpan="2" className="px-4 py-3 text-right font-bold text-gray-700">
-                  Total Value:
+                  Total Amount:
                 </td>
                 <td colSpan="2" className="px-4 py-3 font-bold text-primary">
-                  ${totalValue.toLocaleString()}
+                  {totalValue.toLocaleString()}
                 </td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        {/* Add New Service Button */}
         <div className="mt-4">
           <button
             type="button"
@@ -122,7 +150,6 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
           </button>
         </div>
 
-        {/* Remarks */}
         <div className="mt-6">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Remarks
@@ -139,7 +166,6 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
           />
         </div>
 
-        {/* Navigation Buttons */}
         <div className="mt-8 flex justify-between">
           <button
             onClick={onBack}
@@ -148,9 +174,8 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit }) => {
             Back
           </button>
           <button
-           
-            className="bg-primary text-white px-6 py-2 rounded-md 
-              hover:bg-primary transition-colors flex items-center"
+            onClick={handleSubmit}
+            className="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary transition-colors flex items-center"
           >
             <CheckCircle2 className="mr-2" /> Submit Request
           </button>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { deleteDomain, listDomains } from "../../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
+import { deleteDomain, listDomains } from "../../../api/service/adminServices";
 
 const DomainListTable = () => {
   const [domains, setDomains] = useState([]);

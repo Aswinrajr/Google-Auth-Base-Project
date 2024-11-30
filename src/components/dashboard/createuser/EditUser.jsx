@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  fetchUserDetails,
-  registerUser,
-} from "../../../api/service/axiosService";
+import { fetchUserDetails, registerUser } from "../../../api/service/axiosService";
 
 const EditUser = () => {
   const user = localStorage.getItem("email");
@@ -21,7 +18,7 @@ const EditUser = () => {
       console.log(response);
     };
     fetchUserData();
-  }, []);
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

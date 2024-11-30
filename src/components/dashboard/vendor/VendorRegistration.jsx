@@ -1,163 +1,230 @@
-import { Calendar } from 'lucide-react';
-import { useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import {
+  getNewVendorId,
+  RegVendorData,
+} from "../../../api/service/adminServices";
 
-const EmployeeReg = () => {
-  const [pincode, setPincode] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [loading, setLoading] = useState(false);
+// Validation schema using Yup
+const validationSchema = Yup.object({
+  vendorId: Yup.string().required("Vendor ID is required"),
+  firstName: Yup.string().required("Full Name is required"),
+  phoneNumber: Yup.string().required("Phone Number is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  gstNumber: Yup.string().required("GST Number is required"),
+  streetAddress1: Yup.string().required("Address is required"),
+});
 
-  // Function to fetch city and state based on postal code
-  const fetchCityState = async () => {
-    if (!pincode) {
-      alert('Please enter a valid postal code.');
-      return;
-    }
+const VendorRegistration = () => {
+  const [formData, setFormData] = useState({
+    vendorId: "",
+    firstName: "",
+    phoneNumber: "",
+    email: "",
+    gstNumber: "",
+    streetAddress1: "",
+   
+  });
 
-    setLoading(true);
-
-    try {
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${pincode}` // Replace with your API if needed
-      );
-
-      if (response.data && response.data[0].Status === 'Success') {
-        const { District, State } = response.data[0].PostOffice[0];
-        setCity(District);
-        setState(State);
-      } else {
-        alert('Invalid postal code or data not found!');
+  // Fetch Vendor ID on component mount
+  useEffect(() => {
+    const fetchVendorId = async () => {
+      try {
+        const response = await getNewVendorId();
+        if (response.status === 200) {
+          console.log(response.data.vendorId);
+          setFormData((prevState) => ({
+            ...prevState,
+            vendorId: response.data.vendorId,
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch Vendor ID:", error);
       }
-    } catch (error) {
-      console.error('Error fetching city and state:', error);
-      alert('Failed to fetch city and state. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchVendorId();
+  }, []);
+
+  const formik = useFormik({
+    initialValues: formData,
+    validationSchema: validationSchema,
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      try {
+        console.log(values);
+        const response = await RegVendorData(values);
+        console.log(response);
+
+        setFormData({
+          vendorId: "",
+          firstName: "",
+          phoneNumber: "",
+          email: "",
+          gstNumber: "",
+          streetAddress1: "",
+          streetAddress2: "",
+          postalCode: "",
+          city: "",
+          state: "",
+          country: "",
+          additionalNotes: "",
+        });
+      } catch (error) {
+        console.error("Registration failed:", error);
+        alert("Registration failed. Please try again.");
+      }
+    },
+  });
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <form
+      onSubmit={formik.handleSubmit}
+      className="max-w-6xl bg-white mx-auto p-6 space-y-6"
+    >
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Vendor Registration</h2>
 
-      {/* Personal Information Section */}
+      <div className="p-4 border rounded-lg border-primary">
+        <label htmlFor="vendorId">
+          Vendor ID <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          name="vendorId"
+          placeholder="Vendor ID"
+          value={formik.values.vendorId}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+          readOnly 
+        />
+        {formik.touched.vendorId && formik.errors.vendorId && (
+          <span className="text-red-500 text-sm">{formik.errors.vendorId}</span>
+        )}
+      </div>
+
       <div className="p-4 border rounded-lg border-primary">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
+            <label htmlFor="firstName">
+              Full Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
-              placeholder="First Name"
+              name="firstName"
+              placeholder="Full Name"
+              value={formik.values.firstName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            {formik.touched.firstName && formik.errors.firstName && (
+              <span className="text-red-500 text-sm">
+                {formik.errors.firstName}
+              </span>
+            )}
           </div>
           <div>
+            <label htmlFor="phoneNumber">
+              Phone Number <span className="text-red-500">*</span>
+            </label>
             <input
-              type="text"
-              placeholder="Last Name"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
+              type="tel"
+              name="phoneNumber"
               placeholder="Phone Number"
+              value={formik.values.phoneNumber}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+              <span className="text-red-500 text-sm">
+                {formik.errors.phoneNumber}
+              </span>
+            )}
           </div>
           <div>
+            <label htmlFor="email">
+              Email <span className="text-red-500">*</span>
+            </label>
             <input
               type="email"
+              name="email"
               placeholder="Email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            {formik.touched.email && formik.errors.email && (
+              <span className="text-red-500 text-sm">
+                {formik.errors.email}
+              </span>
+            )}
+          </div>
+          <div>
+            <label htmlFor="gstNumber">
+              GST Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="gstNumber"
+              placeholder="GST Number"
+              value={formik.values.gstNumber}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            {formik.touched.gstNumber && formik.errors.gstNumber && (
+              <span className="text-red-500 text-sm">
+                {formik.errors.gstNumber}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Address Section */}
       <div>
         <h2 className="text-lg text-primary mb-2">Address</h2>
-        <div className="p-4 border rounded-lg border-primary">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-4 border w-full rounded-lg border-primary">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             <div>
-              <input
-                type="text"
-                placeholder="Street Address"
+              <label htmlFor="streetAddress1">
+                Address <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                name="streetAddress1"
+                placeholder="Address"
+                value={formik.values.streetAddress1}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
               />
-            </div>
-            <div>
-              <input
-                type="text"
-                placeholder="Street Address 2"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-            <div>
-              <input
-                type="text"
-                placeholder="Postal Code"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
-                onBlur={fetchCityState}
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-            <div>
-              {loading ? (
-                <div className="w-full p-2 border rounded bg-gray-100 text-center">Loading...</div>
-              ) : (
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={city}
-                  readOnly
-                  className="w-full p-2 border rounded bg-gray-100"
-                />
-              )}
-            </div>
-            <div>
-              {loading ? (
-                <div className="w-full p-2 border rounded bg-gray-100 text-center">Loading...</div>
-              ) : (
-                <input
-                  type="text"
-                  placeholder="State"
-                  value={state}
-                  readOnly
-                  className="w-full p-2 border rounded bg-gray-100"
-                />
-              )}
-            </div>
-            <div>
-              <input
-                type="text"
-                placeholder="Country"
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+              {formik.touched.streetAddress1 &&
+                formik.errors.streetAddress1 && (
+                  <span className="text-red-500 text-sm">
+                    {formik.errors.streetAddress1}
+                  </span>
+                )}
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Additional Notes */}
-      <div>
-        <textarea
-          placeholder="Additional Notes"
-          rows="4"
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-        ></textarea>
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end">
-        <button className="px-6 py-2 bg-primary text-white rounded hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-          SUBMIT
+      <div className="p-4 text-end">
+        <button
+          type="submit"
+          className="px-6 py-2 bg-primary text-white rounded"
+          disabled={formik.isSubmitting || !formik.isValid}
+        >
+          Register Vendor
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 
-export default EmployeeReg;
+export default VendorRegistration;

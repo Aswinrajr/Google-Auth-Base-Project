@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { allowedDomain } from "../../../api/service/adminServices";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { allowedDomain } from "../../../api/service/adminServices";
 
 const AllowDomainList = () => {
   const navigate = useNavigate();

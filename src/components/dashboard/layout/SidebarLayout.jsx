@@ -31,8 +31,10 @@ const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
 };
 
 // SidebarLayout component
-const SidebarLayout = ({ role }) => {
+const SidebarLayout = () => {
   const location = useLocation();
+  const role = localStorage.getItem("role");  // Get the user's role from localStorage
+  console.log(role); // This will show the current role in the console for debugging purposes
 
   // Define sidebar items
   const allSidebarItems = [
@@ -46,7 +48,16 @@ const SidebarLayout = ({ role }) => {
     { icon: LogOut, title: "Logout", path: "/logout" },
   ];
 
-  const sidebarItems = allSidebarItems;
+  // Filter sidebar items based on the role
+  let sidebarItems = [];
+  if (role === "Admin"||!role) {
+    sidebarItems = allSidebarItems;  // Admin sees all items
+  } else if (role === "Employee" || role === "HR") {
+    sidebarItems = [
+      { icon: Home, title: "Dashboard", path: "/dashboard" },
+      { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
+    ];  // Employee and HR see only Dashboard and Requests
+  }
 
   // Find the active item
   const activeItem = sidebarItems.find((item) =>

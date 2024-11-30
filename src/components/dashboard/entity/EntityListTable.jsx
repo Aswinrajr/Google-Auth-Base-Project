@@ -1,72 +1,48 @@
-/* eslint-disable react/prop-types */
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { deleteEntity, getAllEntityData } from "../../../api/service/adminServices";
 
-const EntityListTable = ({ onEdit, onDelete }) => {
+
+const EntityListTable = () => {
   const navigate = useNavigate();
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedEntities, setSelectedEntities] = useState([]);
+  const [entity, setEntity] = useState([]);
 
-  const users = [
-    {
-      sno: 1,
-      entityName: "Entity 1",
-      category: "Category 1",
-      addressLine: "123 Main St",
-      area: "Area 1",
-      city: "City 1",
-      state: "State 1",
-      pincode: "123456",
-      country: "Country 1",
-      landmark: "Landmark 1",
-      latitude: "12.3456",
-      longitude: "78.9101",
-      status: "Pending",
-    },
-    {
-      sno: 2,
-      entityName: "Entity 2",
-      category: "Category 2",
-      addressLine: "456 Market Ave",
-      area: "Area 2",
-      city: "City 2",
-      state: "State 2",
-      pincode: "654321",
-      country: "Country 2",
-      landmark: "Landmark 2",
-      latitude: "21.5432",
-      longitude: "89.0123",
-      status: "Approved",
-    },
-    {
-      sno: 3,
-      entityName: "Entity 3",
-      category: "Category 3",
-      addressLine: "789 Park Blvd",
-      area: "Area 3",
-      city: "City 3",
-      state: "State 3",
-      pincode: "789123",
-      country: "Country 3",
-      landmark: "Landmark 3",
-      latitude: "34.5678",
-      longitude: "90.1234",
-      status: "Rejected",
-    },
-  ];
+  useEffect(() => {
+    const fettchAllEntity = async () => {
+      const response = await getAllEntityData();
+      console.log(response);
+      if (response.status === 200) {
+        setEntity(response.data);
+      }
+    };
+    fettchAllEntity();
+  }, []);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setSelectedUsers(users.map((user) => user.sno));
+      setSelectedEntities(selectedEntities.map((entity) => entity.sno));
     } else {
-      setSelectedUsers([]);
+      setSelectedEntities([]);
     }
   };
 
-  const handleSelectUser = (sno) => {
-    setSelectedUsers((prev) =>
+  const handleSelectentities = (sno) => {
+    setSelectedEntities((prev) =>
       prev.includes(sno) ? prev.filter((id) => id !== sno) : [...prev, sno]
     );
+  };
+
+  const onDelete = async (id) => {
+    try {
+      const response = await deleteEntity(id);
+      console.log(response);
+      setEntity(entity?.filter((entity) => entity?._id !== id));
+    } catch (err) {
+      console.log("Error in delete entity", err);
+    }
   };
 
   return (
@@ -119,7 +95,7 @@ const EntityListTable = ({ onEdit, onDelete }) => {
                     >
                       <input
                         type="checkbox"
-                        checked={selectedUsers.length === users.length}
+                        checked={selectedEntities.length === entity.length}
                         onChange={handleSelectAll}
                         className="h-4 w-4 rounded border-gray-300"
                       />
@@ -134,79 +110,50 @@ const EntityListTable = ({ onEdit, onDelete }) => {
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      entityName
+                      EntityName
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      category
+                      Currency
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      addressLine
+                      AddressLine
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      area
+                      Type
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      city
+                      Tax Id
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      state
+                      Invoice Mail Id
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      pincode
+                      Po MailId
                     </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      country
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      landmark
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      latitude
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      longitude
-                    </th>
+
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
                       Status
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-center text-white uppercase tracking-wider"
-                    >
-                      View More
                     </th>
 
                     <th
@@ -218,82 +165,58 @@ const EntityListTable = ({ onEdit, onDelete }) => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((user) => (
-                    <tr key={user.sno} className="hover:bg-gray-50">
+                  {entity.map((entities,index) => (
+                    <tr key={entities.sno} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
-                          checked={selectedUsers.includes(user.sno)}
-                          onChange={() => handleSelectUser(user.sno)}
+                          checked={selectedEntities.includes(entities.sno)}
+                          onChange={() => handleSelectentities(entities.sno)}
                           className="h-4 w-4 rounded border-gray-300"
                         />
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {user.sno}
+                      {index + 1}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.entityName}
+                        {entities.entityName}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.category}
+                        {entities.currency}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.addressLine}
+                        {entities.addressLine}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.area}
+                        {entities.type}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.city}
+                        {entities.taxId}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.state}
+                        {entities.invoiceMailId}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.pincode}
+                        {entities.poMailId}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.country}
+                        {entities.status}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.landmark}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.latitude}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.longitude}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.status}
-                      </td>
+
                       <td className="px-6 py-4 text-sm text-gray-500">
                         <div className="flex space-x-4">
                           <button
-                            onClick={() => alert("View Logs clicked")}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            View Logs
-                          </button>
-                          <button
-                            onClick={() => alert("View Details clicked")}
-                            className="text-green-600 hover:text-green-800"
-                          >
-                            View Details
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        <div className="flex space-x-4">
-                          <button
-                            // onClick={() => onEdit(user)}
+                            // onClick={() => onEdit(entities)}
                             className="text-primary hover:text-primary/80"
-                            onClick={() => navigate("/entity-list-table/edit-entities")}
+                            onClick={() =>
+                              navigate(`/entity-list-table/edit-entities/${entities._id}`)
+                            }
                           >
                             <Edit className="h-5 w-5" />
                           </button>
                           <button
-                            onClick={() => onDelete(user)}
+                            onClick={() => onDelete(entities._id)}
                             className="text-red-600 hover:text-red-800"
                           >
                             <Trash2 className="h-5 w-5" />

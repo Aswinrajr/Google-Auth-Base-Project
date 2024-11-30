@@ -1,15 +1,46 @@
+/* eslint-disable no-unused-vars */
 import { PlusCircle, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAllEntityData } from "../../../api/service/adminServices";
+import * as Yup from "yup";
 
+// const CommercialValidationSchema = Yup.object().shape({
+//   entity: Yup.string().required("Entity is required"),
+//   city: Yup.string().required("City is required"),
+//   site: Yup.string().required("Site is required"),
+//   department: Yup.string().required("Department is required"),
+//   amount: Yup.number()
+//     .required("Amount is required")
+//     .positive("Amount must be a positive number"),
+//   currency: Yup.string().required("Currency is required"),
+//   costCentre: Yup.string().required("Cost Centre is required"),
+//   paymentType: Yup.string().required("Payment Mode is required"),
+//   paymentTerms: Yup.array()
+//     .of(
+//       Yup.object().shape({
+//         percentageTerm: Yup.number()
+//           .required("Percentage Term is required")
+//           .positive("Percentage Term must be a positive number")
+//           .max(100, "Percentage Term cannot exceed 100"),
+//         percentageAmount: Yup.string().required("Payment Term is required"),
+//         paymentType: Yup.string().required("Payment Type is required"),
+//       })
+//     )
+//     .min(1, "At least one payment term is required"),
+//   billTo: Yup.string().required("Bill To address is required"),
+//   shipTo: Yup.string().required("Ship To address is required"),
+// });
+
+// eslint-disable-next-line react/prop-types
 const Commercials = ({ formData, setFormData, onNext }) => {
   const [localFormData, setLocalFormData] = useState({
     entity: "",
     city: "",
     site: "",
-    department: "",
+    department: "IT Web development",
     amount: "",
     currency: "USD",
-    costCentre: "",
+    costCentre: "CT-ITDT-02",
     paymentType: "",
     paymentTerms: [
       { percentageTerm: "", percentageAmount: "", paymentType: "" },
@@ -17,9 +48,27 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     billTo: "",
     shipTo: "",
   });
+  const [entities, setEntities] = useState([]);
+  const [selectedEntityDetails, setSelectedEntityDetails] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const fetchEntity = async () => {
+      try {
+        const response = await getAllEntityData();
+        if (response.status === 200) {
+          setEntities(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching entities:", error);
+      }
+    };
+    fetchEntity();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
     const updatedFormData = {
       ...localFormData,
       [name]: value,
@@ -27,6 +76,35 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
     setLocalFormData(updatedFormData);
     setFormData(updatedFormData);
+  };
+
+  const handleEntityChange = (e) => {
+    const selectedEntityId = e.target.value;
+    console.log("Selected Entity ID:", selectedEntityId);
+
+    const matchingEntities = entities.filter(
+      (entity) => entity.entityName === selectedEntityId
+    );
+    console.log("Matching Entities:", matchingEntities);
+
+    if (matchingEntities.length > 0) {
+      const selectedEntity = matchingEntities[0];
+      setSelectedEntityDetails(selectedEntity);
+
+      const updatedFormData = {
+        ...localFormData,
+        entity: selectedEntityId,
+        city: selectedEntity ? selectedEntity.city : "",
+        site: selectedEntity ? selectedEntity.area : "",
+        billTo: selectedEntity ? selectedEntity.addressLine : "",
+        shipTo: selectedEntity ? selectedEntity.addressLine : "",
+      };
+
+      setLocalFormData(updatedFormData);
+      setFormData(updatedFormData);
+    } else {
+      console.log("No matching entities found");
+    }
   };
 
   const handlePaymentTermChange = (e, index) => {
@@ -63,23 +141,42 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     const updatedPaymentTerms = localFormData.paymentTerms.filter(
       (_, index) => index !== indexToRemove
     );
-  
+
     const updatedFormData = {
       ...localFormData,
       paymentTerms: updatedPaymentTerms,
     };
-  
+
     setLocalFormData(updatedFormData);
     setFormData(updatedFormData);
   };
 
-  const handleNextStep = () => {
-
+  const handleNextStep = async () => {
+    // const isValid = await validateForm();
+    // if (isValid) {
+    // }
     onNext();
   };
 
+  // const validateForm = async () => {
+  //   try {
+  //     await CommercialValidationSchema.validate(localFormData, {
+  //       abortEarly: false,
+  //     });
+  //     setErrors({});
+  //     return true;
+  //   } catch (yupError) {
+  //     const errorMap = {};
+  //     yupError.inner.forEach((err) => {
+  //       errorMap[err.path] = err.message;
+  //     });
+  //     setErrors(errorMap);
+  //     return false;
+  //   }
+  // };
+
   return (
-    <div className="w-full mx-auto bg-gray-50  shadow-2xl rounded-2xl overflow-hidden ">
+    <div className="w-full mx-auto bg-white  shadow-2xl rounded-2xl overflow-hidden ">
       <div className="bg-gradient-to-r  from-primary to-primary p-6">
         <h2 className="text-3xl font-extrabold text-white text-center">
           Commercial Details
@@ -87,27 +184,35 @@ const Commercials = ({ formData, setFormData, onNext }) => {
       </div>
 
       <div className="p-8 space-y-6">
-        {/* First Row: Entity and City */}
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-primary mb-2">
-              Entity
+              Entity <span className="text-red-500">*</span>
             </label>
             <select
               name="entity"
               value={localFormData.entity}
-              onChange={handleInputChange}
+              onChange={handleEntityChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
             >
               <option value="">Select Entity</option>
-              <option value="entity1">Entity 1</option>
-              <option value="entity2">Entity 2</option>
+
+              {[...new Set(entities.map((entity) => entity.entityName))].map(
+                (entityName, index) => (
+                  <option key={index} value={entityName}>
+                    {entityName}
+                  </option>
+                )
+              )}
             </select>
+            {errors.entity && (
+              <p className="text-red-500 text-xs mt-1">{errors.entity}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              City
+              City <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -117,14 +222,16 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
               placeholder="Enter City"
             />
+            {errors.city && (
+              <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+            )}
           </div>
         </div>
 
-        {/* Second Row: Site and Department */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Site
+              Site <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -134,70 +241,36 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
               placeholder="Enter Site"
             />
+            {errors.site && (
+              <p className="text-red-500 text-xs mt-1">{errors.site}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Department
+              Department <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
+            <select
               name="department"
               value={localFormData.department}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              placeholder="Enter Department"
-            />
+            >
+              <option value="" disabled>
+                Select Department
+              </option>
+              <option value="hr">Human Resources</option>
+              <option value="it">Information Technology</option>
+              <option value="finance">Finance</option>
+              <option value="marketing">Marketing</option>
+            </select>
           </div>
-        </div>
-
-        {/* Third Row: Amount, Cost Centre, and Payment Type */}
-        <div className="grid grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Amount
-            </label>
-            <div className="relative w-full">
-              <input
-                type="number"
-                name="amount"
-                value={localFormData.amount}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 pr-16 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Enter Amount"
-              />
-              <select
-                name="currency"
-                value={localFormData.currency}
-                onChange={handleInputChange}
-                className="absolute right-0 top-0 h-full px-4 py-3 bg-transparent border-0 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-              >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="INR">INR</option>
-                <option value="GBP">GBP</option>
-                <option value="AUD">AUD</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Cost Centre
-            </label>
-            <input
-              type="text"
-              name="costCentre"
-              value={localFormData.costCentre}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              placeholder="Enter Cost Centre"
-            />
-          </div>
-
+          {errors.department && (
+            <p className="text-red-500 text-xs mt-1">{errors.department}</p>
+          )}
           <div>
             <label className="block text-sm font-semibold text-gray-700 ">
-              Payment Mode
+              Payment Mode <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-4 mt-5">
               {["Bank Transfer", "Credit Card"].map((type) => (
@@ -217,10 +290,12 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                 </label>
               ))}
             </div>
+            {errors.paymentType && (
+              <p className="text-red-500 text-xs mt-1">{errors.paymentType}</p>
+            )}
           </div>
         </div>
 
-        {/* Payment Terms Section */}
         <div className="space-y-4">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
@@ -228,19 +303,19 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             </h3>
           </div>
 
-          {/* Payment Terms Table */}
           <div className="overflow-x-auto">
             <table className="w-full table-auto border-collapse">
               <thead>
                 <tr className="bg-gray-100 border-b-2 border-gray-200">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Percentage Amount
+                    Percentage Term <span className="text-red-500">*</span>
+                  </th>
+
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Payment Term <span className="text-red-500">*</span>
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Payment Term
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Payment Type
+                    Payment Type <span className="text-red-500">*</span>
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Actions
@@ -253,7 +328,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                     key={index}
                     className="border-b hover:bg-gray-50 transition duration-200"
                   >
-                    {/* Percentage Term */}
                     <td className="px-4 py-3">
                       <input
                         type="number"
@@ -270,7 +344,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                       />
                     </td>
 
-                    {/* Percentage Amount */}
                     <td className="px-4 py-3">
                       <select
                         name="paymentTerm"
@@ -280,13 +353,18 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                       >
                         <option value="">Select Payment Term</option>
                         <option value="immediate">Immediate</option>
-                        <option value="advance_30">30 days credit period</option>
-                        <option value="advance_45">45 days  credit period</option>
-                        <option value="advance_60">60 days  credit period</option>
+                        <option value="advance_30">
+                          30 days credit period
+                        </option>
+                        <option value="advance_45">
+                          45 days credit period
+                        </option>
+                        <option value="advance_60">
+                          60 days credit period
+                        </option>
                       </select>
                     </td>
 
-                    {/* Payment Type */}
                     <td className="px-4 py-3">
                       <select
                         name="paymentType"
@@ -304,10 +382,8 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                       </select>
                     </td>
 
-                    {/* Delete Button with Trash Icon */}
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end space-x-2">
-                        {/* Delete Button with Trash Icon */}
                         <button
                           type="button"
                           onClick={() => handleDeletePaymentTerm(index)}
@@ -324,7 +400,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             </table>
           </div>
 
-          {/* Add New Payment Term Button (at the bottom) */}
           <div className="mt-4 flex justify-start">
             <button
               type="button"
@@ -337,11 +412,10 @@ const Commercials = ({ formData, setFormData, onNext }) => {
           </div>
         </div>
 
-        {/* Fourth Row: Bill To and Ship To */}
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Bill To
+              Bill To <span className="text-red-500">*</span>
             </label>
             <textarea
               name="billTo"
@@ -351,11 +425,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               placeholder="Enter Bill To"
               rows="4"
             ></textarea>
+            {errors.paymentType && (
+              <p className="text-red-500 text-xs mt-1">{errors.billTo}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Ship To
+              Ship To <span className="text-red-500">*</span>
             </label>
             <textarea
               name="shipTo"
@@ -365,6 +442,9 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               placeholder="Enter Ship To"
               rows="4"
             ></textarea>
+            {errors.paymentType && (
+              <p className="text-red-500 text-xs mt-1">{errors.shipTo}</p>
+            )}
           </div>
         </div>
 
@@ -373,7 +453,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
           <button
             type="button"
             onClick={handleNextStep}
-            className="px-10  py-3 bg-gradient-to-r from-primary to-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out"
+            className="px-10 py-3 bg-gradient-to-r from-primary to-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out"
           >
             Next
           </button>
