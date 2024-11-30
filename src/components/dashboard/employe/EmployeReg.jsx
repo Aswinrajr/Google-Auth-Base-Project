@@ -5,22 +5,10 @@ import { generateEmployeeUniqueId } from "../../../api/service/adminServices";
 
 const EmployeeReg = () => {
   const [empid, setEmpId] = useState();
-  const [name, setName] = useState();
-  const [contact, setContact] = useState();
-  const [email, setEmail] = useState();
   const [dob, setDob] = useState();
-  const [gender, setGender] = useState();
-
-  const [role, setRole] = useState();
-  const [entity, setEntity] = useState();
-  const [reportingTo, setReportingTo] = useState();
-  const [location, setLocation] = useState();
-  const [workType, setWorkType] = useState();
-
   const [pincode, setPincode] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
-
   const [isStartTimeInput, setIsStartTimeInput] = useState(false); // State to toggle start time input type
   const [isEndTimeInput, setIsEndTimeInput] = useState(false); // State to toggle end time input type
   const [startTime, setStartTime] = useState(""); // State to store start time

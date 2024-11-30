@@ -13,9 +13,9 @@ const TopBar = () => {
             className="h-12 w-auto sm:h-16"
           />
         </Link>
-        <h1 className="text-sm sm:text-lg font-semibold">
+        {/* <h1 className="text-sm sm:text-lg font-semibold">
           Capillary Technologies
-        </h1>
+        </h1> */}
       </div>
       <div className="flex items-center space-x-2 sm:space-x-4 ml-auto">
         {/* Three dots (MoreVertical) positioned on the right */}

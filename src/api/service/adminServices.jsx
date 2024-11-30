@@ -96,7 +96,7 @@ export const deleteEmployee = async (id) => {
 export const generateEmployeeUniqueId = async () => {
   try {
     const response = await adminServices.get(
-      `/employees/generate-empid`
+      `/employees/get/${id}`
     );
     return response;
   } catch (err) {

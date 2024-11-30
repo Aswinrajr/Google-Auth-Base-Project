@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getEmployeeList } from "../../../api/service/adminServices";
+import { generateEmployeeUniqueId } from "../../../api/service/adminServices";
 
 const EmployeListTable = ({ onEdit, onDelete }) => {
     const navigate = useNavigate();
