@@ -1,8 +1,10 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import { Search, Download, Filter, Plus, Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteVendor, getVendorList } from "../../../api/service/adminServices";
 import { toast, ToastContainer } from "react-toastify";
+import { deleteVendor, getVendorList } from "../../../api/service/adminServices";
 
 const VendorListTable = (onEdit, onDelete) => {
   const navigate = useNavigate();

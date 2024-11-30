@@ -52,7 +52,7 @@ const PreviewTheReq = () => {
       }
     };
     fetchReq();
-  }, []);
+  }, [params.id]);
 
   const ChatSection = () => {
     const chatTopics = [...new Set(chatMessages.map((msg) => msg.topic))];

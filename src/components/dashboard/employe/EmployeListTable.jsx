@@ -1,11 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  deleteEmployee,
-  getEmployeeList,
-} from "../../../api/service/adminServices";
+import { deleteEmployee, getEmployeeList } from "../../../api/service/adminServices";
+import { toast } from "react-toastify";
+
 
 const EmployeListTable = ({ onEdit, onDelete }) => {
   const navigate = useNavigate();
@@ -35,10 +35,11 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
       toast.error(response.data.message);
     }
   };
-  const handleEdit = (id) => {};
+
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
+      // eslint-disable-next-line no-undef
       setSelectedUsers(users.map((user) => user.sno));
     } else {
       setSelectedUsers([]);

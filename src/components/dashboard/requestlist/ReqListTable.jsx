@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  deleteReq,
-  getAdminReqListEmployee,
-  getReqListEmployee,
-  getReqListHR,
-} from "../../../api/service/adminServices";
+import { deleteReq, getAdminReqListEmployee, getReqListEmployee, getReqListHR } from "../../../api/service/adminServices";
 
 
-const ReqListTable = ({ onEdit}) => {
+
+const ReqListTable = () => {
   const userId = localStorage.getItem("userId");
   const role = localStorage.getItem("role");
   console.log(role)

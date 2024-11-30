@@ -1,12 +1,9 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  generateEmployeeUniqueId,
-  getAllEntityData,
-  regNewEmployee,
-} from "../../../api/service/adminServices";
+
 import { useNavigate } from "react-router-dom";
+import { generateEmployeeUniqueId, getAllEntityData, regNewEmployee } from "../../../api/service/adminServices";
 
 const EmployeeReg = () => {
   const navigate = useNavigate()

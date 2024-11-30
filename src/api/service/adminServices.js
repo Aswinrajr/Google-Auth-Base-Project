@@ -154,7 +154,7 @@ export const regNewEmployee = async (formData) => {
   }
 };
 
-export const getReqListEmployee = async (id, role) => {
+export const getReqListEmployee = async (id) => {
   try {
     const response = await adminServices.get(`/employees/get-all-req/${id}`);
     return response;
@@ -214,6 +214,25 @@ export const RegVendorData = async (formData) => {
 export const fetchAllVendorData = async () => {
   try {
     const response = await adminServices.get(`/vendors/get-all`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const getEntityData = async (id) => {
+  try {
+    const response = await adminServices.get(`/entity/get/${id}`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const updateEntityData = async (id,data) => {
+  try {
+    const response = await adminServices.put(`/entity/update/${id}`,{data:data});
     return response;
   } catch (err) {
     return err;

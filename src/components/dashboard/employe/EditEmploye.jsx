@@ -1,4 +1,4 @@
-import { Calendar } from "lucide-react";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { generateEmployeeUniqueId } from "../../../api/service/adminServices";
@@ -15,6 +15,7 @@ const EditEmploye = () => {
   const [entity, setEntity] = useState();
   const [reportingTo, setReportingTo] = useState();
   const [location, setLocation] = useState();
+  // eslint-disable-next-line no-unused-vars
   const [workType, setWorkType] = useState();
 
   const [pincode, setPincode] = useState("");

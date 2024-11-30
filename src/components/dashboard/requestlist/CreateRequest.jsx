@@ -4,10 +4,9 @@ import Supplies from "./Supplies";
 import Procurements from "./Procurements";
 import Commercials from "./Commercials";
 import Preview from "./Preview";
-import Invoice from "./Invoice";
-import { createNewRequest } from "../../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import { createNewRequest } from "../../../api/service/adminServices";
 
 const CreateRequest = () => {
   const navigate = useNavigate();
@@ -20,6 +19,7 @@ const CreateRequest = () => {
     supplies: [],
     remarks: "",
   });
+  // eslint-disable-next-line no-unused-vars
   const [submittedData, setSubmittedData] = useState(null); // State for submitted data
 
   const handleSubmit = async () => {

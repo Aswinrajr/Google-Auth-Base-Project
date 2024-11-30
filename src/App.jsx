@@ -68,7 +68,7 @@ function App() {
           <Route path="/employee-list-table/edit-employee" element={<EditEmploye/>} />
 
           <Route path="/entity-list-table/entities" element={<AddEntity/>} />
-          <Route path="/entity-list-table/edit-entities" element={<EditEntity/>} />
+          <Route path="/entity-list-table/edit-entities/:id" element={<EditEntity/>} />
           <Route path="/entity-list-table" element={<EntityListTable/>} />
           
 

@@ -1,9 +1,12 @@
+/* eslint-disable no-unused-vars */
 import { format } from "date-fns";
-import capilary_logo from "../../../assets/images/capilary_logo.png";
+import capilary_logo from "../../../assets/images/Logo_Picture.png";
 
+
+// eslint-disable-next-line react/prop-types
 const Invoice = ({ formData, onSubmit }) => {
   const invoice = {
-    number: "INV-001",
+    number: "#45124568",
     date: new Date(),
     dueDate: new Date(),
     from: {
@@ -49,11 +52,43 @@ const Invoice = ({ formData, onSubmit }) => {
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
       <header className="py-6 px-6 flex justify-between items-center">
-        <div className="flex items-center ">
-          <img src={capilary_logo} alt="Soldo Apps" className="h-40 w-full" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <img
+              src={capilary_logo}
+              alt="Capillary Technologies"
+              className="h-40 w-auto"
+            />
+          </div>
+          <div className="text-start">
+            <p className="font-semibold">Capillary Technologies India Ltd</p>
+            <p>360, bearing PID No: 101, 360, 15th Cross Rd,</p>
+            <p>Sector 4, HSR Layout</p>
+            <p>Bengaluru, Karnataka 560102</p>
+            <p>India</p>
+            <p className="mt-2">
+              Web:{" "}
+              <a href="http://www.capillarytech.com" className="text-blue-500">
+                www.capillarytech.com
+              </a>
+            </p>
+            <p>
+              Email:{" "}
+              <a
+                href="mailto:accounts@capillarytech.com"
+                className="text-blue-500"
+              >
+                accounts@capillarytech.com
+              </a>
+            </p>
+            <p className="mt-2">
+              Tax No.: <span className="font-semibold">29AAECK7007Q1ZY</span>
+            </p>
+          </div>
         </div>
+
         <div className="text-right">
-          <h1 className="text-2xl font-bold">Delivery Service Invoice</h1>
+          <h1 className="text-2xl font-bold">Purchase Order</h1>
           <span className="font-medium block">
             Invoice No. {invoice.number}
           </span>
@@ -67,7 +102,7 @@ const Invoice = ({ formData, onSubmit }) => {
       </header>
 
       <div className="p-6 grid grid-cols-2 gap-6 mb-3">
-        <div>
+        <div className="p-2 border-2 border-solid border-black">
           <h2 className="text-lg font-medium mb-2">Bill to</h2>
           <address className="not-italic">
             <div className="font-medium">{invoice.billTo.name}</div>
@@ -76,7 +111,7 @@ const Invoice = ({ formData, onSubmit }) => {
           </address>
         </div>
 
-        <div className="text-right">
+        <div className="text-right p-2 border-2 border-solid border-black">
           {" "}
           <h2 className="text-lg font-medium mb-2">Ship To</h2>
           <address className="not-italic">
@@ -87,24 +122,50 @@ const Invoice = ({ formData, onSubmit }) => {
         </div>
       </div>
 
-      <div className="bg-gray-100 rounded-lg p-4 space-y-4">
-        <div className="grid grid-cols-5 text-gray-600 font-medium">
-          <p>Name</p>
-          <p className="text-right">RATE</p>
-          <p className="text-right">QTY</p>
-          <p className="text-right"></p>
-          <p className="text-right">AMOUNT</p>
+      <div className="p-6 grid grid-cols-2 gap-6 mb-3">
+        <div className="p-2 ">
+          <h2 className="text-lg font-medium mb-2">Payment Terms</h2>
         </div>
-        {invoice.items.map((item, index) => (
-          <div key={index} className="grid grid-cols-5 items-center">
-            <p>{item.description}</p>
-            <p className="text-right">${item.rate.toFixed(2)}</p>
-            <p className="text-right">{item.quantity}</p>
-            <p className="text-right"></p>
-            <p className="text-right">${item.amount.toFixed(2)}</p>
-          </div>
-        ))}
+
+        <div className="text-right p-2 ">
+          {" "}
+          <h2 className="text-lg font-medium mb-2">
+            Tax Terms:Inclusion of Tax
+          </h2>
+        </div>
       </div>
+
+      <div className="ml-7 p-1 mb-2 ">
+        <h2 className="text-lg">30 days from receipt of invoice</h2>
+      </div>
+
+      <table className="w-full bg-gray-100 rounded-lg overflow-hidden">
+        <thead>
+          <tr className="bg-gray-200 text-gray-600 font-medium">
+            <th className="p-3 text-left">SNo</th>
+            <th className="p-3 text-left">Description of Service</th>
+            <th className="p-3 text-right">Quantity</th>
+            <th className="p-3 text-right">Unit</th>
+            <th className="p-3 text-right">Rate</th>
+            <th className="p-3 text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="p-3">1</td>
+            <td className="p-3">
+              ITEM:SUBSCRIPTION FEE (OVERHEADS) Microsoft 365 Apps for business
+              Subcription Period: 16/06/2024 To 15/06/2025 Service Period :
+              16/06/2024 To 15/06/2025 Department : Information Technology
+              Requested By : Sweta Banerjee Approved By : Muralidhar
+            </td>
+            <td className="p-3 text-right">140</td>
+            <td className="p-3 text-right">Qty</td>
+            <td className="p-3 text-right">₹ 6,523.00</td>
+            <td className="p-3 text-right">₹ 9,13,220.00</td>
+          </tr>
+        </tbody>
+      </table>
 
       <div className="p-6 space-y-2">
         <div className="flex justify-between border-t pt-4">

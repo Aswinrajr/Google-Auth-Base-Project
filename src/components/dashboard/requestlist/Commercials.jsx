@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAllEntityData } from "../../../api/service/adminServices";
 
+// eslint-disable-next-line react/prop-types
 const Commercials = ({ formData, setFormData, onNext }) => {
   const [localFormData, setLocalFormData] = useState({
     entity: "",
@@ -37,7 +39,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(name,value)
+    console.log(name, value);
     const updatedFormData = {
       ...localFormData,
       [name]: value,
@@ -57,13 +59,9 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     );
     console.log("Matching Entities:", matchingEntities);
 
-
-
     if (matchingEntities.length > 0) {
-   
-      const selectedEntity = matchingEntities[0]; 
+      const selectedEntity = matchingEntities[0];
       setSelectedEntityDetails(selectedEntity);
-
 
       const updatedFormData = {
         ...localFormData,
@@ -178,7 +176,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
         </div>
 
         {/* Second Row: Site and Department */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Site
@@ -197,63 +195,21 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Department
             </label>
-            <input
-              type="text"
+            <select
               name="department"
               value={localFormData.department}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              placeholder="Enter Department"
-              disabled
-            />
+            >
+              <option value="" disabled>
+                Select Department
+              </option>
+              <option value="hr">Human Resources</option>
+              <option value="it">Information Technology</option>
+              <option value="finance">Finance</option>
+              <option value="marketing">Marketing</option>
+            </select>
           </div>
-        </div>
-
-        {/* Third Row: Amount, Cost Centre, and Payment Type */}
-        <div className="grid grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Amount
-            </label>
-            <div className="relative w-full">
-              <input
-                type="number"
-                name="amount"
-                value={localFormData.amount}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 pr-16 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Enter Amount"
-              />
-              <select
-                name="currency"
-                value={localFormData.currency}
-                onChange={handleInputChange}
-                className="absolute right-0 top-0 h-full px-4 py-3 bg-transparent border-0 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-700"
-              >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="INR">INR</option>
-                <option value="GBP">GBP</option>
-                <option value="AUD">AUD</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Cost Centre
-            </label>
-            <input
-              type="text"
-              name="costCentre"
-              value={localFormData.costCentre}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              placeholder="Enter Cost Centre"
-              disabled
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 ">
               Payment Mode
@@ -278,7 +234,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             </div>
           </div>
         </div>
-
         {/* Payment Terms Section */}
         <div className="space-y-4">
           <div className="mb-4">

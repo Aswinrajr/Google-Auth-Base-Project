@@ -1,11 +1,9 @@
-/* eslint-disable react/prop-types */
+
 import { useEffect, useState } from "react";
 import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  deleteEntity,
-  getAllEntityData,
-} from "../../../api/service/adminServices";
+import { deleteEntity, getAllEntityData } from "../../../api/service/adminServices";
+
 
 const EntityListTable = () => {
   const navigate = useNavigate();
@@ -112,75 +110,51 @@ const EntityListTable = () => {
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      entityName
+                      EntityName
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      category
+                      Currency
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      addressLine
+                      AddressLine
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      area
+                      Type
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      city
+                      Tax Id
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      state
+                      Invoice Mail Id
                     </th>
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      pincode
+                      Po MailId
                     </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      country
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      landmark
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      latitude
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      longitude
-                    </th>
+
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
                       Status
                     </th>
-                   
 
                     <th
                       scope="col"
@@ -191,7 +165,7 @@ const EntityListTable = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {entity.map((entities) => (
+                  {entity.map((entities,index) => (
                     <tr key={entities.sno} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <input
@@ -202,52 +176,41 @@ const EntityListTable = () => {
                         />
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {entities.sno}
+                      {index + 1}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {entities.entityName}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.category}
+                        {entities.currency}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {entities.addressLine}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.area}
+                        {entities.type}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.city}
+                        {entities.taxId}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.state}
+                        {entities.invoiceMailId}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.pincode}
+                        {entities.poMailId}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.country}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.landmark}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.latitude}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {entities.longitude}
-                      </td>
+
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {entities.status}
                       </td>
-                     
+
                       <td className="px-6 py-4 text-sm text-gray-500">
                         <div className="flex space-x-4">
                           <button
                             // onClick={() => onEdit(entities)}
                             className="text-primary hover:text-primary/80"
                             onClick={() =>
-                              navigate("/entity-list-table/edit-entities")
+                              navigate(`/entity-list-table/edit-entities/${entities._id}`)
                             }
                           >
                             <Edit className="h-5 w-5" />

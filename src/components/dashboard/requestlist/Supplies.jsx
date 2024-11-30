@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
+import  { useState } from "react";
 import { Trash2, PlusCircle, CheckCircle2 } from 'lucide-react';
 
 const Supplies = ({ formData, setFormData, onBack, onSubmit, handleSubmited, onNext }) => {
