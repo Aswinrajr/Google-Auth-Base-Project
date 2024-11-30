@@ -2,6 +2,34 @@
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAllEntityData } from "../../../api/service/adminServices";
+import * as Yup from "yup";
+
+// const CommercialValidationSchema = Yup.object().shape({
+//   entity: Yup.string().required("Entity is required"),
+//   city: Yup.string().required("City is required"),
+//   site: Yup.string().required("Site is required"),
+//   department: Yup.string().required("Department is required"),
+//   amount: Yup.number()
+//     .required("Amount is required")
+//     .positive("Amount must be a positive number"),
+//   currency: Yup.string().required("Currency is required"),
+//   costCentre: Yup.string().required("Cost Centre is required"),
+//   paymentType: Yup.string().required("Payment Mode is required"),
+//   paymentTerms: Yup.array()
+//     .of(
+//       Yup.object().shape({
+//         percentageTerm: Yup.number()
+//           .required("Percentage Term is required")
+//           .positive("Percentage Term must be a positive number")
+//           .max(100, "Percentage Term cannot exceed 100"),
+//         percentageAmount: Yup.string().required("Payment Term is required"),
+//         paymentType: Yup.string().required("Payment Type is required"),
+//       })
+//     )
+//     .min(1, "At least one payment term is required"),
+//   billTo: Yup.string().required("Bill To address is required"),
+//   shipTo: Yup.string().required("Ship To address is required"),
+// });
 
 // eslint-disable-next-line react/prop-types
 const Commercials = ({ formData, setFormData, onNext }) => {
@@ -22,6 +50,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
   });
   const [entities, setEntities] = useState([]);
   const [selectedEntityDetails, setSelectedEntityDetails] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchEntity = async () => {
@@ -53,7 +82,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     const selectedEntityId = e.target.value;
     console.log("Selected Entity ID:", selectedEntityId);
 
-    // Find all entities that match the selected entity name
     const matchingEntities = entities.filter(
       (entity) => entity.entityName === selectedEntityId
     );
@@ -123,9 +151,29 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     setFormData(updatedFormData);
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
+    // const isValid = await validateForm();
+    // if (isValid) {
+    // }
     onNext();
   };
+
+  // const validateForm = async () => {
+  //   try {
+  //     await CommercialValidationSchema.validate(localFormData, {
+  //       abortEarly: false,
+  //     });
+  //     setErrors({});
+  //     return true;
+  //   } catch (yupError) {
+  //     const errorMap = {};
+  //     yupError.inner.forEach((err) => {
+  //       errorMap[err.path] = err.message;
+  //     });
+  //     setErrors(errorMap);
+  //     return false;
+  //   }
+  // };
 
   return (
     <div className="w-full mx-auto bg-white  shadow-2xl rounded-2xl overflow-hidden ">
@@ -136,11 +184,10 @@ const Commercials = ({ formData, setFormData, onNext }) => {
       </div>
 
       <div className="p-8 space-y-6">
-        {/* First Row: Entity and City */}
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-primary mb-2">
-              Entity
+              Entity <span className="text-red-500">*</span>
             </label>
             <select
               name="entity"
@@ -149,7 +196,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
             >
               <option value="">Select Entity</option>
-              {/* Use Set to filter unique entity names */}
+
               {[...new Set(entities.map((entity) => entity.entityName))].map(
                 (entityName, index) => (
                   <option key={index} value={entityName}>
@@ -158,11 +205,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                 )
               )}
             </select>
+            {errors.entity && (
+              <p className="text-red-500 text-xs mt-1">{errors.entity}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              City
+              City <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -172,14 +222,16 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
               placeholder="Enter City"
             />
+            {errors.city && (
+              <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+            )}
           </div>
         </div>
 
-        {/* Second Row: Site and Department */}
         <div className="grid grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Site
+              Site <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -189,11 +241,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
               placeholder="Enter Site"
             />
+            {errors.site && (
+              <p className="text-red-500 text-xs mt-1">{errors.site}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Department
+              Department <span className="text-red-500">*</span>
             </label>
             <select
               name="department"
@@ -210,9 +265,12 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               <option value="marketing">Marketing</option>
             </select>
           </div>
+          {errors.department && (
+            <p className="text-red-500 text-xs mt-1">{errors.department}</p>
+          )}
           <div>
             <label className="block text-sm font-semibold text-gray-700 ">
-              Payment Mode
+              Payment Mode <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-4 mt-5">
               {["Bank Transfer", "Credit Card"].map((type) => (
@@ -232,9 +290,12 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                 </label>
               ))}
             </div>
+            {errors.paymentType && (
+              <p className="text-red-500 text-xs mt-1">{errors.paymentType}</p>
+            )}
           </div>
         </div>
-        {/* Payment Terms Section */}
+
         <div className="space-y-4">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
@@ -242,19 +303,19 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             </h3>
           </div>
 
-          {/* Payment Terms Table */}
           <div className="overflow-x-auto">
             <table className="w-full table-auto border-collapse">
               <thead>
                 <tr className="bg-gray-100 border-b-2 border-gray-200">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Percentage Amount
+                    Percentage Term <span className="text-red-500">*</span>
+                  </th>
+
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Payment Term <span className="text-red-500">*</span>
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Payment Term
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Payment Type
+                    Payment Type <span className="text-red-500">*</span>
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Actions
@@ -267,7 +328,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                     key={index}
                     className="border-b hover:bg-gray-50 transition duration-200"
                   >
-                    {/* Percentage Term */}
                     <td className="px-4 py-3">
                       <input
                         type="number"
@@ -284,7 +344,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                       />
                     </td>
 
-                    {/* Percentage Amount */}
                     <td className="px-4 py-3">
                       <select
                         name="paymentTerm"
@@ -306,7 +365,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                       </select>
                     </td>
 
-                    {/* Payment Type */}
                     <td className="px-4 py-3">
                       <select
                         name="paymentType"
@@ -324,10 +382,8 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                       </select>
                     </td>
 
-                    {/* Delete Button with Trash Icon */}
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end space-x-2">
-                        {/* Delete Button with Trash Icon */}
                         <button
                           type="button"
                           onClick={() => handleDeletePaymentTerm(index)}
@@ -344,7 +400,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             </table>
           </div>
 
-          {/* Add New Payment Term Button (at the bottom) */}
           <div className="mt-4 flex justify-start">
             <button
               type="button"
@@ -357,11 +412,10 @@ const Commercials = ({ formData, setFormData, onNext }) => {
           </div>
         </div>
 
-        {/* Fourth Row: Bill To and Ship To */}
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Bill To
+              Bill To <span className="text-red-500">*</span>
             </label>
             <textarea
               name="billTo"
@@ -371,11 +425,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               placeholder="Enter Bill To"
               rows="4"
             ></textarea>
+            {errors.paymentType && (
+              <p className="text-red-500 text-xs mt-1">{errors.billTo}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Ship To
+              Ship To <span className="text-red-500">*</span>
             </label>
             <textarea
               name="shipTo"
@@ -385,6 +442,9 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               placeholder="Enter Ship To"
               rows="4"
             ></textarea>
+            {errors.paymentType && (
+              <p className="text-red-500 text-xs mt-1">{errors.shipTo}</p>
+            )}
           </div>
         </div>
 

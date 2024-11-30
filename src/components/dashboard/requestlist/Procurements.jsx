@@ -15,8 +15,8 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     const fetchVendor = async () => {
       const response = await fetchAllVendorData();
       console.log(response);
-      if(response.status===200){
-        setVendors(response.data)
+      if (response.status === 200) {
+        setVendors(response.data);
       }
     };
 
@@ -86,23 +86,34 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
 
   const handleAddVendor = () => {
     if (newVendor.name && newVendor.email) {
-      // Add the vendor name with brackets
-      const vendorWithBrackets = `${newVendor.name} -(New Vendor)`;
+      const newVendorObj = {
+        _id: `new_${Date.now()}`, // Unique ID for new vendor
+        vendorId: null, // No vendor ID for new vendor
+        firstName: newVendor.name,
+        isNewVendor: true, // Flag to identify new vendor
+      };
 
-      setVendors([
-        ...vendors,
-        { id: vendors.length + 1, name: vendorWithBrackets },
-      ]);
-      setShowModal(false);
-      setNewVendor({ name: "", email: "" });
-      // Update the formData with the new vendor
+      // Add the new vendor to the list
+      setVendors([...vendors, newVendorObj]);
+
+      // Set the newly added vendor as selected
       setFormData((prevState) => ({
         ...prevState,
-        vendor: vendorWithBrackets,
+        vendor: newVendorObj._id,
       }));
+
+      setShowModal(false);
+      setNewVendor({ name: "", email: "" });
     } else {
       alert("Please fill in all fields.");
     }
+  };
+
+  const getVendorDisplayName = (vendor) => {
+    if (vendor.isNewVendor) {
+      return `${vendor.firstName} -(New Vendor)`;
+    }
+    return `${vendor.vendorId} - ${vendor.firstName}`;
   };
 
   const handleSubmit = () => {
@@ -121,9 +132,8 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
 
       <div className="p-8 space-y-6">
         <div className="grid grid-cols-1 gap-6">
-          {/* Vendor Name */}
           <div className="grid grid-cols-1 gap-4">
-            <div>
+          <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Choose Vendor
               </label>
@@ -141,8 +151,11 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               >
                 <option value="">Select Vendor</option>
                 {vendors.map((vendor) => (
-                  <option key={vendor._id} value={vendor.firstName}>
-                    {vendor.firstName}
+                  <option 
+                    key={vendor._id} 
+                    value={vendor._id}
+                  >
+                    {getVendorDisplayName(vendor)}
                   </option>
                 ))}
                 <option value="newVendor">+ New Vendor</option>

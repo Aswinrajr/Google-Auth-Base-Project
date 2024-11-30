@@ -7,6 +7,7 @@ import Preview from "./Preview";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { createNewRequest } from "../../../api/service/adminServices";
+import AgreementCompliences from "./AgreementCompliences";
 
 const CreateRequest = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const CreateRequest = () => {
     procurements: {},
     supplies: [],
     remarks: "",
+    complinces: [],
   });
   // eslint-disable-next-line no-unused-vars
   const [submittedData, setSubmittedData] = useState(null); // State for submitted data
@@ -94,11 +96,32 @@ const CreateRequest = () => {
       ),
     },
     {
+      title: "Agreement Compliences",
+      icon: FileText,
+      content: (
+        <AgreementCompliences
+          formData={formData} // Pass the entire form data here
+          setFormData={(data) =>
+            setFormData((prev) => ({
+              ...prev,
+              complinces:
+                typeof data === "function" ? data(prev.complinces) : data,
+            }))
+          }
+          onSubmit={handleSubmit}
+          onBack={() => setCurrentStep(2)}
+          onNext={() => handleStepComplete(3)}
+        />
+      ),
+    },
+    {
+      title: "Preview",
+      icon: Check,
       content: (
         <Preview
           formData={formData} // Pass the entire form data here
           onSubmit={handleSubmit}
-          onBack={() => setCurrentStep(2)}
+          onBack={() => setCurrentStep(3)}
         />
       ),
     },
@@ -117,10 +140,9 @@ const CreateRequest = () => {
 
   return (
     <div className="w-full mx-auto bg-gray-50 p-6">
-      <div className="grid grid-cols-3 gap-4">
+      {/* Stepper */}
+      <div className="flex justify-between items-center mb-6">
         {steps.map((step, index) => {
-          if (index === steps.length - 1) return null; // Skip rendering icons/titles for Preview step
-
           const StepIcon = step.icon;
           const isActive = currentStep === index;
           const isCompleted = completedSteps.includes(index);
@@ -129,10 +151,11 @@ const CreateRequest = () => {
             <div key={index} className="flex flex-col items-center relative">
               {index < steps.length - 1 && (
                 <div
-                  className={`absolute top-6 left-1/2 w-full h-0.5 transform -translate-x-1/2 -z-10 
+                  className={`absolute top-1/2 left-full w-full h-0.5 transform -translate-y-1/2 -z-10 
                     ${
                       isCompleted || isActive ? "bg-green-500" : "bg-gray-300"
                     }`}
+                  style={{ width: "50px" }} // Adjust for space between steps
                 />
               )}
               <div
@@ -169,6 +192,8 @@ const CreateRequest = () => {
           );
         })}
       </div>
+
+      {/* Step Content */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -178,7 +203,6 @@ const CreateRequest = () => {
         draggable
         pauseOnFocusLoss
       />
-
       <div className="mt-6">{steps[currentStep].content}</div>
     </div>
   );

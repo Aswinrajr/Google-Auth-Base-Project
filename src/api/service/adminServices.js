@@ -238,3 +238,13 @@ export const updateEntityData = async (id,data) => {
     return err;
   }
 };
+
+
+export const getNewVendorId = async () => {
+  try {
+    const response = await adminServices.get(`/vendors/get-new-vendorid`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};

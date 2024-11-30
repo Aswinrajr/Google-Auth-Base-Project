@@ -1,8 +1,10 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { RegVendorData } from "../../../api/service/adminServices";
+import {
+  getNewVendorId,
+  RegVendorData,
+} from "../../../api/service/adminServices";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -14,10 +16,6 @@ const validationSchema = Yup.object({
     .required("Email is required"),
   gstNumber: Yup.string().required("GST Number is required"),
   streetAddress1: Yup.string().required("Address is required"),
-  // postalCode: Yup.string().required("Postal Code is required"),
-  // city: Yup.string().required("City is required"),
-  // state: Yup.string().required("State is required"),
-  // country: Yup.string().required("Country is required"),
 });
 
 const VendorRegistration = () => {
@@ -28,46 +26,32 @@ const VendorRegistration = () => {
     email: "",
     gstNumber: "",
     streetAddress1: "",
-    streetAddress2: "",
-    postalCode: "",
-    city: "",
-    state: "",
-    country: "",
-    additionalNotes: "",
+   
   });
 
-  // Function to fetch city and state based on postal code
-  // const fetchCityState = async () => {
-  //   if (!formData.postalCode) {
-  //     alert("Please enter a valid postal code.");
-  //     return;
-  //   }
+  // Fetch Vendor ID on component mount
+  useEffect(() => {
+    const fetchVendorId = async () => {
+      try {
+        const response = await getNewVendorId();
+        if (response.status === 200) {
+          console.log(response.data.vendorId);
+          setFormData((prevState) => ({
+            ...prevState,
+            vendorId: response.data.vendorId,
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch Vendor ID:", error);
+      }
+    };
+    fetchVendorId();
+  }, []);
 
-  //   try {
-  //     const response = await axios.get(
-  //       `https://api.postalpincode.in/pincode/${formData.postalCode}`
-  //     );
-
-  //     if (response.data && response.data[0].Status === "Success") {
-  //       const { District, State } = response.data[0].PostOffice[0];
-  //       setFormData((prevState) => ({
-  //         ...prevState,
-  //         city: District,
-  //         state: State,
-  //       }));
-  //     } else {
-  //       alert("Invalid postal code or data not found!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching city and state:", error);
-  //     alert("Failed to fetch city and state. Please try again later.");
-  //   }
-  // };
-
-  // Formik setup
   const formik = useFormik({
     initialValues: formData,
     validationSchema: validationSchema,
+    enableReinitialize: true,
     onSubmit: async (values) => {
       try {
         console.log(values);
@@ -100,9 +84,7 @@ const VendorRegistration = () => {
       onSubmit={formik.handleSubmit}
       className="max-w-6xl bg-white mx-auto p-6 space-y-6"
     >
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        Vendor Registration
-      </h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Vendor Registration</h2>
 
       <div className="p-4 border rounded-lg border-primary">
         <label htmlFor="vendorId">
@@ -116,6 +98,7 @@ const VendorRegistration = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+          readOnly 
         />
         {formik.touched.vendorId && formik.errors.vendorId && (
           <span className="text-red-500 text-sm">{formik.errors.vendorId}</span>
@@ -212,7 +195,6 @@ const VendorRegistration = () => {
                 Address <span className="text-red-500">*</span>
               </label>
               <textarea
-                type="text"
                 name="streetAddress1"
                 placeholder="Address"
                 value={formik.values.streetAddress1}
@@ -227,66 +209,12 @@ const VendorRegistration = () => {
                   </span>
                 )}
             </div>
-            {/* <div>
-              <label htmlFor="postalCode">
-                Postal Code <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="postalCode"
-                placeholder="Postal Code"
-                value={formik.values.postalCode}
-                onChange={formik.handleChange}
-                onBlur={fetchCityState}
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              {formik.touched.postalCode && formik.errors.postalCode && (
-                <span className="text-red-500 text-sm">{formik.errors.postalCode}</span>
-              )}
-            </div> */}
-            {/* <div>
-              <label htmlFor="city">
-                City <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="city"
-                placeholder="City"
-                value={formik.values.city}
-                readOnly
-                className="w-full p-2 border rounded bg-gray-100"
-              />
-            </div> */}
-            {/* <div>
-              <input
-                type="text"
-                name="state"
-                placeholder="State"
-                value={formik.values.state}
-                readOnly
-                className="w-full p-2 border rounded bg-gray-100"
-              />
-            </div> */}
-            {/* <div>
-              <input
-                type="text"
-                name="country"
-                placeholder="Country"
-                value={formik.values.country}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              {formik.touched.country && formik.errors.country && (
-                <span className="text-red-500 text-sm">{formik.errors.country}</span>
-              )}
-            </div> */}
           </div>
         </div>
       </div>
 
       {/* Submit Button */}
-      <div className="p-4  text-end">
+      <div className="p-4 text-end">
         <button
           type="submit"
           className="px-6 py-2 bg-primary text-white rounded"
