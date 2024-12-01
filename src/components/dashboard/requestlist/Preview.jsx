@@ -1,37 +1,44 @@
 /* eslint-disable react/prop-types */
-import  { useState } from 'react';
-import { 
-  CheckCircle2, 
-  Edit2, 
-  
-  Package, 
-  DollarSign, 
-  ClipboardList 
-} from 'lucide-react';
+import { useState } from "react";
+import {
+  CheckCircle2,
+  Edit2,
+  Package,
+  DollarSign,
+  ClipboardList,
+  FileText, // Add this import for the new section's icon
+} from "lucide-react";
 
 const Preview = ({ formData, onSubmit, onBack }) => {
-  const [activeSection, setActiveSection] = useState('commercials');
+  const [activeSection, setActiveSection] = useState("commercials");
+  console.log("Formdata in preview",formData)
 
   const SectionNavigation = () => {
     const sections = [
-      { 
-        key: 'commercials', 
-        icon: DollarSign, 
-        label: 'Commercials', 
-        color: 'text-primary hover:bg-primary/10' 
+      {
+        key: "commercials",
+        icon: DollarSign,
+        label: "Commercials",
+        color: "text-primary hover:bg-primary/10",
       },
-      { 
-        key: 'procurements', 
-        icon: Package, 
-        label: 'Procurements', 
-        color: 'text-primary hover:bg-primary/10' 
+      {
+        key: "procurements",
+        icon: Package,
+        label: "Procurements",
+        color: "text-primary hover:bg-primary/10",
       },
-      { 
-        key: 'supplies', 
-        icon: ClipboardList, 
-        label: 'Supplies', 
-        color: 'text-primary hover:bg-primary/10' 
-      }
+      {
+        key: "supplies",
+        icon: ClipboardList,
+        label: "Supplies",
+        color: "text-primary hover:bg-primary/10",
+      },
+      {
+        key: "qna",
+        icon: FileText,
+        label: "Q&A", // New section label
+        color: "text-primary hover:bg-primary/10",
+      },
     ];
 
     return (
@@ -44,9 +51,11 @@ const Preview = ({ formData, onSubmit, onBack }) => {
               onClick={() => setActiveSection(section.key)}
               className={`
                 flex-1 p-4 flex items-center justify-center 
-                ${activeSection === section.key 
-                  ? 'bg-primary/10 border-b-2 border-primary' 
-                  : 'hover:bg-gray-100'}
+                ${
+                  activeSection === section.key
+                    ? "bg-primary/10 border-b-2 border-primary"
+                    : "hover:bg-gray-100"
+                }
                 ${section.color} 
                 transition-all duration-300
               `}
@@ -62,9 +71,9 @@ const Preview = ({ formData, onSubmit, onBack }) => {
 
   const renderSectionContent = () => {
     switch (activeSection) {
-      case 'commercials':
+      case "commercials":
         return (
-          <div className="p-6 space-y-6 ">
+          <div className="p-6 space-y-6">
             <h2 className="text-2xl font-bold text-primary border-b pb-3">
               Commercials Details
             </h2>
@@ -72,16 +81,25 @@ const Preview = ({ formData, onSubmit, onBack }) => {
               Object.values(formData.commercials).some((value) => value) && (
                 <div className="grid md:grid-cols-2 gap-4">
                   {[
-                    { label: 'Amount', value: formData.commercials.amount },
-                    { label: 'Bill To', value: formData.commercials.billTo },
-                    { label: 'City', value: formData.commercials.city },
-                    { label: 'Cost Centre', value: formData.commercials.costCentre },
-                    { label: 'Currency', value: formData.commercials.currency },
-                    { label: 'Department', value: formData.commercials.department },
-                    { label: 'Entity', value: formData.commercials.entity },
-                    { label: 'Payment Type', value: formData.commercials.paymentType },
+                    { label: "Amount", value: formData.commercials.amount },
+                    { label: "Bill To", value: formData.commercials.billTo },
+                    { label: "City", value: formData.commercials.city },
+                    {
+                      label: "Cost Centre",
+                      value: formData.commercials.costCentre,
+                    },
+                    { label: "Currency", value: formData.commercials.currency },
+                    {
+                      label: "Department",
+                      value: formData.commercials.department,
+                    },
+                    { label: "Entity", value: formData.commercials.entity },
+                    {
+                      label: "Payment Type",
+                      value: formData.commercials.paymentType,
+                    },
                   ]
-                    .filter((item) => item.value) // Only include items with values
+                    .filter((item) => item.value)
                     .map((item, index) => (
                       <div
                         key={index}
@@ -97,7 +115,7 @@ const Preview = ({ formData, onSubmit, onBack }) => {
                     ))}
                 </div>
               )}
-  
+
             {formData.commercials?.paymentTerms?.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-xl font-semibold text-primary mb-4">
@@ -118,13 +136,12 @@ const Preview = ({ formData, onSubmit, onBack }) => {
                     </thead>
                     <tbody>
                       {formData.commercials.paymentTerms.map((term, index) => (
-                        <tr
-                          key={index}
-                          className="border-b hover:bg-gray-50"
-                        >
+                        <tr key={index} className="border-b hover:bg-gray-50">
                           <td className="p-3">{term.paymentTerm}</td>
                           <td className="p-3">{term.paymentType}</td>
-                          <td className="p-3 text-right">{term.percentageTerm}%</td>
+                          <td className="p-3 text-right">
+                            {term.percentageTerm}%
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -134,8 +151,8 @@ const Preview = ({ formData, onSubmit, onBack }) => {
             )}
           </div>
         );
-  
-      case 'procurements':
+
+      case "procurements":
         return (
           <div className="p-6 space-y-6">
             <h2 className="text-2xl font-bold text-primary border-b pb-3">
@@ -145,11 +162,23 @@ const Preview = ({ formData, onSubmit, onBack }) => {
               Object.values(formData.procurements).some((value) => value) && (
                 <div className="grid md:grid-cols-2 gap-4">
                   {[
-                    { label: 'Vendor', value: formData.procurements.vendor },
-                    { label: 'Quotation Number', value: formData.procurements.quotationNumber },
-                    { label: 'Quotation Date', value: formData.procurements.quotationDate },
-                    { label: 'Expected Delivery', value: formData.procurements.expectedDeliveryDate },
-                    { label: 'PO Expiry Date', value: formData.procurements.poExpiryDate },
+                    { label: "Vendor", value: formData.procurements.vendor },
+                    {
+                      label: "Quotation Number",
+                      value: formData.procurements.quotationNumber,
+                    },
+                    {
+                      label: "Quotation Date",
+                      value: formData.procurements.quotationDate,
+                    },
+                    {
+                      label: "Expected Delivery",
+                      value: formData.procurements.expectedDeliveryDate,
+                    },
+                    {
+                      label: "PO Expiry Date",
+                      value: formData.procurements.poExpiryDate,
+                    },
                   ]
                     .filter((item) => item.value)
                     .map((item, index) => (
@@ -167,7 +196,7 @@ const Preview = ({ formData, onSubmit, onBack }) => {
                     ))}
                 </div>
               )}
-  
+
             {formData.procurements?.competitiveQuotations?.length > 0 ? (
               <div className="mt-6">
                 <h3 className="text-xl font-semibold text-primary mb-4">
@@ -187,110 +216,105 @@ const Preview = ({ formData, onSubmit, onBack }) => {
             )}
           </div>
         );
-  
-        case 'supplies':
+
+      case "supplies":
+        return (
+          <div className="p-6 space-y-6">
+            <h2 className="text-2xl font-bold text-primary border-b pb-3">
+              Supplies Details
+            </h2>
+
+            {/* Total Value */}
+            {formData.supplies?.totalValue !== undefined && (
+              <div className="p-3 bg-gray-50 rounded-lg flex justify-between">
+                <span className="text-gray-600 font-medium">Total Value</span>
+                <span className="text-gray-800 font-semibold">
+                  {formData.supplies.totalValue}
+                </span>
+              </div>
+            )}
+
+            {/* Services Table */}
+            {formData.supplies?.services?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-primary mb-4">
+                  Services
+                </h3>
+                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-primary/10">
+                      <tr>
+                        <th className="p-3 text-left text-primary">
+                          Product Name
+                        </th>
+                        <th className="p-3 text-left text-primary">Quantity</th>
+                        <th className="p-3 text-left text-primary">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.supplies.services.map((service, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="p-3">
+                            {service.productName || "N/A"}
+                          </td>
+                          <td className="p-3">{service.quantity || "N/A"}</td>
+                          <td className="p-3">{service.price || "N/A"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Remarks */}
+            {formData.supplies?.remarks && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-primary mb-4">
+                  Remarks
+                </h3>
+                <p>{formData.supplies.remarks}</p>
+              </div>
+            )}
+          </div>
+        );
+
+        case 'compliances':
           return (
             <div className="p-6 space-y-6">
-              <h2 className="text-2xl font-bold text-primary border-b pb-3">
-                Supplies Details
-              </h2>
-        
-              {/* Total Value */}
-              {formData.supplies?.totalValue !== undefined && (
-                <div className="p-3 bg-gray-50 rounded-lg flex justify-between">
-                  <span className="text-gray-600 font-medium">Total Value</span>
-                  <span className="text-gray-800 font-semibold">
-                    {formData.supplies.totalValue}
-                  </span>
+              <h2 className="text-2xl font-bold text-primary border-b pb-3">Compliances Details</h2>
+              <h1>{formData.complinces} </h1>
+    
+              {/* Ensure agreementCompliances exists */}
+              {formData.complinces && formData.complinces.agreementCompliances ? (
+                <div className="space-y-4">
+                  {/* Loop through each compliance item */}
+                  {Object.keys(formData.complinces.agreementCompliances).length > 0 ? (
+                    Object.entries(formData.complinces.agreementCompliances).map(([question, answer], index) => (
+                      <div key={index} className="p-4 bg-gray-100 rounded-lg">
+                        <h3 className="text-lg font-semibold">{question}</h3>
+                        <p className="mt-2">{answer ? 'Yes' : 'No'}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">No compliance details available</div>
+                  )}
                 </div>
-              )}
-        
-              {/* Services Table */}
-              {formData.supplies?.services?.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="text-xl font-semibold text-primary mb-4">Services</h3>
-                  <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-primary/10">
-                        <tr>
-                          <th className="p-3 text-left text-primary">Product Name</th>
-                          <th className="p-3 text-left text-primary">Quantity</th>
-                          <th className="p-3 text-left text-primary">Price</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {formData.supplies.services.map((service, index) => (
-                          <tr key={index} className="border-b hover:bg-gray-50">
-                            <td className="p-3">
-                              {service.productName || 'N/A'}
-                            </td>
-                            <td className="p-3">
-                              {service.quantity || 'N/A'}
-                            </td>
-                            <td className="p-3">
-                              {service.price || 'N/A'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-        
-              {/* Remarks */}
-              {formData.supplies?.remarks && (
-                <div className="mt-6">
-                  <h3 className="text-xl font-semibold text-primary mb-4">Remarks</h3>
-                  <p className="p-3 bg-gray-50 rounded-lg text-gray-800">
-                    {formData.supplies.remarks}
-                  </p>
-                </div>
+              ) : (
+                <div className="text-gray-500">No compliance data available</div>
               )}
             </div>
-          );
-        
-  
+          )
+
       default:
         return null;
     }
   };
-  
+
   return (
-    <div className=" flex flex-col bg-white">
-      {/* Header */}
-      <div className="bg-primary text-white p-4 text-center shadow-md">
-        <h1 className="text-2xl font-bold">Purchase Order Preview</h1>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Section Navigation */}
-        <SectionNavigation />
-
-        {/* Section Content */}
-        <div className="flex-1 overflow-y-auto">
-          {renderSectionContent()}
-        </div>
-      </div>
-
-      {/* Footer Actions */}
-      <div className="bg-white p-4 flex justify-between items-center border-t shadow-md">
-        <button 
-          onClick={onBack} 
-          className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-        >
-          <Edit2 className="mr-2 inline-block" size={20} /> 
-          Edit
-        </button>
-        <button 
-          onClick={onSubmit} 
-          className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          Submit 
-          <CheckCircle2 className="ml-2 inline-block" size={20} />
-        </button>
-      </div>
+    <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+      <SectionNavigation />
+      {renderSectionContent()}
     </div>
   );
 };

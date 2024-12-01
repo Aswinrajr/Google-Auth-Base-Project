@@ -14,7 +14,7 @@ import * as Yup from "yup";
 //     .positive("Amount must be a positive number"),
 //   currency: Yup.string().required("Currency is required"),
 //   costCentre: Yup.string().required("Cost Centre is required"),
-//   paymentType: Yup.string().required("Payment Mode is required"),
+//   paymentMode: Yup.string().required("Payment Mode is required"),
 //   paymentTerms: Yup.array()
 //     .of(
 //       Yup.object().shape({
@@ -22,8 +22,8 @@ import * as Yup from "yup";
 //           .required("Percentage Term is required")
 //           .positive("Percentage Term must be a positive number")
 //           .max(100, "Percentage Term cannot exceed 100"),
-//         percentageAmount: Yup.string().required("Payment Term is required"),
-//         paymentType: Yup.string().required("Payment Type is required"),
+//         paymentTerm: Yup.string().required("Payment Term is required"),
+//         paymentMode: Yup.string().required("Payment Type is required"),
 //       })
 //     )
 //     .min(1, "At least one payment term is required"),
@@ -41,12 +41,11 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     amount: "",
     currency: "USD",
     costCentre: "CT-ITDT-02",
-    paymentType: "",
-    paymentTerms: [
-      { percentageTerm: "", percentageAmount: "", paymentType: "" },
-    ],
+    paymentMode: "",
+    paymentTerms: [{ percentageTerm: "", paymentTerm: "", paymentType: "" }],
     billTo: "",
     shipTo: "",
+    isCreditCardSelected: false,
   });
   const [entities, setEntities] = useState([]);
   const [selectedEntityDetails, setSelectedEntityDetails] = useState(null);
@@ -68,11 +67,24 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
+
     const updatedFormData = {
       ...localFormData,
       [name]: value,
     };
+
+    if (name === "paymentMode" && value === "creditcard") {
+      updatedFormData.paymentTerms = [
+        {
+          percentageTerm: "100",
+          paymentTerm: "immediate",
+          paymentType: "fullPayment",
+        },
+      ];
+      updatedFormData.isCreditCardSelected = true;
+    } else if (name === "paymentMode") {
+      updatedFormData.isCreditCardSelected = false;
+    }
 
     setLocalFormData(updatedFormData);
     setFormData(updatedFormData);
@@ -129,7 +141,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
       ...localFormData,
       paymentTerms: [
         ...localFormData.paymentTerms,
-        { percentageTerm: "", percentageAmount: "", paymentType: "" },
+        { percentageTerm: "", paymentTerm: "", paymentMode: "" },
       ],
     };
 
@@ -277,10 +289,10 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                 <label key={type} className="inline-flex items-center">
                   <input
                     type="radio"
-                    name="paymentType"
+                    name="paymentMode"
                     value={type.toLowerCase().replace(" ", "")}
                     checked={
-                      localFormData.paymentType ===
+                      localFormData.paymentMode ===
                       type.toLowerCase().replace(" ", "")
                     }
                     onChange={handleInputChange}
@@ -290,8 +302,8 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                 </label>
               ))}
             </div>
-            {errors.paymentType && (
-              <p className="text-red-500 text-xs mt-1">{errors.paymentType}</p>
+            {errors.paymentMode && (
+              <p className="text-red-500 text-xs mt-1">{errors.paymentMode}</p>
             )}
           </div>
         </div>
@@ -334,7 +346,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         name="percentageTerm"
                         value={term.percentageTerm}
                         onChange={(e) => handlePaymentTermChange(e, index)}
-                        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                        disabled={localFormData.isCreditCardSelected}
+                        className={`w-full px-3 py-2 border-2 border-gray-300 rounded-lg 
+            ${
+              localFormData.isCreditCardSelected
+                ? "bg-gray-100 cursor-not-allowed"
+                : "focus:ring-2 focus:ring-primary"
+            }
+            focus:outline-none focus:border-transparent transition duration-300`}
                         placeholder="Enter Percentage Term"
                         style={{
                           appearance: "none",
@@ -349,7 +368,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         name="paymentTerm"
                         value={term.paymentTerm}
                         onChange={(e) => handlePaymentTermChange(e, index)}
-                        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                        disabled={localFormData.isCreditCardSelected}
+                        className={`w-full px-3 py-2 border-2 border-gray-300 rounded-lg 
+            ${
+              localFormData.isCreditCardSelected
+                ? "bg-gray-100 cursor-not-allowed"
+                : "focus:ring-2 focus:ring-primary"
+            }
+            focus:outline-none focus:border-transparent transition duration-300`}
                       >
                         <option value="">Select Payment Term</option>
                         <option value="immediate">Immediate</option>
@@ -370,7 +396,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         name="paymentType"
                         value={term.paymentType}
                         onChange={(e) => handlePaymentTermChange(e, index)}
-                        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                        disabled={localFormData.isCreditCardSelected}
+                        className={`w-full px-3 py-2 border-2 border-gray-300 rounded-lg 
+            ${
+              localFormData.isCreditCardSelected
+                ? "bg-gray-100 cursor-not-allowed"
+                : "focus:ring-2 focus:ring-primary"
+            }
+            focus:outline-none focus:border-transparent transition duration-300`}
                       >
                         <option value="">Select Payment Type</option>
                         <option value="fullPayment">Full Payment</option>
@@ -387,7 +420,13 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         <button
                           type="button"
                           onClick={() => handleDeletePaymentTerm(index)}
-                          className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-300"
+                          disabled={localFormData.isCreditCardSelected}
+                          className={`flex items-center px-4 py-2 rounded-lg transition duration-300 
+        ${
+          localFormData.isCreditCardSelected
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-red-500 text-white hover:bg-red-700"
+        }`}
                         >
                           <Trash2 size={16} className="mr-2" />
                           Delete
@@ -425,7 +464,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               placeholder="Enter Bill To"
               rows="4"
             ></textarea>
-            {errors.paymentType && (
+            {errors.paymentMode && (
               <p className="text-red-500 text-xs mt-1">{errors.billTo}</p>
             )}
           </div>
@@ -442,7 +481,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               placeholder="Enter Ship To"
               rows="4"
             ></textarea>
-            {errors.paymentType && (
+            {errors.paymentMode && (
               <p className="text-red-500 text-xs mt-1">{errors.shipTo}</p>
             )}
           </div>

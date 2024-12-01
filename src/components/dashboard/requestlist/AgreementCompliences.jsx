@@ -3,49 +3,37 @@ import { AlertTriangle, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react'
 
 const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
   const [answers, setAnswers] = useState({
-    confidentialInfo: false,
-    personalData: false,
-    paymentType: false,
-    autoRenewal: false,
-    counterpartyAgreement: false,
+    'Is there an exchange of confidential information?': false, 
+    'Is there an exchange of personal or customer data?': false, 
+    'Is this a recurring payment?': false, 
+    'Is there an auto-renewal or renewal clause?': false, 
+    'Does the counterparty require an agreement?': false, 
   });
 
   const questions = [
-    { 
-      name: 'confidentialInfo', 
-      text: 'Is there an exchange of confidential information?' 
-    },
-    { 
-      name: 'personalData', 
-      text: 'Is there an exchange of personal or customer data?' 
-    },
-    { 
-      name: 'paymentType', 
-      text: 'Is this a recurring payment?' 
-    },
-    { 
-      name: 'autoRenewal', 
-      text: 'Is there an auto-renewal or renewal clause?' 
-    },
-    { 
-      name: 'counterpartyAgreement', 
-      text: 'Does the counterparty require an agreement?' 
-    }
+    'Is there an exchange of confidential information?', 
+    'Is there an exchange of personal or customer data?', 
+    'Is this a recurring payment?', 
+    'Is there an auto-renewal or renewal clause?', 
+    'Does the counterparty require an agreement?'
   ];
 
-  const handleAnswerChange = (question, value) => {
+  const handleAnswerChange = (questionText, value) => {
     const updatedAnswers = {
       ...answers,
-      [question]: value,
+      [questionText]: value,
     };
 
     setAnswers(updatedAnswers);
-    
-    // Update form data with compliance answers
-    setFormData(prevData => ({
-      ...prevData,
-      agreementCompliances: updatedAnswers
-    }));
+
+    setFormData(prevData => {
+      const updatedFormData = {
+        ...prevData, 
+        agreementCompliances: updatedAnswers,
+      };
+      console.log("Updated Form Data:", updatedFormData); 
+      return updatedFormData;
+    });
   };
 
   const isAgreementRequired = Object.values(answers).some((answer) => answer === true);
@@ -60,25 +48,23 @@ const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
-      {/* Gradient Header */}
       <div className="bg-gradient-to-r from-primary to-primary p-6">
         <h2 className="text-3xl font-extrabold text-white text-center">
           Engagement Agreement Questionnaire
         </h2>
       </div>
 
-      {/* Content Container */}
       <div className="p-8 space-y-6">
         {/* Questions Section */}
         <div className="space-y-6">
-          {questions.map((question, index) => (
+          {questions.map((questionText, index) => (
             <div 
-              key={question.name} 
+              key={questionText} 
               className="flex justify-between items-center border-b border-gray-200 pb-4 hover:bg-gray-50 transition duration-200 rounded-lg px-4"
             >
               {/* Question Text */}
               <p className="text-gray-800 font-medium flex-grow pr-4">
-                ({index + 1}) {question.text}
+                ({index + 1}) {questionText}
               </p>
 
               {/* Radio Button Group */}
@@ -87,9 +73,9 @@ const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
                   <label key={option} className="inline-flex items-center">
                     <input
                       type="radio"
-                      name={question.name}
-                      checked={answers[question.name] === (option === 'Yes')}
-                      onChange={() => handleAnswerChange(question.name, option === 'Yes')}
+                      name={questionText}
+                      checked={answers[questionText] === (option === 'Yes')}
+                      onChange={() => handleAnswerChange(questionText, option === 'Yes')}
                       className="form-radio h-5 w-5 text-primary focus:ring-primary"
                     />
                     <span className="ml-2 text-gray-700">{option}</span>
@@ -102,8 +88,7 @@ const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
 
         {/* Result Section */}
         <div 
-          className={`
-            p-6 rounded-2xl mt-6 transition-all duration-300 ease-in-out
+          className={`p-6 rounded-2xl mt-6 transition-all duration-300 ease-in-out
             ${isAgreementRequired 
               ? 'bg-red-50 border-2 border-red-200 hover:bg-red-100' 
               : 'bg-green-50 border-2 border-green-200 hover:bg-green-100'
@@ -116,15 +101,10 @@ const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
               : <CheckCircle className="text-green-500 h-10 w-10" />
             }
             <div>
-              <h3 className={`
-                font-bold text-xl mb-2
-                ${isAgreementRequired ? 'text-red-700' : 'text-green-700'}
-              `}>
+              <h3 className={`font-bold text-xl mb-2 ${isAgreementRequired ? 'text-red-700' : 'text-green-700'}`}>
                 {isAgreementRequired ? 'Agreement Required' : 'No Agreement Necessary'}
               </h3>
-              <p className={`
-                ${isAgreementRequired ? 'text-red-600' : 'text-green-600'}
-              `}>
+              <p className={`${isAgreementRequired ? 'text-red-600' : 'text-green-600'}`}>
                 {isAgreementRequired
                   ? 'Please consult the legal team or prepare an agreement.'
                   : 'All conditions met. No agreement is required.'}
@@ -135,7 +115,6 @@ const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
 
         {/* Navigation Buttons */}
         <div className="mt-8 flex justify-between">
-          {/* Back Button */}
           <button
             type="button"
             onClick={handleBackStep}
@@ -145,7 +124,6 @@ const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
             Back
           </button>
 
-          {/* Next Button */}
           <button
             type="button"
             onClick={handleNextStep}

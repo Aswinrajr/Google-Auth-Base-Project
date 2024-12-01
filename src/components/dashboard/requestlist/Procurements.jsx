@@ -3,20 +3,24 @@ import { useState, useRef, useEffect } from "react";
 import { fetchAllVendorData } from "../../../api/service/adminServices";
 
 const Procurements = ({ formData, setFormData, onBack, onNext }) => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-
   const [isDragOver, setIsDragOver] = useState(false);
   const [vendors, setVendors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newVendor, setNewVendor] = useState({ name: "", email: "" });
+
   const uploadAreaRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const competitiveQuotationsRef = useRef(null);
 
   useEffect(() => {
     const fetchVendor = async () => {
-      const response = await fetchAllVendorData();
-      console.log(response);
-      if (response.status === 200) {
-        setVendors(response.data);
+      try {
+        const response = await fetchAllVendorData();
+        if (response.status === 200) {
+          setVendors(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching vendors:", error);
       }
     };
 
@@ -32,6 +36,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
       }));
     }
   }, [setFormData, formData.quotationDate]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -39,22 +44,27 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
       [name]: value,
     }));
   };
-  const getMinDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() - 15); // Subtract 15 days
-    return date.toISOString().split("T")[0];
-  };
 
   const handleFileChange = (e) => {
-    const files = e.target.files;
-    const updatedFiles = [...selectedFiles, ...files];
-    setSelectedFiles(updatedFiles);
-
-    // Add files to formData
+    const { name, files } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      competitiveQuotations: updatedFiles,
+      [name]: files[0], // For single file inputs
     }));
+  };
+
+  const handleMultiFileChange = (e) => {
+    const { name, files } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: Array.from(files), // For multiple file inputs
+    }));
+  };
+
+  const getMinDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 15);
+    return date.toISOString().split("T")[0];
   };
 
   const handleDragOver = (e) => {
@@ -69,14 +79,11 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-    const files = e.dataTransfer.files;
-    const updatedFiles = [...selectedFiles, ...files];
-    setSelectedFiles(updatedFiles);
-
-    // Add files to formData
+    
+    const droppedFiles = e.dataTransfer.files;
     setFormData((prevState) => ({
       ...prevState,
-      competitiveQuotations: updatedFiles,
+      competitiveQuotations: Array.from(droppedFiles),
     }));
   };
 
@@ -87,16 +94,14 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const handleAddVendor = () => {
     if (newVendor.name && newVendor.email) {
       const newVendorObj = {
-        _id: `new_${Date.now()}`, // Unique ID for new vendor
-        vendorId: null, // No vendor ID for new vendor
+        _id: `new_${Date.now()}`,
+        vendorId: null,
         firstName: newVendor.name,
-        isNewVendor: true, // Flag to identify new vendor
+        isNewVendor: true,
       };
 
-      // Add the new vendor to the list
       setVendors([...vendors, newVendorObj]);
 
-      // Set the newly added vendor as selected
       setFormData((prevState) => ({
         ...prevState,
         vendor: newVendorObj._id,
@@ -117,8 +122,16 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   };
 
   const handleSubmit = () => {
-    console.log("formData", formData);
-    console.log("Selectedfile", selectedFiles);
+    // Validate required fields before proceeding
+    const requiredFields = ['vendor', 'quotationDate', 'quotationNumber', 'quotationCopy'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+
+    if (missingFields.length > 0) {
+      alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    console.log("formData for Procurements stage", formData);
     onNext();
   };
 
@@ -133,7 +146,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
       <div className="p-8 space-y-6">
         <div className="grid grid-cols-1 gap-6">
           <div className="grid grid-cols-1 gap-4">
-          <div>
+            <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Choose Vendor
               </label>
@@ -151,10 +164,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               >
                 <option value="">Select Vendor</option>
                 {vendors.map((vendor) => (
-                  <option 
-                    key={vendor._id} 
-                    value={vendor._id}
-                  >
+                  <option key={vendor._id} value={vendor._id}>
                     {getVendorDisplayName(vendor)}
                   </option>
                 ))}
@@ -196,6 +206,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               </label>
               <input
                 type="file"
+                ref={fileInputRef}
                 name="quotationCopy"
                 onChange={handleFileChange}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
@@ -203,13 +214,11 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
             </div>
           </div>
 
-          {/* PO Expiry Date, Expected Delivery Date, Final Quote */}
           <div className="grid grid-cols-2 gap-6 items-start">
-            {/* Left Column: Stacked Fields */}
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  PO Expiry Date
+                  Quotation Expiry Date
                 </label>
                 <input
                   type="date"
@@ -221,27 +230,46 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Expected Delivery Date
+                  PO Validity Date
                 </label>
-                <input
-                  type="date"
-                  name="expectedDeliveryDate"
-                  value={formData.expectedDeliveryDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-                />
+                <div className="flex space-x-4">
+                  <div className="w-full">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      From
+                    </label>
+                    <input
+                      type="date"
+                      name="poValidityFrom"
+                      value={formData.poValidityFrom}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      To
+                    </label>
+                    <input
+                      type="date"
+                      name="poValidityTo"
+                      value={formData.poValidityTo}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Right Column: Drag and Drop */}
-            <div className="flex-1 ">
+            <div className="flex-1">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Attach Competitive Quotations
               </label>
+
               <div
-                className={`border-2 border-dashed rounded-xl p-4 w-full h-40 cursor-pointer transition-colors duration-300 ${
+                className={`border-2 border-dashed rounded-xl p-4 w-full h-40 cursor-pointer transition-colors duration-300 flex flex-col items-center justify-center ${
                   isDragOver
-                    ? "border-primary bg-primary"
+                    ? "border-primary bg-primary-light"
                     : "border-primary hover:border-primary"
                 }`}
                 onDragOver={handleDragOver}
@@ -249,42 +277,42 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                 onDrop={handleDrop}
                 ref={uploadAreaRef}
               >
-                <div className="flex items-center justify-center h-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-10 h-10 text-primary"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-10 h-10 text-primary"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-18 0h18M7.5 12l4.5 4.5L16.5 12"
+                  />
+                </svg>
+                <p className="ml-2 text-lg text-primary mt-2">
+                  Drag and drop files here
+                </p>
+
+                <div className="mt-4">
+                  <input
+                    type="file"
+                    multiple
+                    id="competitiveQuotationsUpload"
+                    name="competitiveQuotations"
+                    ref={competitiveQuotationsRef}
+                    onChange={handleMultiFileChange}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="competitiveQuotationsUpload"
+                    className="inline-block px-6 py-2 text-sm font-medium text-white bg-primary rounded-lg cursor-pointer hover:bg-primary-dark transition duration-300"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-18 0h18M7.5 12l4.5 4.5L16.5 12"
-                    />
-                  </svg>
-                  <p className="ml-2 text-lg text-primary mt-3">
-                    Drag and drop files here
-                  </p>
+                    Select Files
+                  </label>
                 </div>
               </div>
-
-              {/* Display selected files */}
-              {selectedFiles.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-semibold text-gray-700">
-                    Selected Files:
-                  </p>
-                  <ul className="list-disc pl-5">
-                    {selectedFiles.map((file, index) => (
-                      <li key={index} className="text-sm text-gray-600">
-                        {file.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
           </div>
 

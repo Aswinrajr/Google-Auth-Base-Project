@@ -19,10 +19,10 @@ const CreateRequest = () => {
     procurements: {},
     supplies: [],
     remarks: "",
-    complinces: [],
+    complinces: {},
   });
   // eslint-disable-next-line no-unused-vars
-  const [submittedData, setSubmittedData] = useState(null); // State for submitted data
+  const [submittedData, setSubmittedData] = useState(null); 
 
   const handleSubmit = async () => {
     try {
@@ -100,7 +100,7 @@ const CreateRequest = () => {
       icon: FileText,
       content: (
         <AgreementCompliences
-          formData={formData} // Pass the entire form data here
+          formData={formData} 
           setFormData={(data) =>
             setFormData((prev) => ({
               ...prev,
