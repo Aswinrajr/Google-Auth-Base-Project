@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useRef, useEffect } from "react";
 import { fetchAllVendorData } from "../../../api/service/adminServices";
+import { uploadCloudinary } from "../../../utils/cloudinaryUtils";
 
 const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const [isDragOver, setIsDragOver] = useState(false);
@@ -45,22 +46,44 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const { name, files } = e.target;
+
+    console.log("name", name);
+    console.log("file", files);
+    const data = await uploadCloudinary(files[0], "final");
+    console.log(data);
+    const { url } = data;
+
     setFormData((prevState) => ({
       ...prevState,
-      [name]: files[0], // For single file inputs
+      [name]: url,
     }));
   };
 
-  const handleMultiFileChange = (e) => {
+  const handleMultiFileChange = async (e) => {
     const { name, files } = e.target;
+  
+    console.log(files);
+  
+   
+    const filesArray = Array.from(files);
+  
+    const uploadedImages = await Promise.all(
+      filesArray.map(async (image) => {
+        const data = await uploadCloudinary(image);
+        return data.url;
+      })
+    );
+  
+    console.log(uploadedImages);
+  
     setFormData((prevState) => ({
       ...prevState,
-      [name]: Array.from(files), // For multiple file inputs
+      [name]: uploadedImages, 
     }));
   };
-
+  
   const getMinDate = () => {
     const date = new Date();
     date.setDate(date.getDate() - 15);
@@ -79,7 +102,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const droppedFiles = e.dataTransfer.files;
     setFormData((prevState) => ({
       ...prevState,
@@ -123,11 +146,16 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
 
   const handleSubmit = () => {
     // Validate required fields before proceeding
-    const requiredFields = ['vendor', 'quotationDate', 'quotationNumber', 'quotationCopy'];
-    const missingFields = requiredFields.filter(field => !formData[field]);
+    const requiredFields = [
+      "vendor",
+      "quotationDate",
+      "quotationNumber",
+      "quotationCopy",
+    ];
+    const missingFields = requiredFields.filter((field) => !formData[field]);
 
     if (missingFields.length > 0) {
-      alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+      alert(`Please fill in the following fields: ${missingFields.join(", ")}`);
       return;
     }
 

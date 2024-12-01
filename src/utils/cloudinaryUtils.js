@@ -1,31 +1,32 @@
 import axios from "axios";
 
-export const uploadToCloudinary = async (file, inputName) => {
+const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+export const uploadCloudinary = async (file, fileType) => {
+  console.log("Selected file:", file);
+  console.log("File type:", file.type);
+
+  // Get today's date in "YYYY-MM-DD" format
+  const today = new Date().toISOString().split("T")[0];
+
+  // Define the folder structure: main folder > date > file type (or general category)
+  const folderPath = `Capilary_tech/${today}/${fileType}`;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "Capilary_tech"); // Replace with your Cloudinary upload preset
+  formData.append("folder", folderPath);
+
   try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // Replace with your Cloudinary upload preset
-    formData.append("cloud_name", "YOUR_CLOUD_NAME"); // Replace with your Cloudinary cloud name
-
-    // Generate the timestamp and set the public_id with input name and timestamp
-    const timestamp = new Date().toISOString();
-    const publicId = `${inputName}_${timestamp}`;
-
-    formData.append("public_id", publicId); // Assign public_id to the file
-
-    const response = await axios.post(
-      `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload`, 
-      formData, 
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      }
+    const { data } = await axios.post(
+      `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+      formData
     );
+    console.log("Cloudinary Response:", data);
 
-    return response.data.secure_url;  // Return the secure URL of the uploaded image
+    return { url: data.secure_url, format: data.format, folder: data.folder };
   } catch (error) {
-    console.error("Cloudinary upload error", error);
-    throw new Error("Failed to upload image. Please try again.");
+    console.error("Error uploading to Cloudinary:", error);
+    throw error;
   }
 };

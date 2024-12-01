@@ -64,7 +64,7 @@ const Supplies = ({ formData, setFormData, onBack, onSubmit, handleSubmited, onN
   return (
     <div className="mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
       <div className="bg-gradient-to-r from-primary to-primary p-6">
-        <h2 className="text-3xl font-extrabold text-white text-center">Supplies Management</h2>
+        <h2 className="text-3xl font-extrabold text-white text-center">Product/Services</h2>
       </div>
 
       <div className="p-8 space-y-6">

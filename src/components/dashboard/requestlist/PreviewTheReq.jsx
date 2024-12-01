@@ -8,42 +8,25 @@ import {
   XCircle,
   PauseCircle,
   Send,
-  UserCircle2,
+  
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { fetchIndividualReq } from "../../../api/service/adminServices";
+import { formatDateToDDMMYY } from "../../../utils/dateFormat";
+import ChatComments from "./ChatComments";
 
 const PreviewTheReq = () => {
   const params = useParams();
 
   const [request, setRequest] = useState(null);
   const [activeSection, setActiveSection] = useState("commercials");
-  const [chatMessages, setChatMessages] = useState([
-    {
-      id: 1,
-      username: "John Doe",
-      userImage: null,
-      message: "Can we discuss the payment terms for this request?",
-      timestamp: new Date("2024-02-15T10:30:00"),
-      topic: "Payment Discussion",
-    },
-    {
-      id: 2,
-      username: "Jane Smith",
-      userImage: null,
-      message: "I have some questions about the competitive quotations.",
-      timestamp: new Date("2024-02-15T11:15:00"),
-      topic: "Quotation Inquiry",
-    },
-  ]);
-  const [newMessage, setNewMessage] = useState();
-  const [activeChatTopic, setActiveChatTopic] = useState(null);
-
+  
   // Fetch request details
   useEffect(() => {
     const fetchReq = async () => {
       try {
         const response = await fetchIndividualReq(params.id);
+        console.log(response);
         if (response.status === 200) {
           setRequest(response.data.data);
         }
@@ -54,164 +37,7 @@ const PreviewTheReq = () => {
     fetchReq();
   }, [params.id]);
 
-  const ChatSection = () => {
-    const chatTopics = [...new Set(chatMessages.map((msg) => msg.topic))];
 
-    const filteredMessages = activeChatTopic
-      ? chatMessages.filter((msg) => msg.topic === activeChatTopic)
-      : chatMessages;
-
-    const handleSendMessage = () => {
-      const message = document.getElementById("message")
-      console.log("Message",message)
-      if (newMessage.trim()) {
-        const newMsg = {
-          id: chatMessages.length + 1,
-          username: "Current User", // Replace with actual username
-          userImage: null,
-          message: newMessage,
-          timestamp: new Date(),
-          topic: activeChatTopic || "General Discussion",
-        };
-        setChatMessages([...chatMessages, newMsg]);
-        setNewMessage("");
-      }
-    };
-
-    return (
-      <div className="flex h-full">
-        {/* Topics Sidebar */}
-        <div className="w-1/4 bg-gray-100 border-r p-4 space-y-2">
-          <h3 className="text-xl font-semibold text-primary mb-4">
-            Chat Topics
-          </h3>
-          <div
-            onClick={() => setActiveChatTopic(null)}
-            className={`
-              p-3 rounded-lg cursor-pointer 
-              ${
-                activeChatTopic === null
-                  ? "bg-primary text-white"
-                  : "hover:bg-gray-200"
-              }
-            `}
-          >
-            All Discussions
-          </div>
-          {chatTopics.map((topic, index) => (
-            <div
-              key={index}
-              onClick={() => setActiveChatTopic(topic)}
-              className={`
-                p-3 rounded-lg cursor-pointer 
-                ${
-                  activeChatTopic === topic
-                    ? "bg-primary text-white"
-                    : "hover:bg-gray-200"
-                }
-              `}
-            >
-              {topic}
-            </div>
-          ))}
-        </div>
-
-        <div className="w-3/4 flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {filteredMessages.map((msg) => (
-              <div key={msg.id} className="flex items-start space-x-3">
-                {msg.userImage ? (
-                  <img
-                    src={msg.userImage}
-                    alt={msg.username}
-                    className="w-10 h-10 rounded-full"
-                  />
-                ) : (
-                  <UserCircle2 className="w-10 h-10 text-gray-400" />
-                )}
-                <div className="flex-1">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">{msg.username}</span>
-                    <span className="text-xs text-gray-500">
-                      {msg.timestamp.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="bg-gray-100 p-3 rounded-lg mt-1">
-                    <p>{msg.message}</p>
-                    {msg.topic && (
-                      <span className="text-xs text-primary mt-1 block">
-                        Topic: {msg.topic}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="border-t p-4 flex items-center space-x-3">
-            <input id="message"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
-              className="flex-1 p-2 border rounded-lg"
-           
-            />
-
-            <select
-              value={activeChatTopic || ""}
-              onChange={(e) => setActiveChatTopic(e.target.value || null)}
-              className="p-2 border rounded-lg"
-            >
-              <option value="">Select Subject</option>
-              {chatTopics.map((topic, index) => (
-                <option key={index} value={topic}>
-                  {topic}
-                </option>
-              ))}
-              <option value="">Others</option>
-            </select>
-            <div className="relative group">
-              <label className="flex items-center cursor-pointer">
-                <input type="file" className="hidden" />
-                <div className="p-2 rounded-lg border hover:bg-gray-100">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828l6.586-6.586a2 2 0 00-2.828-2.828z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M16 3.879a2 2 0 113.121 3.121L10.243 16.121a4 4 0 11-5.657-5.657L16 3.879z"
-                    />
-                  </svg>
-                </div>
-              </label>
-              <span className="absolute left-1/2 bottom-full mb-1 transform -translate-x-1/2 whitespace-nowrap bg-gray-700 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                Attachments
-              </span>
-            </div>
-            <button
-              onClick={handleSendMessage}
-              className="bg-primary text-white p-2 rounded-lg hover:bg-primary/90"
-            >
-              <Send size={20} />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   // Section Navigation Component
   const SectionNavigation = () => {
@@ -276,7 +102,7 @@ const PreviewTheReq = () => {
 
     switch (activeSection) {
       case "chat":
-        return <ChatSection />;
+        return <ChatComments reqId={params.id} />;
 
       case "commercials":
         return (
@@ -288,10 +114,10 @@ const PreviewTheReq = () => {
               <div className="grid md:grid-cols-2 gap-4">
                 {[
                   {
-                    label: "Amount",
-                    value: `${request.commercials.currency} ${request.commercials.amount}`,
+                    label: "Bill To",
+                    value: `${request.commercials.billTo}`,
                   },
-                  { label: "Bill To", value: request.commercials.billTo },
+                  { label: "Ship To", value: request.commercials.shipTo },
                   { label: "City", value: request.commercials.city },
                   {
                     label: "Cost Centre",
@@ -378,26 +204,31 @@ const PreviewTheReq = () => {
                   {
                     label: "Quotation Date",
                     value: request.procurements.quotationDate
-                      ? new Date(
-                          request.procurements.quotationDate
-                        ).toLocaleDateString()
+                      ? formatDateToDDMMYY(request.procurements.quotationDate)
                       : "N/A",
                   },
                   {
-                    label: "Expected Delivery",
-                    value: request.procurements.expectedDeliveryDate
-                      ? new Date(
-                          request.procurements.expectedDeliveryDate
-                        ).toLocaleDateString()
-                      : "N/A",
-                  },
-                  {
-                    label: "PO Expiry Date",
+                    label: "Po ExpiryDate",
                     value: request.procurements.poExpiryDate
-                      ? new Date(
-                          request.procurements.poExpiryDate
-                        ).toLocaleDateString()
+                      ? formatDateToDDMMYY(request.procurements.poExpiryDate)
                       : "N/A",
+                  },
+                  {
+                    label: "Po Validity From",
+                    value: request.procurements.poValidityFrom
+                      ? formatDateToDDMMYY(request.procurements.poValidityFrom)
+                      : "N/A",
+                  },
+                  {
+                    label: "Po Validity To",
+                    value: request.procurements.poValidityTo
+                      ? formatDateToDDMMYY(request.procurements.poValidityTo)
+                      : "N/A",
+                  },
+                  {
+                    label: "Final Quotation",
+                    value: request.procurements.quotationCopy, // Assuming this is the URL
+                    isLink: true, // Add a flag to indicate this is a link
                   },
                 ]
                   .filter((item) => item.value)
@@ -410,7 +241,18 @@ const PreviewTheReq = () => {
                         {item.label}
                       </span>
                       <span className="text-gray-800 font-semibold">
-                        {item.value}
+                        {item.isLink ? (
+                          <a
+                            href={item.value}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline hover:text-blue-800"
+                          >
+                            View Document
+                          </a>
+                        ) : (
+                          item.value
+                        )}
                       </span>
                     </div>
                   ))}
@@ -423,10 +265,22 @@ const PreviewTheReq = () => {
                   Competitive Quotations
                 </h3>
                 <div className="bg-white shadow-md rounded-lg p-4">
-                  <div className="text-green-600 flex items-center">
-                    <CheckCircle2 className="mr-2" size={20} />
-                    Files uploaded successfully
-                  </div>
+                  <ul className="space-y-2">
+                    {request.procurements.competitiveQuotations.map(
+                      (fileUrl, index) => (
+                        <li key={index} className="flex items-center space-x-2">
+                          <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline hover:text-blue-800"
+                          >
+                            {`Comptative Quaotation ${index + 1}`}
+                          </a>
+                        </li>
+                      )
+                    )}
+                  </ul>
                 </div>
               </div>
             ) : (

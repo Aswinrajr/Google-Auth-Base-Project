@@ -2,16 +2,17 @@
 import { useState } from "react";
 import {
   CheckCircle2,
-  Edit2,
   Package,
   DollarSign,
   ClipboardList,
-  FileText, // Add this import for the new section's icon
+  FileText,
+  ArrowLeft,
+  Save,
 } from "lucide-react";
 
 const Preview = ({ formData, onSubmit, onBack }) => {
   const [activeSection, setActiveSection] = useState("commercials");
-  console.log("Formdata in preview",formData)
+  console.log("Formdata in preview", formData);
 
   const SectionNavigation = () => {
     const sections = [
@@ -28,15 +29,15 @@ const Preview = ({ formData, onSubmit, onBack }) => {
         color: "text-primary hover:bg-primary/10",
       },
       {
-        key: "supplies",
+        key: "product/services",
         icon: ClipboardList,
-        label: "Supplies",
+        label: "Product/Services",
         color: "text-primary hover:bg-primary/10",
       },
       {
-        key: "qna",
+        key: "complinces",
         icon: FileText,
-        label: "Q&A", // New section label
+        label: "complinces",
         color: "text-primary hover:bg-primary/10",
       },
     ];
@@ -217,14 +218,13 @@ const Preview = ({ formData, onSubmit, onBack }) => {
           </div>
         );
 
-      case "supplies":
+      case "product/services":
         return (
           <div className="p-6 space-y-6">
             <h2 className="text-2xl font-bold text-primary border-b pb-3">
               Supplies Details
             </h2>
 
-            {/* Total Value */}
             {formData.supplies?.totalValue !== undefined && (
               <div className="p-3 bg-gray-50 rounded-lg flex justify-between">
                 <span className="text-gray-600 font-medium">Total Value</span>
@@ -234,7 +234,6 @@ const Preview = ({ formData, onSubmit, onBack }) => {
               </div>
             )}
 
-            {/* Services Table */}
             {formData.supplies?.services?.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-xl font-semibold text-primary mb-4">
@@ -267,7 +266,6 @@ const Preview = ({ formData, onSubmit, onBack }) => {
               </div>
             )}
 
-            {/* Remarks */}
             {formData.supplies?.remarks && (
               <div className="mt-6">
                 <h3 className="text-xl font-semibold text-primary mb-4">
@@ -279,32 +277,37 @@ const Preview = ({ formData, onSubmit, onBack }) => {
           </div>
         );
 
-        case 'compliances':
-          return (
-            <div className="p-6 space-y-6">
-              <h2 className="text-2xl font-bold text-primary border-b pb-3">Compliances Details</h2>
-              <h1>{formData.complinces} </h1>
-    
-              {/* Ensure agreementCompliances exists */}
-              {formData.complinces && formData.complinces.agreementCompliances ? (
-                <div className="space-y-4">
-                  {/* Loop through each compliance item */}
-                  {Object.keys(formData.complinces.agreementCompliances).length > 0 ? (
-                    Object.entries(formData.complinces.agreementCompliances).map(([question, answer], index) => (
-                      <div key={index} className="p-4 bg-gray-100 rounded-lg">
-                        <h3 className="text-lg font-semibold">{question}</h3>
-                        <p className="mt-2">{answer ? 'Yes' : 'No'}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-gray-500">No compliance details available</div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-gray-500">No compliance data available</div>
-              )}
-            </div>
-          )
+      case "complinces":
+        return (
+          <div className="p-6 space-y-6">
+            <h2 className="text-2xl font-bold text-primary border-b pb-3">
+              Compliances Details
+            </h2>
+
+            {formData.complinces &&
+            formData?.complinces?.agreementCompliances ? (
+              <div className="space-y-4">
+                {Object.keys(formData?.complinces?.agreementCompliances)
+                  ?.length > 0 ? (
+                  Object.entries(
+                    formData?.complinces?.agreementCompliances
+                  )?.map(([question, answer], index) => (
+                    <div key={index} className="p-4 bg-gray-100 rounded-lg">
+                      <h3 className="text-lg font-semibold">{question}</h3>
+                      <p className="mt-2">{answer ? "Yes" : "No"}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500">
+                    No compliance details available
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-gray-500">No compliance data available</div>
+            )}
+          </div>
+        );
 
       default:
         return null;
@@ -315,6 +318,23 @@ const Preview = ({ formData, onSubmit, onBack }) => {
     <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <SectionNavigation />
       {renderSectionContent()}
+
+      <div className="p-6 flex justify-between items-center border-t">
+        <button
+          onClick={onBack}
+          className="flex items-center text-gray-600 hover:text-primary transition-colors duration-300 px-4 py-2 rounded-md hover:bg-gray-100"
+        >
+          <ArrowLeft className="mr-2" size={20} />
+          Back
+        </button>
+        <button
+          onClick={onSubmit}
+          className="flex items-center bg-primary text-white px-6 py-2 rounded-md hover:bg-primary-dark transition-colors duration-300"
+        >
+          <Save className="mr-2" size={20} />
+          Submit
+        </button>
+      </div>
     </div>
   );
 };

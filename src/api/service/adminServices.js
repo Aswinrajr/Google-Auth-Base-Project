@@ -2,7 +2,6 @@ import { adminServices } from "../axiosInstance/adminService";
 
 // ............................VENDOR SIDE..........................................................
 
-
 export const getNewVendorId = async () => {
   try {
     const response = await adminServices.get(`/vendors/get-new-vendorid`);
@@ -11,7 +10,6 @@ export const getNewVendorId = async () => {
     return err;
   }
 };
-
 
 export const createNewVendor = async (formData) => {
   try {
@@ -24,7 +22,6 @@ export const createNewVendor = async (formData) => {
     return err;
   }
 };
-
 
 export const getVendorList = async () => {
   try {
@@ -44,7 +41,6 @@ export const RegVendorData = async (formData) => {
   }
 };
 
-
 export const fetchAllVendorData = async () => {
   try {
     const response = await adminServices.get(`/vendors/get-all`);
@@ -63,7 +59,6 @@ export const deleteVendor = async (id) => {
   }
 };
 
-
 // ............................VENDOR SIDE..........................................................
 
 // ............................EMPLOYEE SIDE..........................................................
@@ -77,9 +72,6 @@ export const generateEmployeeUniqueId = async () => {
   }
 };
 
-
-
-
 export const regNewEmployee = async (formData) => {
   try {
     const response = await adminServices.post(
@@ -91,7 +83,6 @@ export const regNewEmployee = async (formData) => {
     return err;
   }
 };
-
 
 export const deleteEmployee = async (id) => {
   try {
@@ -124,12 +115,7 @@ export const createNewRequest = async (id, formData) => {
   }
 };
 
-
-
 // ............................EMPLOYEE SIDE..........................................................
-
-
-
 
 // ............................DOMAIN SIDE..........................................................
 
@@ -166,15 +152,9 @@ export const deleteDomain = async (id) => {
   }
 };
 
-
 // ............................DOMAIN SIDE..........................................................
 
-
-
 // ............................REQUEST SIDE..........................................................
-
-
-
 
 export const submitRequest = async (id, formData) => {
   try {
@@ -209,7 +189,6 @@ export const fetchIndividualReq = async (id) => {
   }
 };
 
-
 export const deleteReq = async (id) => {
   try {
     const response = await adminServices.delete(`/employees/delete-req/${id}`);
@@ -218,7 +197,6 @@ export const deleteReq = async (id) => {
     return err;
   }
 };
-
 
 export const getReqListHR = async () => {
   try {
@@ -229,7 +207,6 @@ export const getReqListHR = async () => {
   }
 };
 
-
 export const getAdminReqListEmployee = async () => {
   try {
     const response = await adminServices.get(`/employees/get-all-req-admin`);
@@ -239,11 +216,7 @@ export const getAdminReqListEmployee = async () => {
   }
 };
 
-
-
 // ............................REQUEST SIDE..........................................................
-
-
 
 // ............................ENTITY SIDE..........................................................
 
@@ -274,7 +247,6 @@ export const deleteEntity = async (id) => {
   }
 };
 
-
 export const getEntityData = async (id) => {
   try {
     const response = await adminServices.get(`/entity/get/${id}`);
@@ -284,9 +256,24 @@ export const getEntityData = async (id) => {
   }
 };
 
-export const updateEntityData = async (id,data) => {
+export const updateEntityData = async (id, data) => {
   try {
-    const response = await adminServices.put(`/entity/update/${id}`,{data:data});
+    const response = await adminServices.put(`/entity/update/${id}`, {
+      data: data,
+    });
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+// ............................ENTITY SIDE..........................................................
+
+export const sendMessageComments = async (message) => {
+  try {
+    const response = await adminServices.put(`/request/chats/${message.reqId}`, {
+      data: message,
+    });
     return response;
   } catch (err) {
     return err;
@@ -294,25 +281,13 @@ export const updateEntityData = async (id,data) => {
 };
 
 
-
-
-
-
-
-// ............................ENTITY SIDE..........................................................
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export const fetcAllChats = async (id) => {
+  try {
+    const response = await adminServices.get(`/request/get-all-chats/${id}`, {
+ 
+    });
+    return response;
+  } catch (err) {
+    return err;
+  }
+};

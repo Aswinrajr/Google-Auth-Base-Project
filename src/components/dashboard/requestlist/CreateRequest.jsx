@@ -19,9 +19,9 @@ const CreateRequest = () => {
     procurements: {},
     supplies: [],
     remarks: "",
-    complinces: {},
+    complinces: [],
   });
-  // eslint-disable-next-line no-unused-vars
+
   const [submittedData, setSubmittedData] = useState(null); 
 
   const handleSubmit = async () => {
@@ -119,7 +119,7 @@ const CreateRequest = () => {
       icon: Check,
       content: (
         <Preview
-          formData={formData} // Pass the entire form data here
+          formData={formData}
           onSubmit={handleSubmit}
           onBack={() => setCurrentStep(3)}
         />

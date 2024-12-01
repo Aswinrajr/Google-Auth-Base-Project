@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react'
 
 const AgreementCompliances = ({ formData, setFormData, onNext, onBack }) => {
   const [answers, setAnswers] = useState({
-    'Is there an exchange of confidential information?': false, 
+    'Is there an exchange of confidential information?': true, 
     'Is there an exchange of personal or customer data?': false, 
     'Is this a recurring payment?': false, 
     'Is there an auto-renewal or renewal clause?': false, 
