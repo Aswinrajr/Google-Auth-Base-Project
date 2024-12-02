@@ -104,11 +104,22 @@ export const getEmployeeList = async () => {
 
 export const createNewRequest = async (id, formData) => {
   try {
-    console.log(id, formData);
+  
     const response = await adminServices.post(
       `/employees/create-newrequest/${id}`,
       formData
     );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getEmployeeData = async (id) => {
+  try {
+
+    const response = await adminServices.get(
+      `/employees/get/${id}`);
     return response;
   } catch (err) {
     return err;
@@ -215,6 +226,76 @@ export const getAdminReqListEmployee = async () => {
     return err;
   }
 };
+
+
+export const hodApproveRequest = async (userId, role, reqId) => {
+  try {
+    const response = await adminServices.post(`/request/accept-request-hod/${userId}`,{role,reqId});
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const businessFinanceApproveRequest = async (userId, role, reqId) => {
+  try {
+    const response = await adminServices.post(`/request/accept-request-business/${userId}`,{role,reqId});
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const vendorManagementApproveRequest = async (userId, role, reqId) => {
+  try {
+    const response = await adminServices.post(`/request/accept-request-vendor/${userId}`,{role,reqId});
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const legalTeamApproveRequest = async (userId, role, reqId) => {
+  try {
+    const response = await adminServices.post(`/request/accept-request-legal/${userId}`,{role,reqId});
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const infoSecurityApproveRequest = async (userId, role, reqId) => {
+  try {
+    const response = await adminServices.post(`/request/accept-request-info-security/${userId}`,{role,reqId});
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const poTeamApproveRequest = async (userId, role, reqId) => {
+  try {
+    const response = await adminServices.post(`/request/accept-request-po-team/${userId}`,{role,reqId});
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const hofApproveRequest = async (userId, role, reqId) => {
+  try {
+    const response = await adminServices.post(`/request/accept-request-hof-team/${userId}`,{role,reqId});
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+
+
 
 // ............................REQUEST SIDE..........................................................
 

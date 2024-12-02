@@ -8,19 +8,23 @@ import {
   XCircle,
   PauseCircle,
   Send,
-  
 } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchIndividualReq } from "../../../api/service/adminServices";
 import { formatDateToDDMMYY } from "../../../utils/dateFormat";
 import ChatComments from "./ChatComments";
+import handleApprove from "./handleApprove";
+import { toast, ToastContainer } from "react-toastify";
 
 const PreviewTheReq = () => {
+  const navigate = useNavigate();
   const params = useParams();
+  const userId = localStorage.getItem("userId");
+  const role = localStorage.getItem("role");
 
   const [request, setRequest] = useState(null);
   const [activeSection, setActiveSection] = useState("commercials");
-  
+
   // Fetch request details
   useEffect(() => {
     const fetchReq = async () => {
@@ -37,7 +41,24 @@ const PreviewTheReq = () => {
     fetchReq();
   }, [params.id]);
 
+  const approveRequest = async () => {
+    try {
+      const response = await handleApprove(userId, role, params.id);
+      console.log("response===>", response.status);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        setTimeout(() => {
+          navigate("/req-list-table");
+        }, 1500);
+      }
+    
+    } catch (err) {
+      console.log("Error in appeve the request", err);
+      toast.error(err.response);
+      
 
+    }
+  };
 
   // Section Navigation Component
   const SectionNavigation = () => {
@@ -396,9 +417,7 @@ const PreviewTheReq = () => {
             <PauseCircle className="mr-2" /> Hold
           </button>
           <button
-            onClick={() => {
-              /* Handle submit logic */
-            }}
+            onClick={approveRequest}
             className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center"
           >
             <CheckCircle2 className="mr-2" />
@@ -406,6 +425,15 @@ const PreviewTheReq = () => {
           </button>
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss
+      />
     </div>
   );
 };

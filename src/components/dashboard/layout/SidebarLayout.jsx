@@ -9,10 +9,11 @@ import {
   HelpCircle,
   FileText,
   LogOut,
+  CheckCircle 
 } from "lucide-react";
 import TopBar from "./TopBar";
 
-// SidebarItem component
+
 const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
   return (
     <Link to={path} className="cursor-pointer px-2">
@@ -30,13 +31,13 @@ const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
   );
 };
 
-// SidebarLayout component
+
 const SidebarLayout = () => {
   const location = useLocation();
-  const role = localStorage.getItem("role");  // Get the user's role from localStorage
-  console.log(role); // This will show the current role in the console for debugging purposes
+  const role = localStorage.getItem("role");  
+  console.log(role);
 
-  // Define sidebar items
+
   const allSidebarItems = [
     { icon: Home, title: "Dashboard", path: "/dashboard" },
     { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
@@ -48,18 +49,25 @@ const SidebarLayout = () => {
     { icon: LogOut, title: "Logout", path: "/logout" },
   ];
 
-  // Filter sidebar items based on the role
+
   let sidebarItems = [];
   if (role === "Admin"||!role) {
-    sidebarItems = allSidebarItems;  // Admin sees all items
-  } else if (role === "Employee" || role === "HR") {
+    sidebarItems = allSidebarItems;  
+  } else if (role === "HOD") {
     sidebarItems = [
       { icon: Home, title: "Dashboard", path: "/dashboard" },
       { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
-    ];  // Employee and HR see only Dashboard and Requests
+      { icon: CheckCircle , title: "Approvals", path: "/req-approvals" },
+    ]; 
+  }
+  else{
+    sidebarItems = [
+      { icon: Home, title: "Dashboard", path: "/dashboard" },
+      { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
+    ]; 
   }
 
-  // Find the active item
+
   const activeItem = sidebarItems.find((item) =>
     location.pathname.startsWith(item.path)
   );

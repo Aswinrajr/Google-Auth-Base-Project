@@ -17,7 +17,7 @@ const VendorListTable = (onEdit, onDelete) => {
   useEffect(() => {
     const fetchVendor = async () => {
       try {
-        // setPersonalData(response?.data?.data);
+
         const response = await getVendorList();
         console.log(response);
         setPersonalData(response.data);

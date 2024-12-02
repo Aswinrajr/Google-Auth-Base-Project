@@ -28,8 +28,9 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
   const handleDelete = async (id) => {
     const response = await deleteEmployee(id);
     console.log(response);
+    
     if (response.status === 200) {
-      setSelectedUsers(selectedUsers?.filter((person) => person?._id !== id));
+      setEmployees(employees?.filter((person) => person?._id !== id));
       toast.success(response.data.message);
     } else {
       toast.error(response.data.message);
@@ -269,7 +270,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                         {index + 1}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.empid || "CAP5321944"}
+                        {user.empId || "CAP5321944"}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {user.name}
@@ -354,7 +355,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                             // onClick={() => onEdit(user)}
                             className="text-primary hover:text-primary/80"
                             onClick={() =>
-                              navigate("/employee-list-table/edit-employee")
+                              navigate(`/employee-list-table/edit-employee/${user._id}`)
                             }
                           >
                             <Edit className="h-5 w-5" />

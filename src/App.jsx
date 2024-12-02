@@ -65,7 +65,7 @@ function App() {
           <Route path="/support" element={<Support/>} />
           <Route path="/employee-list-table/employee-reg" element={<EmployeeReg/>} />
           <Route path="/employee-list-table" element={<EmployeListTable/>} />
-          <Route path="/employee-list-table/edit-employee" element={<EditEmploye/>} />
+          <Route path="/employee-list-table/edit-employee/:id" element={<EditEmploye/>} />
 
           <Route path="/entity-list-table/entities" element={<AddEntity/>} />
           <Route path="/entity-list-table/edit-entities/:id" element={<EditEntity/>} />
