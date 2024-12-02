@@ -1,17 +1,12 @@
 import {
-    businessFinanceApproveRequest,
+  businessFinanceApproveRequest,
   hodApproveRequest,
   hofApproveRequest,
   infoSecurityApproveRequest,
   legalTeamApproveRequest,
   poTeamApproveRequest,
   vendorManagementApproveRequest,
-//   businessFinanceApproveRequest,
-//   vendorManagementApproveRequest,
-//   legalTeamApproveRequest,
-//   infoSecurityApproveRequest,
-//   poTeamApproveRequest,
-//   hofApproveRequest,
+
 } from "../../../api/service/adminServices";
 
 const handleApprove = async (userId, role, reqId) => {

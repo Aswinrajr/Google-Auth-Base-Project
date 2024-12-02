@@ -28,6 +28,7 @@ import EmployeListTable from "./components/dashboard/employe/EmployeListTable";
 import EditEmploye from "./components/dashboard/employe/EditEmploye";
 import EditVendor from "./components/dashboard/vendor/EditVendor";
 import PreviewTheReq from "./components/dashboard/requestlist/PreviewTheReq";
+import Approvals from "./components/dashboard/approvals/Approvals";
 
 function App() {
   return (
@@ -74,6 +75,8 @@ function App() {
 
           <Route path="/invoice" element={<Invoice/>} />
           <Route path="/req-list-table/preview-one-req/:id" element={<PreviewTheReq/>} />
+          <Route path="/approveal-request-list" element={<Approvals/>} />
+
 
 
 

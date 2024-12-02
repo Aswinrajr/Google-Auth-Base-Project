@@ -8,6 +8,7 @@ import {
   XCircle,
   PauseCircle,
   Send,
+  File
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchIndividualReq } from "../../../api/service/adminServices";
@@ -15,6 +16,7 @@ import { formatDateToDDMMYY } from "../../../utils/dateFormat";
 import ChatComments from "./ChatComments";
 import handleApprove from "./handleApprove";
 import { toast, ToastContainer } from "react-toastify";
+import RequestLogs from "./RequestLogs";
 
 const PreviewTheReq = () => {
   const navigate = useNavigate();
@@ -51,12 +53,9 @@ const PreviewTheReq = () => {
           navigate("/req-list-table");
         }, 1500);
       }
-    
     } catch (err) {
       console.log("Error in appeve the request", err);
       toast.error(err.response);
-      
-
     }
   };
 
@@ -76,15 +75,21 @@ const PreviewTheReq = () => {
         color: "text-primary hover:bg-primary/10",
       },
       {
-        key: "supplies",
+        key: "Product/Serivces",
         icon: ClipboardList,
-        label: "Supplies",
+        label: "Product/Serivces",
         color: "text-primary hover:bg-primary/10",
       },
       {
         key: "chat",
         icon: Send,
         label: "Discussions",
+        color: "text-primary hover:bg-primary/10",
+      },
+      {
+        key: "Logs",
+        icon: File,
+        label: "Logs",
         color: "text-primary hover:bg-primary/10",
       },
     ];
@@ -117,13 +122,15 @@ const PreviewTheReq = () => {
     );
   };
 
-  // Render Section Content
   const renderSectionContent = () => {
     if (!request) return null;
 
     switch (activeSection) {
       case "chat":
         return <ChatComments reqId={params.id} />;
+
+      case "Logs":
+        return <RequestLogs logData={request.approvals}  />;
 
       case "commercials":
         return (
@@ -312,7 +319,7 @@ const PreviewTheReq = () => {
           </div>
         );
 
-      case "supplies":
+      case "Product/Serivces":
         return (
           <div className="p-6 space-y-6">
             <h2 className="text-2xl font-bold text-primary border-b pb-3">

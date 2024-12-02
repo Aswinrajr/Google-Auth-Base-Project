@@ -293,7 +293,24 @@ export const hofApproveRequest = async (userId, role, reqId) => {
   }
 };
 
+export const getNewNotification = async (userId) => {
+  try {
+    const response = await adminServices.get(`/request/get-new-notification/${userId}`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
 
+
+export const getApprovedReq = async (userId) => {
+  try {
+    const response = await adminServices.get(`/request/get-approved-req/${userId}`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
 
 
 

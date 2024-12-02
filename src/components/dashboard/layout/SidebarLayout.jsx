@@ -9,10 +9,9 @@ import {
   HelpCircle,
   FileText,
   LogOut,
-  CheckCircle 
+  CheckCircle,
 } from "lucide-react";
 import TopBar from "./TopBar";
-
 
 const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
   return (
@@ -20,7 +19,11 @@ const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
       <div
         className={`aspect-square flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 ease-in-out
           hover:bg-primary hover:text-white hover:border-primary
-          ${isActive ? "bg-primary text-white border-primary" : "text-gray-600 border-transparent"}`}
+          ${
+            isActive
+              ? "bg-primary text-white border-primary"
+              : "text-gray-600 border-transparent"
+          }`}
       >
         <Icon className="w-7 h-7 mb-2" />
         <span className="text-xs font-medium text-center leading-tight">
@@ -31,12 +34,10 @@ const SidebarItem = ({ icon: Icon, title, isActive, path }) => {
   );
 };
 
-
 const SidebarLayout = () => {
   const location = useLocation();
-  const role = localStorage.getItem("role");  
+  const role = localStorage.getItem("role");
   console.log(role);
-
 
   const allSidebarItems = [
     { icon: Home, title: "Dashboard", path: "/dashboard" },
@@ -49,24 +50,27 @@ const SidebarLayout = () => {
     { icon: LogOut, title: "Logout", path: "/logout" },
   ];
 
-
   let sidebarItems = [];
-  if (role === "Admin"||!role) {
-    sidebarItems = allSidebarItems;  
-  } else if (role === "HOD") {
-    sidebarItems = [
-      { icon: Home, title: "Dashboard", path: "/dashboard" },
-      { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
-      { icon: CheckCircle , title: "Approvals", path: "/req-approvals" },
-    ]; 
-  }
-  else{
-    sidebarItems = [
-      { icon: Home, title: "Dashboard", path: "/dashboard" },
-      { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
-    ]; 
-  }
 
+  if (role === "HOD") {
+    sidebarItems = [
+      { icon: Home, title: "Dashboard", path: "/dashboard" },
+      { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
+      {
+        icon: CheckCircle,
+        title: "Approvals",
+        path: "/approveal-request-list",
+      },
+    ];
+  } else if (role === "Employee") {
+    sidebarItems = [
+      { icon: Home, title: "Dashboard", path: "/dashboard" },
+      { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
+    ];
+  }else{
+    sidebarItems = allSidebarItems
+
+  }
 
   const activeItem = sidebarItems.find((item) =>
     location.pathname.startsWith(item.path)
