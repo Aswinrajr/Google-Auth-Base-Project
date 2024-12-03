@@ -6,29 +6,28 @@ import { getNewNotification } from '../../../api/service/adminServices';
 
 const TopBar = () => {
   const userId = localStorage.getItem("userId");
+  const role = localStorage.getItem("role");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [reqData, setReqData] = useState([]);
 
   useEffect(() => {
-    const fetchNotification = async () => {
-      try {
-        const response = await getNewNotification(userId);
-        if (response.status === 200) {
-          setReqData(response.data.reqData);
+    if (role !== "Employee") { // Only fetch notifications if the role is not "employee"
+      const fetchNotification = async () => {
+        try {
+          const response = await getNewNotification(userId);
+          if (response.status === 200) {
+            setReqData(response.data.reqData);
+          }
+        } catch (error) {
+          console.error("Failed to fetch notifications:", error);
         }
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error);
-      }
-    };
-    fetchNotification();
-  }, [userId]);
+      };
+      fetchNotification();
+    }
+  }, [userId, role]); 
 
   const toggleNotifications = () => {
     setIsNotificationOpen(!isNotificationOpen);
-  };
-
-  const clearNotification = (id) => {
-    setReqData(reqData.filter((notification) => notification.reqId !== id));
   };
 
   return (

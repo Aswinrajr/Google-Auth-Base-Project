@@ -1,14 +1,25 @@
 import { useEffect, useState } from "react";
-import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
+import {
+  Edit,
+  Trash2,
+  Search,
+  Download,
+  Plus,
+  Filter,
+  FileText,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { deleteReq, getAdminReqListEmployee, getReqListEmployee, getReqListHR } from "../../../api/service/adminServices";
-
-
+import {
+  deleteReq,
+  getAdminReqListEmployee,
+  getReqListEmployee,
+  getReqListHR,
+} from "../../../api/service/adminServices";
 
 const ReqListTable = () => {
   const userId = localStorage.getItem("userId");
   const role = localStorage.getItem("role");
-  console.log(role)
+  console.log(role);
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -19,13 +30,12 @@ const ReqListTable = () => {
 
       if (role === "Admin") {
         response = await getAdminReqListEmployee();
-        console.log(response)
-      } else if (role === "Employee") {  
+        console.log(response);
+      } else if (role === "Employee") {
         // Fetch data for Employee role
         response = await getReqListEmployee(userId);
       } else {
         response = await getReqListHR();
-        
       }
 
       if (response && response.data) {
@@ -51,12 +61,13 @@ const ReqListTable = () => {
       prev.includes(sno) ? prev.filter((id) => id !== sno) : [...prev, sno]
     );
   };
-  const onDelete = async(id)=>{
-    console.log("Delete")
-    const response = await deleteReq(id)
-    console.log(response)
+  const onDelete = async (id) => {
+    console.log("Delete");
+    setUsers(users?.filter((person) => person?._id !== id));
 
-  }
+    const response = await deleteReq(id);
+    console.log(response);
+  };
 
   return (
     <div className="p-8 bg-white rounded-lg shadow-sm h-full">
@@ -113,7 +124,7 @@ const ReqListTable = () => {
                         className="h-4 w-4 rounded border-gray-300"
                       />
                     </th>
-                    
+
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
@@ -182,6 +193,12 @@ const ReqListTable = () => {
                     </th>
                     <th
                       scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
+                      PO Document
+                    </th>
+                    <th
+                      scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium  text-white uppercase tracking-wider"
                     >
                       View More
@@ -214,7 +231,6 @@ const ReqListTable = () => {
                           {user.reqid}
                         </td>
 
-
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.commercials.entity}
                         </td>
@@ -239,9 +255,26 @@ const ReqListTable = () => {
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.supplies.totalValue}
                         </td>
-                        <td  className="px-6 py-4 text-sm text-gray-500" onClick={() =>navigate(`/req-list-table/preview-one-req/${user._id}`)} >
+                        <td
+                          className="px-6 py-4 text-sm text-gray-500"
+                          
+                        >
                           {user.status || "Pending"}
                         </td>
+                        <td className="px-6 py-4 text-sm text-gray-500">
+                          {user.status === "Approved" ? (
+                            <button
+                              onClick={() => navigate(`/req-list-table/invoice/${user._id}`)}
+                              className="flex items-center text-blue-500 hover:text-blue-700"
+                            >
+                              <FileText className="h-5 w-5 mr-2" />
+                              View PO
+                            </button>
+                          ) : (
+                            "N/A"
+                          )}
+                        </td>
+
                         <td className="px-6 py-4 text-sm text-gray-500 text-center">
                           <button
                             className="text-blue-500 hover:text-blue-700"
@@ -254,11 +287,8 @@ const ReqListTable = () => {
                             View
                           </button>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center space-x-2 mt-2">
-                          <button
-                            className="text-blue-500 hover:text-blue-700"
-                            
-                          >
+                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center justify-center space-x-2 mt-6">
+                          <button className="text-blue-500 hover:text-blue-700">
                             <Edit className="h-5 w-5" />
                           </button>
                           <button

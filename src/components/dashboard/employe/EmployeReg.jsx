@@ -6,6 +6,7 @@ import {
   getAllEntityData,
   regNewEmployee,
 } from "../../../api/service/adminServices";
+import { toast, ToastContainer } from "react-toastify";
 
 const EditEmployee = () => {
   const navigate = useNavigate();
@@ -109,7 +110,11 @@ const EditEmployee = () => {
     const response = await regNewEmployee(formData);
     console.log(response);
     if (response.status === 201) {
-      navigate("/employee-list-table");
+      toast.success(response.data.message)
+      setTimeout(() => {
+        
+        navigate("/employee-list-table");
+      }, 1500);
     }
   };
 
@@ -422,6 +427,15 @@ const EditEmployee = () => {
           </button>
         </div>
       </form>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss
+      />
     </div>
   );
 };

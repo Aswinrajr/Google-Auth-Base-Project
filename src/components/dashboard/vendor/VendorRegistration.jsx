@@ -5,6 +5,8 @@ import {
   getNewVendorId,
   RegVendorData,
 } from "../../../api/service/adminServices";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -19,6 +21,7 @@ const validationSchema = Yup.object({
 });
 
 const VendorRegistration = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     vendorId: "",
     firstName: "",
@@ -57,6 +60,13 @@ const VendorRegistration = () => {
         console.log(values);
         const response = await RegVendorData(values);
         console.log(response);
+        if(response.status===201){
+          toast.success(response.data.message)
+          setTimeout(() => {
+            navigate("/vendor-list-table")
+            
+          }, 1500);
+        }
 
         setFormData({
           vendorId: "",
@@ -223,6 +233,15 @@ const VendorRegistration = () => {
           Register Vendor
         </button>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss
+      />
     </form>
   );
 };

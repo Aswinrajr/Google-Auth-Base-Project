@@ -58,6 +58,26 @@ export const deleteVendor = async (id) => {
     return err;
   }
 };
+export const getVendorData = async (id) => {
+  try {
+    const response = await adminServices.get(`/vendors/get/${id}`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const updateVendorData = async (id,formData) => {
+  try {
+    const response = await adminServices.put(`/vendors/update/${id}`,formData);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
 
 // ............................VENDOR SIDE..........................................................
 
@@ -125,6 +145,43 @@ export const getEmployeeData = async (id) => {
     return err;
   }
 };
+
+export const updateEmployeeData = async (id,formData) => {
+  try {
+
+    const response = await adminServices.put(
+      `/employees/update/${id}`,formData);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+export const isDisplayButton = async (id) => {
+  try {
+
+    const response = await adminServices.get(
+      `/request/is-display-button/${id}`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const generatePo = async (id) => {
+  try {
+
+    const response = await adminServices.get(
+      `/request/generate-po/${id}`);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+
 
 // ............................EMPLOYEE SIDE..........................................................
 

@@ -221,7 +221,7 @@ const VendorListTable = (onEdit, onDelete) => {
                           <div className="flex space-x-4">
                             <button
                               className="text-primary hover:text-primary/80"
-                              onClick={() => handleEdit(person?._id)}
+                              onClick={() => navigate(`/vendor-list-table/edit-vendor/${person._id}`)}
                             >
                               <Edit className="h-5 w-5" />
                             </button>

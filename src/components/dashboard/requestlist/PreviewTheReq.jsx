@@ -8,10 +8,13 @@ import {
   XCircle,
   PauseCircle,
   Send,
-  File
+  File,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchIndividualReq } from "../../../api/service/adminServices";
+import {
+  fetchIndividualReq,
+  isDisplayButton,
+} from "../../../api/service/adminServices";
 import { formatDateToDDMMYY } from "../../../utils/dateFormat";
 import ChatComments from "./ChatComments";
 import handleApprove from "./handleApprove";
@@ -26,6 +29,7 @@ const PreviewTheReq = () => {
 
   const [request, setRequest] = useState(null);
   const [activeSection, setActiveSection] = useState("commercials");
+  const [isDisplay, setIsDisplay] = useState(false);
 
   // Fetch request details
   useEffect(() => {
@@ -42,6 +46,18 @@ const PreviewTheReq = () => {
     };
     fetchReq();
   }, [params.id]);
+
+  useEffect(() => {
+    const fetchSameDept = async () => {
+      const respose = await isDisplayButton(userId);
+      console.log(respose);
+      if (respose.status === 200) {
+        setIsDisplay(respose?.data?.display);
+      }
+    };
+
+    fetchSameDept();
+  }, []);
 
   const approveRequest = async () => {
     try {
@@ -130,7 +146,7 @@ const PreviewTheReq = () => {
         return <ChatComments reqId={params.id} />;
 
       case "Logs":
-        return <RequestLogs logData={request.approvals}  />;
+        return <RequestLogs logData={request.approvals} />;
 
       case "commercials":
         return (
@@ -391,47 +407,67 @@ const PreviewTheReq = () => {
 
   return (
     <div className="flex flex-col bg-white">
-      {/* Header */}
       <div className="bg-primary text-white p-4 text-center shadow-md">
         <h1 className="text-2xl font-bold">Purchase Order Preview</h1>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Section Navigation */}
         <SectionNavigation />
 
-        {/* Section Content */}
         <div className="flex-1 overflow-y-auto">{renderSectionContent()}</div>
       </div>
 
-      {/* Footer Actions */}
       <div className="bg-white p-4 flex justify-between items-center border-t shadow-md">
         <button
           onClick={() => {
-            /* Handle back/edit logic */
+            // Add your edit functionality here
           }}
-          className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+          className={`px-6 py-2 rounded-lg transition-colors flex items-center ${
+            isDisplay
+              ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}
+          disabled={!isDisplay} // Disable when isDisplay is false
         >
           <Edit2 className="mr-2 inline-block" size={20} />
           Edit
         </button>
         <div className="flex space-x-4">
-          <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center">
+          <button
+            className={`px-6 py-2 rounded-lg flex items-center ${
+              isDisplay
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-red-400 text-gray-300 cursor-not-allowed"
+            }`}
+            disabled={!isDisplay} // Disable when isDisplay is false
+          >
             <XCircle className="mr-2" /> Reject
           </button>
-          <button className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 flex items-center">
+          <button
+            className={`px-6 py-2 rounded-lg flex items-center ${
+              isDisplay
+                ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                : "bg-yellow-400 text-gray-300 cursor-not-allowed"
+            }`}
+            disabled={!isDisplay} // Disable when isDisplay is false
+          >
             <PauseCircle className="mr-2" /> Hold
           </button>
           <button
             onClick={approveRequest}
-            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center"
+            className={`px-6 py-2 rounded-lg transition-colors flex items-center ${
+              isDisplay
+                ? "bg-primary text-white hover:bg-primary/90"
+                : "bg-primary text-gray-300 cursor-not-allowed"
+            }`}
+            disabled={!isDisplay} // Disable when isDisplay is false
           >
             <CheckCircle2 className="mr-2" />
             Submit
           </button>
         </div>
       </div>
+
       <ToastContainer
         position="top-right"
         autoClose={5000}

@@ -5,6 +5,7 @@ import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { deleteEmployee, getEmployeeList } from "../../../api/service/adminServices";
 import { toast } from "react-toastify";
+import {formatDateToDDMMYY} from "../../../utils/dateFormat"
 
 
 const EmployeListTable = ({ onEdit, onDelete }) => {
@@ -240,12 +241,12 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                     >
                       Status
                     </th>
-                    <th
+                    {/* <th
                       scope="col"
                       className="sticky top-0 px-6 py-4  text-xs font-medium text-center text-white uppercase tracking-wider"
                     >
                       ViewMore
-                    </th>
+                    </th> */}
 
                     <th
                       scope="col"
@@ -282,11 +283,11 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                         {user.email}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {new Date(user.dob).toLocaleDateString()}
+                        {formatDateToDDMMYY(user.dob)}
                       </td>
 
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {user.doj}
+                        {formatDateToDDMMYY(user.doj)}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {user.gender}
@@ -333,7 +334,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {user.status}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      {/* <td className="px-6 py-4 text-sm text-gray-500">
                         <div className="flex space-x-4">
                           <button
                             onClick={() => alert("View Logs clicked")}
@@ -348,7 +349,7 @@ const EmployeListTable = ({ onEdit, onDelete }) => {
                             View Details
                           </button>
                         </div>
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 text-sm text-gray-500">
                         <div className="flex space-x-4">
                           <button

@@ -1,24 +1,30 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import { getEmployeeData } from "../../../api/service/adminServices";
+import { useNavigate, useParams } from "react-router-dom";
+import { getEmployeeData, updateEmployeeData } from "../../../api/service/adminServices";
+import { formatDateToDDMMYY } from "../../../utils/dateFormat"
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditEmployee = () => {
   const { id } = useParams();
+  const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDateInput, setIsDateInput] = useState(false);
+  const [isDateInputDoj, setIsDateInputDoj] = useState(false);
+
   const [isStartTimeInput, setIsStartTimeInput] = useState(false);
   const [isEndTimeInput, setIsEndTimeInput] = useState(false);
 
   const [formData, setFormData] = useState({
-    empid: "",
+    empId: "",
     name: "",
     contact: "",
     email: "",
     dob: "",
-    dateOfJoining: "",
+    doj: "",
     gender: "",
     role: "",
     entity: "",
@@ -52,6 +58,7 @@ const EditEmployee = () => {
       } catch (error) {
         console.error("Error fetching employee data:", error);
         setError("Failed to fetch employee data");
+        toast.error("Failed to fetch employee data");
       } finally {
         setIsLoading(false);
       }
@@ -62,7 +69,7 @@ const EditEmployee = () => {
 
   const fetchCityState = async () => {
     if (!formData.pincode) {
-      alert("Please enter a valid pincode.");
+      toast.warning("Please enter a valid pincode.");
       return;
     }
 
@@ -79,11 +86,11 @@ const EditEmployee = () => {
           state: State
         }));
       } else {
-        alert("Invalid pincode or data not found!");
+        toast.error("Invalid pincode or data not found!");
       }
     } catch (error) {
       console.error("Error fetching city and state:", error);
-      alert("Failed to fetch city and state. Please try again later.");
+      toast.error("Failed to fetch city and state. Please try again later.");
     }
   };
 
@@ -99,7 +106,22 @@ const EditEmployee = () => {
     e.preventDefault();
 
     console.log("Employee Data:", formData);
-    // Add your submission logic here
+    try {
+      const response = await updateEmployeeData(id, formData);
+      console.log(response);
+
+      if (response.status === 200) {
+        toast.success(response?.data?.message || "Employee updated successfully");
+        setTimeout(() => {
+          navigate("/employee-list-table");
+        }, 1500);
+      } else {
+        toast.error("Failed to update employee data");
+      }
+    } catch (error) {
+      console.error("Error updating employee data:", error);
+      toast.error("An error occurred while updating employee data");
+    }
   };
 
   // Loading and Error States
@@ -116,7 +138,7 @@ const EditEmployee = () => {
           <div>
             <input
               name="empid"
-              value={formData.empid}
+              value={formData.empId}
               type="text"
               placeholder="Employee ID"
               readOnly
@@ -180,7 +202,7 @@ const EditEmployee = () => {
               ) : (
                 <input
                   type="text"
-                  value={formData.dob}
+                  value={formatDateToDDMMYY(formData.dob)}
                   placeholder="Date of Birth"
                   readOnly
                   onFocus={() => setIsDateInput(true)}
@@ -189,22 +211,22 @@ const EditEmployee = () => {
               )}
             </div>
             <div className="relative">
-              {isDateInput ? (
+              {isDateInputDoj ? (
                 <input
                   type="date"
-                  name="dateOfJoining"
-                  value={formData.dateOfJoining}
+                  name="doj"
+                  value={formData.doj}
                   onChange={handleInputChange}
-                  onBlur={() => !formData.dateOfJoining && setIsDateInput(false)}
+                  onBlur={() => !formData.doj && setIsDateInputDoj(false)}
                   className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               ) : (
                 <input
                   type="text"
-                  value={formData.dateOfJoining}
+                  value={formatDateToDDMMYY(formData.doj)}
                   placeholder="Date of Joining"
                   readOnly
-                  onFocus={() => setIsDateInput(true)}
+                  onFocus={() => setIsDateInputDoj(true)}
                   className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
                 />
               )}
@@ -287,7 +309,6 @@ const EditEmployee = () => {
               </div>
               <div>
                 <div className="flex space-x-5">
-             
                   {isStartTimeInput ? (
                     <input
                       type="time"
@@ -413,6 +434,15 @@ const EditEmployee = () => {
           </button>
         </div>
       </form>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss
+      />
     </div>
   );
 };

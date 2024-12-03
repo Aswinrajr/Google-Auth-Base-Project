@@ -58,10 +58,12 @@ function App() {
 
           <Route path="/req-list-table/create-request" element={<CreateRequest/>} />
           <Route path="/req-list-table" element={<ReqListTable/>} />
+          <Route path="/req-list-table/invoice/:id" element={<Invoice/>} />
+
 
           <Route path="/vendor-list-table/vendor-registration" element={<VendorRegistration/>} />
           <Route path="/vendor-list-table" element={<VendorListTable/>} />
-          <Route path="/vendor-list-table/edit-vendor" element={<EditVendor/>} />
+          <Route path="/vendor-list-table/edit-vendor/:id" element={<EditVendor/>} />
 
           <Route path="/support" element={<Support/>} />
           <Route path="/employee-list-table/employee-reg" element={<EmployeeReg/>} />
