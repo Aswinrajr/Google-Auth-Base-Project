@@ -63,27 +63,22 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
 
   const handleMultiFileChange = async (e) => {
     const { name, files } = e.target;
-  
-    console.log(files);
-  
-   
+
     const filesArray = Array.from(files);
-  
+
     const uploadedImages = await Promise.all(
       filesArray.map(async (image) => {
         const data = await uploadCloudinary(image);
         return data.url;
       })
     );
-  
-    console.log(uploadedImages);
-  
+
     setFormData((prevState) => ({
       ...prevState,
-      [name]: uploadedImages, 
+      [name]: [...(prevState[name] || []), ...uploadedImages],
     }));
   };
-  
+
   const getMinDate = () => {
     const date = new Date();
     date.setDate(date.getDate() - 15);
@@ -99,14 +94,22 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     setIsDragOver(false);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     setIsDragOver(false);
 
-    const droppedFiles = e.dataTransfer.files;
+    const droppedFiles = Array.from(e.dataTransfer.files);
+
+    const uploadedImages = await Promise.all(
+      droppedFiles.map((file) => uploadCloudinary(file))
+    );
+
     setFormData((prevState) => ({
       ...prevState,
-      competitiveQuotations: Array.from(droppedFiles),
+      competitiveQuotations: [
+        ...(prevState.competitiveQuotations || []),
+        ...uploadedImages.map((img) => img.url),
+      ],
     }));
   };
 
@@ -144,8 +147,16 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     return `${vendor.vendorId} - ${vendor.firstName}`;
   };
 
+  const handleRemoveFile = (indexToRemove) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      competitiveQuotations: prevState.competitiveQuotations.filter(
+        (_, index) => index !== indexToRemove
+      ),
+    }));
+  };
+
   const handleSubmit = () => {
-    // Validate required fields before proceeding
     const requiredFields = [
       "vendor",
       "quotationDate",
@@ -232,13 +243,43 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Final Quotation
               </label>
-              <input
-                type="file"
-                ref={fileInputRef}
-                name="quotationCopy"
-                onChange={handleFileChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
-              />
+
+              {formData.quotationCopy ? (
+                <div className="flex items-center space-x-4">
+             
+                  <a
+                    href={formData.quotationCopy}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    Final Quotation Copy
+                  </a>
+
+             
+                  <button
+                    type="button"
+                    onClick={() => {
+                    
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        quotationCopy: null,
+                      }));
+                    }}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  name="quotationCopy"
+                  onChange={handleFileChange}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                />
+              )}
             </div>
           </div>
 
@@ -341,6 +382,33 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                   </label>
                 </div>
               </div>
+
+              {formData.competitiveQuotations &&
+                formData.competitiveQuotations.length > 0 && (
+                  <ul className="mt-4 space-y-2">
+                    {formData.competitiveQuotations.map((fileUrl, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center text-sm text-black"
+                      >
+                        <a
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-primary underline"
+                        >
+                          {`Competitive Quotations File ${index + 1}`}
+                        </a>
+                        <button
+                          onClick={() => handleRemoveFile(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </div>
           </div>
 
@@ -359,7 +427,6 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
             </button>
           </div>
         </div>
-
         {showModal && (
           <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 p-4">
             <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl transform transition-all duration-300 ease-in-out">

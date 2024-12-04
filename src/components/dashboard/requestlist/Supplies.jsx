@@ -11,9 +11,13 @@ const Supplies = ({
   handleSubmited,
   onNext,
 }) => {
-  // Initialize with a single default row
+  
+  console.log("supploies",formData)
+  
   const initialService = { productName: "", quantity: "", price: "" };
-  const [services, setServices] = useState([initialService]);
+  const [services, setServices] = useState(formData.services || [initialService]);
+
+  
 
   // New state to manage submission display
   const [isSubmitted, setIsSubmitted] = useState(false);

@@ -271,8 +271,8 @@ const PreviewTheReq = () => {
                   },
                   {
                     label: "Final Quotation",
-                    value: request.procurements.quotationCopy, // Assuming this is the URL
-                    isLink: true, // Add a flag to indicate this is a link
+                    value: request.procurements.quotationCopy, 
+                    isLink: true, 
                   },
                 ]
                   .filter((item) => item.value)
@@ -420,14 +420,14 @@ const PreviewTheReq = () => {
       <div className="bg-white p-4 flex justify-between items-center border-t shadow-md">
         <button
           onClick={() => {
-            // Add your edit functionality here
+         
           }}
           className={`px-6 py-2 rounded-lg transition-colors flex items-center ${
             isDisplay
               ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
               : "bg-gray-100 text-gray-400 cursor-not-allowed"
           }`}
-          disabled={!isDisplay} // Disable when isDisplay is false
+          disabled={!isDisplay} 
         >
           <Edit2 className="mr-2 inline-block" size={20} />
           Edit
@@ -439,7 +439,7 @@ const PreviewTheReq = () => {
                 ? "bg-red-600 text-white hover:bg-red-700"
                 : "bg-red-400 text-gray-300 cursor-not-allowed"
             }`}
-            disabled={!isDisplay} // Disable when isDisplay is false
+            disabled={!isDisplay} 
           >
             <XCircle className="mr-2" /> Reject
           </button>
@@ -449,7 +449,7 @@ const PreviewTheReq = () => {
                 ? "bg-yellow-600 text-white hover:bg-yellow-700"
                 : "bg-yellow-400 text-gray-300 cursor-not-allowed"
             }`}
-            disabled={!isDisplay} // Disable when isDisplay is false
+            disabled={!isDisplay} 
           >
             <PauseCircle className="mr-2" /> Hold
           </button>
@@ -460,7 +460,7 @@ const PreviewTheReq = () => {
                 ? "bg-primary text-white hover:bg-primary/90"
                 : "bg-primary text-gray-300 cursor-not-allowed"
             }`}
-            disabled={!isDisplay} // Disable when isDisplay is false
+            disabled={!isDisplay} 
           >
             <CheckCircle2 className="mr-2" />
             Submit

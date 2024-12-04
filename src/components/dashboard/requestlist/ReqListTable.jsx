@@ -69,6 +69,35 @@ const ReqListTable = () => {
     console.log(response);
   };
 
+  const renderActionColumn = (user) => {
+    if (role === "Admin" || role === "HR") {
+      return (
+        <td className="px-6 py-4 text-sm text-gray-500 flex items-center justify-center space-x-2 mt-6">
+          <button className="text-blue-500 hover:text-blue-700">
+            <Edit className="h-5 w-5" />
+          </button>
+          <button
+            className="text-red-500 hover:text-red-700"
+            onClick={() => onDelete(user._id)}
+          >
+            <Trash2 className="h-5 w-5" />
+          </button>
+        </td>
+      );
+    } else if (role === "Employee") {
+      return (
+        <td className="px-6 py-4 text-sm text-gray-500 text-center">
+          <button
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary"
+            onClick={() => navigate(`/req-list-table/request-edit/${user._id}`)}
+          >
+            Request Edit
+          </button>
+        </td>
+      );
+    }
+  };
+
   return (
     <div className="p-8 bg-white rounded-lg shadow-sm h-full">
       <div className="mb-8">
@@ -231,7 +260,7 @@ const ReqListTable = () => {
                           {user.reqid}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-500">
+                        <td className="px-4 py-4 text-sm text-gray-500">
                           {user.commercials.entity}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">
@@ -287,17 +316,7 @@ const ReqListTable = () => {
                             View
                           </button>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center justify-center space-x-2 mt-6">
-                          <button className="text-blue-500 hover:text-blue-700">
-                            <Edit className="h-5 w-5" />
-                          </button>
-                          <button
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() => onDelete(user._id)}
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </td>
+                        {renderActionColumn(user)}
                       </tr>
                     ))
                   ) : (

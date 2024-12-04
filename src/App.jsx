@@ -37,68 +37,47 @@ function App() {
   
         {/* <Route path="/" element={<Login />} /> */}
           <Route path="/" element={<HomePage />} />
-
-     
           <Route path="/" element={<SidebarLayout />}>
-
-
- 
-
-
-
-
-
-          <Route path="/create-user" element={<UserRegistartion />} />
+          <Route path="/dashboard-page" element={<Dasboard />} />
 
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard-page" element={<Dasboard />} />
+
+          <Route path="/req-list-table" element={<ReqListTable/>} />
+
+
+
+          <Route path="/req-list-table/create-request" element={<CreateRequest/>} />
+
+
+
+          
+          <Route path="/req-list-table/invoice/:id" element={<Invoice/>} />
+
+          <Route path="/req-list-table/preview-one-req/:id" element={<PreviewTheReq/>} />
+
+          <Route path="/approveal-request-list" element={<Approvals/>} />
+
           <Route path="/users/list" element={<UserListTable />} />
+          <Route path="/create-user" element={<UserRegistartion />} />
           <Route path="/users/adduser" element={<AddUser/>} />
           <Route path="/users/edituser" element={<EditUser/>} />
 
-          <Route path="/req-list-table/create-request" element={<CreateRequest/>} />
-          <Route path="/req-list-table" element={<ReqListTable/>} />
-          <Route path="/req-list-table/invoice/:id" element={<Invoice/>} />
-
-
-          <Route path="/vendor-list-table/vendor-registration" element={<VendorRegistration/>} />
-          <Route path="/vendor-list-table" element={<VendorListTable/>} />
-          <Route path="/vendor-list-table/edit-vendor/:id" element={<EditVendor/>} />
-
-          <Route path="/support" element={<Support/>} />
-          <Route path="/employee-list-table/employee-reg" element={<EmployeeReg/>} />
-          <Route path="/employee-list-table" element={<EmployeListTable/>} />
-          <Route path="/employee-list-table/edit-employee/:id" element={<EditEmploye/>} />
-
+          <Route path="/entity-list-table" element={<EntityListTable/>} />
           <Route path="/entity-list-table/entities" element={<AddEntity/>} />
           <Route path="/entity-list-table/edit-entities/:id" element={<EditEntity/>} />
-          <Route path="/entity-list-table" element={<EntityListTable/>} />
-          
 
+          <Route path="/vendor-list-table" element={<VendorListTable/>} />
+          <Route path="/vendor-list-table/vendor-registration" element={<VendorRegistration/>} />
+          <Route path="/vendor-list-table/edit-vendor/:id" element={<EditVendor/>} />
+
+          <Route path="/employee-list-table" element={<EmployeListTable/>} />
+          <Route path="/employee-list-table/employee-reg" element={<EmployeeReg/>} />
+          <Route path="/employee-list-table/edit-employee/:id" element={<EditEmploye/>} />
+
+          <Route path="/support" element={<Support/>} />
           <Route path="/invoice" element={<Invoice/>} />
-          <Route path="/req-list-table/preview-one-req/:id" element={<PreviewTheReq/>} />
-          <Route path="/approveal-request-list" element={<Approvals/>} />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           <Route path="/admin/domain" element={<AllowDomainList/>} />
           <Route path="/admin/domain-table" element={<DomainListTable/>} />
-
-
-
-
-
 
         </Route>
       </Routes>

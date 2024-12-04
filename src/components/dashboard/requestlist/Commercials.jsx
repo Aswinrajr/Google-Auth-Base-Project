@@ -1,8 +1,10 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAllEntityData } from "../../../api/service/adminServices";
 import * as Yup from "yup";
+
 
 // const CommercialValidationSchema = Yup.object().shape({
 //   entity: Yup.string().required("Entity is required"),
@@ -31,21 +33,23 @@ import * as Yup from "yup";
 //   shipTo: Yup.string().required("Ship To address is required"),
 // });
 
-// eslint-disable-next-line react/prop-types
+
 const Commercials = ({ formData, setFormData, onNext }) => {
+
   const [localFormData, setLocalFormData] = useState({
-    entity: "",
-    city: "",
-    site: "",
-    department: "IT Web development",
-    amount: "",
-    currency: "USD",
-    costCentre: "CT-ITDT-02",
-    paymentMode: "",
-    paymentTerms: [{ percentageTerm: "", paymentTerm: "", paymentType: "" }],
-    billTo: "",
-    shipTo: "",
-    isCreditCardSelected: false,
+    
+    entity: formData.entity||"",
+    city:formData.city|| "",
+    site:formData.site||"",
+    department:formData.department|| "IT Web development",
+    amount:formData.amount|| "",
+    currency:formData.currency|| "USD",
+    costCentre:formData.costCentre|| "CT-ITDT-02",
+    paymentMode:formData.paymentMode|| "",
+    paymentTerms:formData.paymentTerms|| [{ percentageTerm: "", paymentTerm: "", paymentType: "" }],
+    billTo:formData.billTo|| "",
+    shipTo:formData.shipTo|| "",
+    isCreditCardSelected:formData.isCreditCardSelected|| false,
   });
   const [entities, setEntities] = useState([]);
   const [selectedEntityDetails, setSelectedEntityDetails] = useState(null);
@@ -167,6 +171,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     // const isValid = await validateForm();
     // if (isValid) {
     // }
+  
     onNext();
   };
 
