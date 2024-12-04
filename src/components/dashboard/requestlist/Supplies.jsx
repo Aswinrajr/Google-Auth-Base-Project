@@ -189,12 +189,7 @@ const Supplies = ({
             <tfoot>
               <tr className="bg-gray-100">
                 <td colSpan="2" className="px-4 py-3">
-                  <button
-                    onClick={handleAddService}
-                    className="flex items-center text-blue-600 hover:text-blue-800 transition duration-300"
-                  >
-                    <PlusCircle className="mr-2 w-5 h-5" /> Add Service
-                  </button>
+                  {}
                 </td>
                 <td
                   colSpan="2"

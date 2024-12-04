@@ -29,6 +29,7 @@ import EditEmploye from "./components/dashboard/employe/EditEmploye";
 import EditVendor from "./components/dashboard/vendor/EditVendor";
 import PreviewTheReq from "./components/dashboard/requestlist/PreviewTheReq";
 import Approvals from "./components/dashboard/approvals/Approvals";
+import EditRequestForm from "./components/dashboard/requestlist/EditRequestForm";
 
 function App() {
   return (
@@ -43,17 +44,11 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/req-list-table" element={<ReqListTable/>} />
-
-
-
           <Route path="/req-list-table/create-request" element={<CreateRequest/>} />
-
-
-
-          
           <Route path="/req-list-table/invoice/:id" element={<Invoice/>} />
-
           <Route path="/req-list-table/preview-one-req/:id" element={<PreviewTheReq/>} />
+          <Route path="/req-list-table/edit-req/:id" element={<EditRequestForm/>} />
+
 
           <Route path="/approveal-request-list" element={<Approvals/>} />
 

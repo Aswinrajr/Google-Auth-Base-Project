@@ -9,7 +9,6 @@ import { generatePo } from "../../../api/service/adminServices";
 const Invoice = ({ formData, onSubmit }) => {
   const { id } = useParams();
   const invoice = {
-   
     date: new Date(),
     dueDate: new Date(),
     paymentInstruction: "Please pay via bank transfer to account #123456789.",
@@ -104,25 +103,43 @@ const Invoice = ({ formData, onSubmit }) => {
 
       <div className="p-6 grid grid-cols-2 gap-6 mb-3">
         <div className="p-2">
-          <h2 className="text-lg font-medium mb-2">Payment Terms</h2>
-          <h3>{invoiceData?.commercials?.paymentTerm}</h3>
-          {invoiceData?.commercials?.paymentTerms?.map((terms) => (
-            <div key={terms._id} className="mb-2">
-              <div>
-                <strong>Payment Term: </strong> {terms.paymentTerm}
-              </div>
-              <div>
-                <strong>Payment Type: </strong> {terms.paymentType}
-              </div>
-              <div>
-                <strong>Percentage Term: </strong> {terms.percentageTerm}%
-              </div>
-              <div>
-                <strong>Percentage Amount: </strong>{" "}
-                {terms.percentageAmount || "N/A"}
-              </div>
+ 
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-gray-800 mb-2">
+                Overall Payment Term: 
+                <span className="text-gray-600 ml-2">
+                  {invoiceData?.commercials?.paymentTerm}
+                </span>
+              </h3>
+              
+              {invoiceData?.commercials?.paymentTerms?.map((terms) => (
+                <div 
+                  key={terms._id} 
+                  className="border-l-4 border-blue-500 pl-4 py-2 mb-3 bg-white shadow-sm"
+                >
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <strong className="text-gray-600">Payment Term:</strong>
+                      <p className="text-gray-800">{terms.paymentTerm}</p>
+                    </div>
+                    <div>
+                      <strong className="text-gray-600">Payment Type:</strong>
+                      <p className="text-gray-800">{terms.paymentType}</p>
+                    </div>
+                    <div>
+                      <strong className="text-gray-600">Percentage Term:</strong>
+                      <p className="text-gray-800">{terms.percentageTerm}%</p>
+                    </div>
+                   
+                  </div>
+                </div>
+              ))}
+
+
+              
             </div>
-          ))}
+          </div>
         </div>
 
         <div className="text-right p-2">

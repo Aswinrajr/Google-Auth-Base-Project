@@ -75,7 +75,7 @@ const PreviewTheReq = () => {
     }
   };
 
-  // Section Navigation Component
+
   const SectionNavigation = () => {
     const sections = [
       {
@@ -417,21 +417,8 @@ const PreviewTheReq = () => {
         <div className="flex-1 overflow-y-auto">{renderSectionContent()}</div>
       </div>
 
-      <div className="bg-white p-4 flex justify-between items-center border-t shadow-md">
-        <button
-          onClick={() => {
-         
-          }}
-          className={`px-6 py-2 rounded-lg transition-colors flex items-center ${
-            isDisplay
-              ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-          }`}
-          disabled={!isDisplay} 
-        >
-          <Edit2 className="mr-2 inline-block" size={20} />
-          Edit
-        </button>
+      <div className="bg-white p-4 flex justify-end items-end border-t shadow-md">
+        
         <div className="flex space-x-4">
           <button
             className={`px-6 py-2 rounded-lg flex items-center ${

@@ -73,7 +73,7 @@ const ReqListTable = () => {
     if (role === "Admin" || role === "HR") {
       return (
         <td className="px-6 py-4 text-sm text-gray-500 flex items-center justify-center space-x-2 mt-6">
-          <button className="text-blue-500 hover:text-blue-700">
+          <button className="text-blue-500 hover:text-blue-700 " onClick={() => navigate(`/req-list-table/edit-req/${user._id}`)}>
             <Edit className="h-5 w-5" />
           </button>
           <button
@@ -89,7 +89,7 @@ const ReqListTable = () => {
         <td className="px-6 py-4 text-sm text-gray-500 text-center">
           <button
             className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary"
-            onClick={() => navigate(`/req-list-table/request-edit/${user._id}`)}
+            onClick={() => navigate(`/req-list-table/edit-req/${user._id}`)}
           >
             Request Edit
           </button>
