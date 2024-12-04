@@ -181,6 +181,20 @@ export const generatePo = async (id) => {
 };
 
 
+export const updateRequest = async (id,formData) => {
+  try {
+
+    const response = await adminServices.put(
+      `/request/update-request/${id}`,formData);
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+
+
+
 
 
 // ............................EMPLOYEE SIDE..........................................................

@@ -29,7 +29,8 @@ import EditEmploye from "./components/dashboard/employe/EditEmploye";
 import EditVendor from "./components/dashboard/vendor/EditVendor";
 import PreviewTheReq from "./components/dashboard/requestlist/PreviewTheReq";
 import Approvals from "./components/dashboard/approvals/Approvals";
-import EditRequestForm from "./components/dashboard/requestlist/EditRequestForm";
+import EditRequestForm from "./components/dashboard/requestlist/edit/EditRequestForm";
+
 
 function App() {
   return (
