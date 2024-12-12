@@ -53,18 +53,15 @@ const SidebarLayout = () => {
   let sidebarItems = [];
 
 
-  if(role==="Admin"){
-    sidebarItems = allSidebarItems
 
-  }
-  else if (role === "Employee") {
+  if (role === "Admin") {
+    sidebarItems = allSidebarItems;
+  } else if (role === "Employee") {
     sidebarItems = [
       { icon: Home, title: "Dashboard", path: "/dashboard" },
       { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
     ];
-  }
-
-  else if (role === "Legal Team") {
+  } else if (role === "Legal Team") {
     sidebarItems = [
       { icon: Home, title: "Dashboard", path: "/dashboard" },
       { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
@@ -74,11 +71,9 @@ const SidebarLayout = () => {
         path: "/approveal-request-list",
       },
       { icon: HelpCircle, title: "Questions", path: "/questions" },
-
     ];
   }
-
-  else {
+   else if(role==="HOF"||role==="PO Team"||role==="Vendor Management"||role==="HOD") {
     sidebarItems = [
       { icon: Home, title: "Dashboard", path: "/dashboard" },
       { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
@@ -89,9 +84,9 @@ const SidebarLayout = () => {
       },
     ];
   }
-  
-
-  
+  else{
+    sidebarItems=[]
+  }
 
   const activeItem = sidebarItems.find((item) =>
     location.pathname.startsWith(item.path)
