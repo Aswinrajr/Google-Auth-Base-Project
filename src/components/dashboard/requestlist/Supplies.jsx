@@ -1,5 +1,28 @@
 import { useState } from "react";
 import { Trash2, PlusCircle, CheckCircle2 } from "lucide-react";
+import * as Yup from "yup";
+import { toast } from "react-toastify";
+
+const validationSchema = Yup.object().shape({
+  services: Yup.array().of(
+    Yup.object().shape({
+      productName: Yup.string().required("Product Name is required"),
+      productDescription: Yup.string().required("Product Description is required"),
+      quantity: Yup.number()
+        .typeError("Quantity must be a number")
+        .required("Quantity is required")
+        .min(1, "Quantity must be at least 1"),
+      price: Yup.number()
+        .typeError("Price must be a number")
+        .required("Price is required")
+        .min(0, "Price cannot be negative"),
+      
+    })
+  ),
+});
+
+
+
 
 const Supplies = ({
   formData,
@@ -13,6 +36,7 @@ const Supplies = ({
   const [services, setServices] = useState(formData.services || [initialService]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  
 
   const handleServiceChange = (e, index) => {
     const { name, value } = e.target;
@@ -45,32 +69,39 @@ const Supplies = ({
   const totalValue = services.reduce((acc, service) => acc + calculateRowTotal(service), 0);
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const submissionData = {
       ...formData,
       services,
       totalValue,
     };
-
-    // Update the formData state
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      ...submissionData,
-    }));
-
-    // Log the submission data
-    console.log("Submission Data:", submissionData);
-
-    // Set submitted state to true to show submission details
-    setIsSubmitted(true);
-
-    // Call onSubmit if provided
-    if (onSubmit) {
-      onSubmit(submissionData);
+  
+    try {
+      await validationSchema.validate({ services }, { abortEarly: false });
+  
+      // If validation passes
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        ...submissionData,
+      }));
+  
+      setIsSubmitted(true);
+  
+      if (onSubmit) {
+        onSubmit(submissionData);
+      }
+  
+      onNext();
+    } catch (err) {
+      if (err.inner) {
+        const errorMessages = err.inner.map((e) => e.message).join("\n");
+        toast.error(errorMessages)
+        return
+        
+      }
     }
-
-    onNext();
   };
+  
 
   return (
     <div className="mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
@@ -86,16 +117,16 @@ const Supplies = ({
             <thead>
               <tr className="bg-gray-100 border-b-2 border-gray-200">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Product Name
+                  Product Name<span className="text-red-500">*</span>
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Product Description
+                  Product Description<span className="text-red-500">*</span>
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Quantity
+                  Quantity<span className="text-red-500">*</span>
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Price
+                  Price<span className="text-red-500">*</span>
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Tax (%)
@@ -120,6 +151,7 @@ const Supplies = ({
                       className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       placeholder="Product Name"
                     />
+ 
                   </td>
                   <td className="px-4 py-4">
                     <textarea

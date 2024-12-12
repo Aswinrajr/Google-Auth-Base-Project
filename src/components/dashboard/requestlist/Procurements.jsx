@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { fetchAllVendorData } from "../../../api/service/adminServices";
 import { uploadCloudinary } from "../../../utils/cloudinaryUtils";
 import { FaFilePdf } from "react-icons/fa";
+import * as Yup from "yup";
+import { toast } from "react-toastify";
 
 const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const [vendors, setVendors] = useState([]);
@@ -334,6 +336,10 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   // Handle form submission
   const handleSubmit = () => {
     console.log("formData for Procurements stage", formData);
+    if(!formData.vendor||!formData.servicePeriod){
+      toast.error("Please select Required Fields")
+      return
+    }
     onNext();
   };
 
@@ -350,7 +356,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Choose Vendor
+                Choose Vendor<span className="text-red-500">*</span>
               </label>
               <select
                 name="vendor"
@@ -406,7 +412,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
           <div className="grid grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Service Period
+                Service Period<span className="text-red-500">*</span>
               </label>
               <select
                 name="servicePeriod"

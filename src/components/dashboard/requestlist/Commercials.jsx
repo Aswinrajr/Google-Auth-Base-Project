@@ -6,18 +6,57 @@ import { getAllEntityData } from "../../../api/service/adminServices";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 
+const CommercialValidationSchema = Yup.object().shape({
+  businessUnit: Yup.string().required("Business Unit is required"),
+  entity: Yup.string().required("Entity is required"),
+  city: Yup.string().required("City is required"),
+  site: Yup.string().required("Site is required"),
+  department: Yup.string().required("Department is required"),
+  hod: Yup.string().required("Head of Department is required"),
+  paymentMode: Yup.string().required("Payment Mode is required"),
+  billTo: Yup.string().required("Bill To address is required"),
+  shipTo: Yup.string().required("Ship To address is required"),
+
+  // Validate Payment Terms
+  paymentTerms: Yup.array()
+    .of(
+      Yup.object().shape({
+        percentageTerm: Yup.number()
+          .required("Percentage Term is required")
+          .min(0, "Percentage Term must be at least 0")
+          .max(100, "Percentage Term cannot exceed 100"),
+        paymentTerm: Yup.string().required("Payment Term is required"),
+        paymentType: Yup.string().required("Payment Type is required"),
+      })
+    )
+    .test(
+      "total-percentage",
+      "Total Percentage Terms must equal 100%",
+      function (paymentTerms) {
+        // Skip validation for credit card payment
+        if (this.parent.isCreditCardSelected) return true;
+
+        const totalPercentage = paymentTerms.reduce((sum, term) => {
+          return sum + (parseFloat(term.percentageTerm) || 0);
+        }, 0);
+
+        return totalPercentage === 100;
+      }
+    ),
+});
+
 const Commercials = ({ formData, setFormData, onNext }) => {
   const [localFormData, setLocalFormData] = useState({
     entity: formData.entity || "",
     city: formData.city || "",
     site: formData.site || "",
-    department: formData.department || "IT Web development",
+    department: formData.department || "",
     amount: formData.amount || "",
     currency: formData.currency || "USD",
     costCentre: formData.costCentre || "CT-ITDT-02",
     paymentMode: formData.paymentMode || "",
     paymentTerms: formData.paymentTerms || [
-      { percentageTerm: "", paymentTerm: "", paymentType: "" },
+      { percentageTerm: 0, paymentTerm: "", paymentType: "" },
     ],
     billTo: formData.billTo || "",
     shipTo: formData.shipTo || "",
@@ -43,6 +82,34 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     fetchEntity();
   }, []);
 
+  const validateForm = async () => {
+    try {
+      // Validate the entire form
+      await CommercialValidationSchema.validate(localFormData, {
+        abortEarly: false,
+      });
+      setErrors({});
+      return true;
+    } catch (yupError) {
+      if (yupError.inner) {
+        // Transform Yup errors into a more manageable format
+        const formErrors = yupError.inner.reduce((acc, error) => {
+          acc[error.path] = error.message;
+          return acc;
+        }, {});
+
+        setErrors(formErrors);
+
+        // Show toast for first error
+        const firstErrorKey = Object.keys(formErrors)[0];
+        if (firstErrorKey) {
+          toast.error(formErrors[firstErrorKey]);
+        }
+      }
+      return false;
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -66,6 +133,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
     setLocalFormData(updatedFormData);
     setFormData(updatedFormData);
+
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleEntityChange = (e) => {
@@ -92,6 +167,14 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
       setLocalFormData(updatedFormData);
       setFormData(updatedFormData);
+
+      if (errors.entity) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.entity;
+          return newErrors;
+        });
+      }
     } else {
       console.log("No matching entities found");
     }
@@ -113,6 +196,15 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
     setLocalFormData(updatedFormData);
     setFormData(updatedFormData);
+    if (errors.paymentTerms?.[index]?.[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        if (newErrors.paymentTerms?.[index]) {
+          delete newErrors.paymentTerms[index][name];
+        }
+        return newErrors;
+      });
+    }
   };
 
   const handleAddMorePaymentTerm = () => {
@@ -142,20 +234,26 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     setFormData(updatedFormData);
   };
 
+  // const handleNextStep = async () => {
+  //   const isValid = await validateForm();
+  //   if (isValid) {
+  //   }
+
+  //   console.log(localFormData);
+  //   const totalSum = localFormData.paymentTerms.reduce((sum, term) => {
+  //     return sum + (parseFloat(term.percentageTerm) || 0);
+  //   }, 0);
+
+  //   if (totalSum !== 100) {
+  //     toast.error("Persentage term is not equal to 100");
+  //     return;
+  //   } else {
+  //     onNext();
+  //   }
+  // };
   const handleNextStep = async () => {
-    // const isValid = await validateForm();
-    // if (isValid) {
-    // }
-
-    console.log(localFormData);
-    const totalSum = localFormData.paymentTerms.reduce((sum, term) => {
-      return sum + (parseFloat(term.percentageTerm) || 0);
-    }, 0);
-
-    if (totalSum !== 100) {
-      toast.error("Persentage term is not equal to 100");
-      return;
-    } else {
+    const isValid = await validateForm();
+    if (isValid) {
       onNext();
     }
   };
@@ -271,9 +369,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               onChange={handleInputChange}
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
             >
-              <option value="" disabled>
-                Select Department
-              </option>
+              <option value="">Select Department</option>
 
               <option value="Corporate:Corp">Corporate : Corp</option>
               <option value="Corporate:Finance">Corporate : Finance</option>
@@ -331,11 +427,10 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                 Technology : Tech-Product
               </option>
             </select>
+            {errors.department && (
+              <p className="text-red-500 text-xs mt-1">{errors.department}</p>
+            )}
           </div>
-
-          {errors.department && (
-            <p className="text-red-500 text-xs mt-1">{errors.department}</p>
-          )}
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -435,6 +530,11 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                           WebkitAppearance: "none",
                         }}
                       />
+                      {errors.paymentTerms?.[index]?.percentageTerm && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.paymentTerms[index].percentageTerm}
+                        </p>
+                      )}
                     </td>
 
                     <td className="px-4 py-3">
@@ -466,6 +566,11 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                           90 days credit period
                         </option>
                       </select>
+                      {errors.paymentTerms?.[index]?.paymentTerm && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.paymentTerms[index].paymentTerm}
+                        </p>
+                      )}
                     </td>
 
                     <td className="px-4 py-3">
@@ -490,6 +595,11 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         </option>
                         <option value="partPayment">Part Payment</option>
                       </select>
+                      {errors.paymentTerms?.[index]?.paymentType && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.paymentTerms[index].paymentType}
+                        </p>
+                      )}
                     </td>
 
                     <td className="px-4 py-3 text-right">

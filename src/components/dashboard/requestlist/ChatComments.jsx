@@ -1,27 +1,28 @@
-import { Send, UserCircle2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Send, UserCircle2, Paperclip } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { fetcAllChats, sendMessageComments } from "../../../api/service/adminServices";
 
 const ChatComments = ({ reqId }) => {
-  console.log("reqid", reqId);
   const userId = localStorage.getItem("userId");
   const [chatMessages, setChatMessages] = useState([]);
-
-  useEffect(()=>{
-    const fetchChats = async()=>{
-        const resposne =await fetcAllChats(reqId)
-        console.log(resposne)
-        if(resposne.status===200){
-            setChatMessages(resposne.data.chatData.commentLogs)
-        }
-
-    }
-    fetchChats()
-
-  },[])
-
   const [newMessage, setNewMessage] = useState("");
   const [activeChatTopic, setActiveChatTopic] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await fetcAllChats(reqId);
+        if (response.status === 200) {
+          setChatMessages(response.data.chatData.commentLogs);
+        }
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    };
+    fetchChats();
+  }, [reqId]);
 
   const chatTopics = [
     "Head of Dept",
@@ -39,22 +40,55 @@ const ChatComments = ({ reqId }) => {
     ? chatMessages.filter((msg) => msg.topic === activeChatTopic)
     : chatMessages;
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (newMessage.trim()) {
-      const newMsg = {
-        reqId: reqId,
-        senderId: userId,
-        username: "Current User",
-        userImage: null,
-        message: newMessage,
-        timestamp: new Date(),
-        topic: activeChatTopic || "General Discussion",
-      };
-      console.log("newMessage", newMsg);
-      const response = await sendMessageComments(newMsg);
-      console.log(response);
-      setChatMessages([...chatMessages, newMsg]);
-      setNewMessage("");
+    try {
+      let attachmentUrl = null;
+      
+      // Upload file if selected
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        
+        // const uploadResponse = await uploadAttachment(formData);
+        // if (uploadResponse.status === 200) {
+        //   attachmentUrl = uploadResponse.data.fileUrl;
+        // }
+      }
+
+      // Prepare message object
+      if (newMessage.trim() || attachmentUrl) {
+        const newMsg = {
+          reqId: reqId,
+          senderId: userId,
+          username: "Current User",
+          userImage: null,
+          message: newMessage,
+          attachmentUrl: attachmentUrl,
+          timestamp: new Date(),
+          topic: activeChatTopic || "General Discussion",
+        };
+
+        const response = await sendMessageComments(newMsg);
+        
+        // Update chat messages
+        setChatMessages([...chatMessages, newMsg]);
+        
+        // Reset states
+        setNewMessage("");
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
   };
 
@@ -105,11 +139,23 @@ const ChatComments = ({ reqId }) => {
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">{msg.senderName}</span>
                   <span className="text-xs text-gray-500">
-                    {msg.timestamp.toLocaleString()}
+                    {new Date(msg.timestamp).toLocaleString()}
                   </span>
                 </div>
                 <div className="bg-gray-100 p-3 rounded-lg mt-1">
                   <p>{msg.message}</p>
+                  {msg.attachmentUrl && (
+                    <div className="mt-2">
+                      <a 
+                        href={msg.attachmentUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-primary hover:underline"
+                      >
+                        View Attachment
+                      </a>
+                    </div>
+                  )}
                   {msg.topic && (
                     <span className="text-xs text-primary mt-1 block">
                       Tag to: {msg.topic}
@@ -131,6 +177,25 @@ const ChatComments = ({ reqId }) => {
             className="flex-1 p-2 border rounded-lg"
             autoComplete="off"
           />
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            className="hidden"
+            id="file-upload"
+          />
+          <label 
+            htmlFor="file-upload" 
+            className="cursor-pointer p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <Paperclip size={20} className={selectedFile ? "text-primary" : "text-gray-500"} />
+          </label>
+          {selectedFile && (
+            <span className="text-xs text-gray-500 truncate max-w-[100px]">
+              {selectedFile.name}
+            </span>
+          )}
 
           <select
             value={activeChatTopic || ""}
