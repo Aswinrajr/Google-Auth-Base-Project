@@ -336,9 +336,9 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   // Handle form submission
   const handleSubmit = () => {
     console.log("formData for Procurements stage", formData);
-    if(!formData.vendor||!formData.servicePeriod){
-      toast.error("Please select Required Fields")
-      return
+    if (!formData.vendor || !formData.servicePeriod) {
+      toast.error("Please select Required Fields");
+      return;
     }
     onNext();
   };
@@ -462,6 +462,33 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                 </div>
               </>
             )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Project Code
+              </label>
+              <input
+                type="text"
+                name="projectCode"
+                value={formData.projectCode || ""}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Client Name
+              </label>
+              <input
+                type="text"
+                name="clientName"
+                value={formData.clientName || ""}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+              />
+            </div>
           </div>
 
           <div className="space-y-4">

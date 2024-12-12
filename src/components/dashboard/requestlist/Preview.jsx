@@ -229,6 +229,7 @@ const Preview = ({ formData, onSubmit, onBack }) => {
                       label: "Quotation Date",
                       value: formData.procurements.quotationDate,
                     },
+                    
                     {
                       label: "Service Period",
                       value: formData.procurements.servicePeriod,

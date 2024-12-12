@@ -301,6 +301,14 @@ const PreviewTheReq = () => {
                       label: "Quotation Number",
                       value: request.procurements.quotationNumber,
                     },
+                    request.procurements.projectCode && {
+                      label: "Project Code",
+                      value: request.procurements.projectCode,
+                    },
+                    request.procurements.clientName && {
+                      label: "Client Name",
+                      value: request.procurements.clientName,
+                    },
                     request.procurements.quotationDate && {
                       label: "Quotation Date",
                       value: formatDateToDDMMYY(

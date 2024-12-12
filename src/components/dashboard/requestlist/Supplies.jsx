@@ -36,6 +36,22 @@ const Supplies = ({
   const [services, setServices] = useState(formData.services || [initialService]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+
+  const currencies = [
+    { code: "USD", symbol: "$" },
+    { code: "EUR", symbol: "€" },
+    { code: "GBP", symbol: "£" },
+    { code: "JPY", symbol: "¥" },
+    { code: "CAD", symbol: "C$" },
+    { code: "INR", symbol: "₹" },
+  ];
+
+  const formatCurrency = (value) => {
+    const currency = currencies.find(c => c.code === selectedCurrency);
+    return `${currency.symbol}${value.toFixed(2)}`;
+  };
+
   
 
   const handleServiceChange = (e, index) => {
@@ -112,37 +128,40 @@ const Supplies = ({
       </div>
 
       <div className="p-8 space-y-6">
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100 border-b-2 border-gray-200">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-56">
                   Product Name<span className="text-red-500">*</span>
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-56">
                   Product Description<span className="text-red-500">*</span>
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-56">
+                  Product Purpose<span className="text-red-500">*</span>
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-28">
                   Quantity<span className="text-red-500">*</span>
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-2">
                   Price<span className="text-red-500">*</span>
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">
                   Tax (%)
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">
                   Row Total
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Actions
+                  
                 </th>
               </tr>
             </thead>
             <tbody>
               {services.map((service, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50 transition duration-200">
-                  <td className="px-4 py-4">
+                  <td className="px-4 w-24">
                     <input
                       type="text"
                       name="productName"
@@ -151,9 +170,8 @@ const Supplies = ({
                       className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                       placeholder="Product Name"
                     />
- 
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-3 py-5 w-56">
                     <textarea
                       name="productDescription"
                       value={service.productDescription}
@@ -163,7 +181,17 @@ const Supplies = ({
                       rows={3}
                     />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-3 py-4 w-56">
+                    <textarea
+                      name="productPurpose"
+                      value={service.productPurpose}
+                      onChange={(e) => handleServiceChange(e, index)}
+                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 resize-y"
+                      placeholder="Product Purpose"
+                      rows={3}
+                    />
+                  </td>
+                  <td className="px-3 py-4 w-28">
                     <input
                       type="number"
                       name="quantity"
@@ -174,7 +202,7 @@ const Supplies = ({
                       min="0"
                     />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-3 py-4 w-48">
                     <input
                       type="number"
                       name="price"
@@ -186,7 +214,7 @@ const Supplies = ({
                       step="0.01"
                     />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-3 py-4 w-28">
                     <input
                       type="number"
                       name="tax"
@@ -198,7 +226,7 @@ const Supplies = ({
                       step="0.01"
                     />
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-3 py-4 w-52">
                     <input
                       type="number"
                       value={calculateRowTotal(service).toFixed(2)}
@@ -207,7 +235,7 @@ const Supplies = ({
                       placeholder="Row Total"
                     />
                   </td>
-                  <td className="px-4 py-4 text-right">
+                  <td className="px-3 py-4 text-right">
                     <button
                       type="button"
                       onClick={() => handleRemoveService(index)}
@@ -224,11 +252,24 @@ const Supplies = ({
             </tbody>
             <tfoot>
               <tr className="bg-gray-100">
-                <td colSpan="5" className="px-4 py-3 font-bold text-gray-700">
+                <td colSpan="4" className="px-4 py-3 font-bold text-gray-700">
                   Total Amount:
                 </td>
+                <td className="px-4 py-3">
+                  <select
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    className="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+                  >
+                    {currencies.map((currency) => (
+                      <option key={currency.code} value={currency.code}>
+                        {currency.code} ({currency.symbol})
+                      </option>
+                    ))}
+                  </select>
+                </td>
                 <td className="px-4 py-3 font-bold text-blue-600">
-                  {totalValue.toFixed(2)}
+                  {formatCurrency(totalValue)}
                 </td>
                 <td></td>
               </tr>
