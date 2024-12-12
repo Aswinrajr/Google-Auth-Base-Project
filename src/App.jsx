@@ -30,6 +30,7 @@ import EditVendor from "./components/dashboard/vendor/EditVendor";
 import PreviewTheReq from "./components/dashboard/requestlist/PreviewTheReq";
 import Approvals from "./components/dashboard/approvals/Approvals";
 import EditRequestForm from "./components/dashboard/requestlist/edit/EditRequestForm";
+import QuestionsDetails from "./components/questions/QuestionDetails";
 
 
 function App() {
@@ -52,6 +53,8 @@ function App() {
 
 
           <Route path="/approveal-request-list" element={<Approvals/>} />
+          <Route path="/questions" element={<QuestionsDetails/>} />
+
 
           <Route path="/users/list" element={<UserListTable />} />
           <Route path="/create-user" element={<UserRegistartion />} />

@@ -1,17 +1,16 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { fetchAllVendorData } from "../../../api/service/adminServices";
 import { uploadCloudinary } from "../../../utils/cloudinaryUtils";
-import { FaFilePdf } from "react-icons/fa";
 
 const Procurements = ({ formData, setFormData, onBack, onNext }) => {
   const [vendors, setVendors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newVendor, setNewVendor] = useState({ name: "", email: "" });
   const [filesData, setFilesData] = useState([
-    { id: Date.now(), fileType: "", otherType: "", files: [], urls: [] },
+    { fileType: "", otherType: "", file: null },
   ]);
 
-  // Fetch vendors on component mount
   useEffect(() => {
     const fetchVendor = async () => {
       try {
@@ -27,39 +26,6 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     fetchVendor();
   }, []);
 
-  // Populate files data from formData when component mounts or formData changes
-  useEffect(() => {
-    if (
-      formData.uploadedFiles &&
-      Object.keys(formData.uploadedFiles).length > 0
-    ) {
-      const reconstructedFilesData = Object.entries(formData.uploadedFiles).map(
-        ([fileType, urls]) => ({
-          id: Date.now(),
-          fileType: fileType,
-          otherType: fileType === "Other" ? fileType : "",
-          files: [], // Note: original File objects are lost on page refresh
-          urls: urls,
-        })
-      );
-
-      setFilesData(
-        reconstructedFilesData.length > 0
-          ? reconstructedFilesData
-          : [
-              {
-                id: Date.now(),
-                fileType: "",
-                otherType: "",
-                files: [],
-                urls: [],
-              },
-            ]
-      );
-    }
-  }, [formData.uploadedFiles]);
-
-  // Set default quotation date if not already set
   useEffect(() => {
     if (!formData.quotationDate) {
       const today = new Date().toISOString().split("T")[0];
@@ -70,14 +36,6 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     }
   }, [setFormData, formData.quotationDate]);
 
-  // Utility method to get effective file type
-  const getEffectiveFileType = (fileData) => {
-    return fileData.fileType === "Other"
-      ? fileData.otherType
-      : fileData.fileType;
-  };
-
-  // Handle input changes for form fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -86,19 +44,56 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     }));
   };
 
-  // Get minimum date for quotation (15 days ago)
+  const handleMultiFileChange = async (e) => {
+    const { name, files } = e.target;
+
+    const filesArray = Array.from(files);
+
+    const uploadedImages = await Promise.all(
+      filesArray.map(async (image) => {
+        const data = await uploadCloudinary(image);
+        return data.url;
+      })
+    );
+
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: [...(prevState[name] || []), ...uploadedImages],
+    }));
+  };
+
   const getMinDate = () => {
     const date = new Date();
     date.setDate(date.getDate() - 15);
     return date.toISOString().split("T")[0];
   };
 
-  // Open new vendor modal
+  const handleFileTypeChange = (e, index) => {
+    const updatedData = [...filesData];
+    updatedData[index].fileType = e.target.value;
+    if (e.target.value !== "Other") {
+      updatedData[index].otherType = "";
+    }
+    setFilesData(updatedData);
+  };
+
+  const handleOtherTypeChange = (e, index) => {
+    const updatedData = [...filesData];
+    updatedData[index].otherType = e.target.value;
+    setFilesData(updatedData);
+  };
+
+  const handleAddRow = () => {
+    setFilesData((prev) => [
+      ...prev,
+      { fileType: "", otherType: "", file: null },
+    ]);
+  };
+
   const handleNewVendor = () => {
     setShowModal(true);
   };
 
-  // Add new vendor
   const handleAddVendor = () => {
     if (newVendor.name && newVendor.email) {
       const newVendorObj = {
@@ -122,7 +117,6 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     }
   };
 
-  // Get vendor display name
   const getVendorDisplayName = (vendor) => {
     if (vendor.isNewVendor) {
       return `${vendor.firstName} -(New Vendor)`;
@@ -130,208 +124,28 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
     return `${vendor.vendorId} - ${vendor.firstName}`;
   };
 
-  // Handle multiple file uploads
-  const handleMultiFileChange = async (e, index) => {
-    const files = Array.from(e.target.files);
-    const currentFileData = filesData[index];
-
-    // Determine the file type to use
-    const fileType = getEffectiveFileType(currentFileData);
-
-    if (!fileType) {
-      alert("Please select a file type first");
-      return;
-    }
-
-    try {
-      const uploadedUrls = await Promise.all(
-        files.map(async (file) => {
-          const data = await uploadCloudinary(file);
-          return data.url;
-        })
+  const handleRemoveFile = (index) => {
+    console.log("Removing file at index:", index);
+    setFormData((prevData) => {
+      const updatedFiles = prevData.competitiveQuotations.filter(
+        (file, i) => i !== index
       );
-
-      // Update filesData for the specific row
-      const updatedFilesData = filesData.map((data, idx) => {
-        if (idx === index) {
-          return {
-            ...data,
-            files: [...data.files, ...files],
-            urls: [...data.urls, ...uploadedUrls],
-          };
-        }
-        return data;
-      });
-      setFilesData(updatedFilesData);
-
-      // Update formData
-      setFormData((prevState) => {
-        const currentUploadedFiles = prevState.uploadedFiles || {};
-        return {
-          ...prevState,
-          uploadedFiles: {
-            ...currentUploadedFiles,
-            [fileType]: [
-              ...(currentUploadedFiles[fileType] || []),
-              ...uploadedUrls,
-            ],
-          },
-        };
-      });
-    } catch (error) {
-      console.error("Error uploading files:", error);
-      alert("Error uploading files. Please try again.");
-    }
-  };
-
-  // Remove a specific file
-  const handleRemoveFile = (fileType, fileIndex) => {
-    // Remove from formData
-    setFormData((prevState) => {
-      const updatedFiles = { ...prevState.uploadedFiles };
-      if (updatedFiles[fileType]) {
-        updatedFiles[fileType] = updatedFiles[fileType].filter(
-          (_, i) => i !== fileIndex
-        );
-
-        if (updatedFiles[fileType].length === 0) {
-          delete updatedFiles[fileType];
-        }
-      }
+      console.log("Updated files:", updatedFiles);
       return {
-        ...prevState,
-        uploadedFiles: updatedFiles,
+        ...prevData,
+        competitiveQuotations: updatedFiles,
       };
     });
-
-    // Update filesData
-    setFilesData((prevData) =>
-      prevData
-        .map((fileData) => {
-          const currentFileType = getEffectiveFileType(fileData);
-
-          if (currentFileType === fileType) {
-            return {
-              ...fileData,
-              urls: fileData.urls.filter((_, i) => i !== fileIndex),
-            };
-          }
-          return fileData;
-        })
-        .filter(
-          (fileData) => fileData.urls.length > 0 || fileData.fileType === ""
-        )
-    );
   };
 
-  // Handle file type selection
-  const handleFileTypeChange = (e, index) => {
-    const newFileType = e.target.value;
-
-    setFilesData((prevData) => {
-      const updatedData = [...prevData];
-      updatedData[index] = {
-        ...updatedData[index],
-        fileType: newFileType,
-        otherType: newFileType === "Other" ? updatedData[index].otherType : "",
-        files: [],
-        urls: [],
-      };
-      return updatedData;
-    });
-
-    // Clear any existing files for this row from formData
-    const oldFileType = getEffectiveFileType(filesData[index]);
-
-    if (oldFileType) {
-      setFormData((prevState) => {
-        const updatedFiles = { ...prevState.uploadedFiles };
-        delete updatedFiles[oldFileType];
-        return {
-          ...prevState,
-          uploadedFiles: updatedFiles,
-        };
-      });
-    }
-  };
-
-  // Handle other file type input
-  const handleOtherTypeChange = (e, index) => {
-    const updatedData = [...filesData];
-    updatedData[index].otherType = e.target.value;
-    setFilesData(updatedData);
-  };
-
-  // Add a new file upload row
-  const handleAddRow = () => {
-    setFilesData((prev) => [
-      ...prev,
-      { id: Date.now(), fileType: "", otherType: "", files: [], urls: [] },
-    ]);
-  };
-
-  // Remove a file upload row
   const handleRemoveRow = (index) => {
-    // Get the file type before removing the row
-    const fileType = getEffectiveFileType(filesData[index]);
+    console.log(index);
 
-    // Remove the row from filesData
     const updatedFilesData = filesData.filter((_, i) => i !== index);
+
     setFilesData(updatedFilesData);
-
-    // Remove corresponding files from formData
-    if (fileType) {
-      setFormData((prevState) => {
-        const updatedFiles = { ...prevState.uploadedFiles };
-        delete updatedFiles[fileType];
-        return {
-          ...prevState,
-          uploadedFiles: updatedFiles,
-        };
-      });
-    }
   };
 
-  // Render uploaded files for a specific row
-  const renderUploadedFiles = (rowIndex) => {
-    const fileData = filesData[rowIndex];
-    const fileType = getEffectiveFileType(fileData);
-
-    if (!fileType || !fileData.urls.length) return null;
-
-    return (
-      <div className="flex flex-col gap-4">
-        <div>
-          <h3 className="font-semibold mb-2">{fileType}</h3>
-          <div className="flex flex-wrap gap-2">
-            {fileData.urls.map((url, fileIndex) => (
-              <div
-                key={fileIndex}
-                className="flex items-center bg-gray-100 rounded-lg p-2"
-              >
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center"
-                >
-                  <FaFilePdf size={24} className="text-red-500" />
-                </a>
-                <button
-                  onClick={() => handleRemoveFile(fileType, fileIndex)}
-                  className="ml-2 text-red-500 hover:text-red-700"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Handle form submission
   const handleSubmit = () => {
     console.log("formData for Procurements stage", formData);
     onNext();
@@ -354,7 +168,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               </label>
               <select
                 name="vendor"
-                value={formData.vendor || ""}
+                value={formData.vendor}
                 onChange={(e) => {
                   if (e.target.value === "newVendor") {
                     handleNewVendor();
@@ -382,7 +196,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               <input
                 type="date"
                 name="quotationDate"
-                value={formData.quotationDate || ""}
+                value={formData.quotationDate}
                 onChange={handleInputChange}
                 min={getMinDate()}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
@@ -395,7 +209,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               <input
                 type="text"
                 name="quotationNumber"
-                value={formData.quotationNumber || ""}
+                value={formData.quotationNumber}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
                 placeholder="Enter Quotation Number"
@@ -410,7 +224,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               </label>
               <select
                 name="servicePeriod"
-                value={formData.servicePeriod || "oneTime"}
+                value={formData.servicePeriod}
                 onChange={(e) => {
                   handleInputChange(e);
                   if (e.target.value === "oneTime") {
@@ -418,6 +232,11 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                       ...prevData,
                       poValidFrom: "",
                       poValidTo: "",
+                    }));
+                  } else {
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      validityDate: "",
                     }));
                   }
                 }}
@@ -428,7 +247,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               </select>
             </div>
 
-            {formData.servicePeriod === "custom" && (
+            {formData.servicePeriod === "custom" ? (
               <>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -437,7 +256,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                   <input
                     type="date"
                     name="poValidFrom"
-                    value={formData.poValidFrom || ""}
+                    value={formData.poValidFrom}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
                   />
@@ -449,18 +268,47 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                   <input
                     type="date"
                     name="poValidTo"
-                    value={formData.poValidTo || ""}
+                    value={formData.poValidTo}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
                   />
                 </div>
               </>
+            ) : (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Validity Date
+                </label>
+                <input
+                  type="date"
+                  name="validityDate"
+                  value={formData.validityDate}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                />
+              </div>
             )}
           </div>
 
+          <div className="grid grid-cols-2 gap-6 items-start">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Quotation Expiry Date
+                </label>
+                <input
+                  type="date"
+                  name="poExpiryDate"
+                  value={formData.poExpiryDate}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+                />
+              </div>
+            </div>
+          </div>
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Upload Documents
+              Upload Competitive Quotations
             </h3>
 
             <div className="overflow-x-auto">
@@ -473,9 +321,6 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Upload File
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Uploaded Files
-                    </th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Actions
                     </th>
@@ -484,7 +329,7 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                 <tbody>
                   {filesData.map((fileData, index) => (
                     <tr
-                      key={fileData.id}
+                      key={index}
                       className="border-b hover:bg-gray-50 transition duration-200"
                     >
                       <td className="px-4 py-3">
@@ -517,19 +362,14 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
                           type="file"
                           onChange={(e) => handleMultiFileChange(e, index)}
                           className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                          multiple
-                          disabled={!fileData.fileType}
+                          multiple 
                         />
-                      </td>
-
-                      <td className="px-4 py-3">
-                        {renderUploadedFiles(index)}
                       </td>
 
                       <td className="px-4 py-3 text-right">
                         <button
                           onClick={() => handleRemoveRow(index)}
-                          className={`bg-red-500 text-white hover:bg-red-700 px-4 py-2 rounded-lg transition duration-300 ${
+                          className={`bg-red-500 text-white hover:bg-red-700 px-4 py-2 rounded-lg transition duration-300 hover:text-red-700 ${
                             index === 0 ? "cursor-not-allowed opacity-50" : ""
                           }`}
                           disabled={index === 0}
@@ -567,66 +407,65 @@ const Procurements = ({ formData, setFormData, onBack, onNext }) => {
               Next
             </button>
           </div>
+        </div>
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 p-4">
+            <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl transform transition-all duration-300 ease-in-out">
+              <div className="bg-primary text-white p-6 rounded-t-2xl">
+                <h3 className="text-2xl font-bold text-center">
+                  Add New Vendor
+                </h3>
+              </div>
 
-          {showModal && (
-            <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 p-4">
-              <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl transform transition-all duration-300 ease-in-out">
-                <div className="bg-primary text-white p-6 rounded-t-2xl">
-                  <h3 className="text-2xl font-bold text-center">
-                    Add New Vendor
-                  </h3>
+              <div className="p-8 space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Vendor Name
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Enter vendor name"
+                    value={newVendor.name}
+                    onChange={(e) =>
+                      setNewVendor({ ...newVendor, name: e.target.value })
+                    }
+                  />
                 </div>
 
-                <div className="p-8 space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Vendor Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="Enter vendor name"
-                      value={newVendor.name}
-                      onChange={(e) =>
-                        setNewVendor({ ...newVendor, name: e.target.value })
-                      }
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Vendor Email
+                  </label>
+                  <input
+                    type="email"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Enter vendor email"
+                    value={newVendor.email}
+                    onChange={(e) =>
+                      setNewVendor({ ...newVendor, email: e.target.value })
+                    }
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Vendor Email
-                    </label>
-                    <input
-                      type="email"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="Enter vendor email"
-                      value={newVendor.email}
-                      onChange={(e) =>
-                        setNewVendor({ ...newVendor, email: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className="flex space-x-4">
-                    <button
-                      onClick={() => setShowModal(false)}
-                      className="w-full px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleAddVendor}
-                      className="w-full px-6 py-3 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-dark transition duration-300"
-                    >
-                      Add Vendor
-                    </button>
-                  </div>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="w-full px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddVendor}
+                    className="w-full px-6 py-3 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-dark transition duration-300"
+                  >
+                    Add Vendor
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

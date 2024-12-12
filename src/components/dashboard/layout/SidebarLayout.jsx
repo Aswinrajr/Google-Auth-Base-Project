@@ -64,6 +64,20 @@ const SidebarLayout = () => {
     ];
   }
 
+  else if (role === "Legal Team") {
+    sidebarItems = [
+      { icon: Home, title: "Dashboard", path: "/dashboard" },
+      { icon: MonitorSmartphone, title: "Requests", path: "/req-list-table" },
+      {
+        icon: CheckCircle,
+        title: "Approvals",
+        path: "/approveal-request-list",
+      },
+      { icon: HelpCircle, title: "Questions", path: "/questions" },
+
+    ];
+  }
+
   else {
     sidebarItems = [
       { icon: Home, title: "Dashboard", path: "/dashboard" },

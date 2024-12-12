@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Edit, Trash2, Search, Download, Plus, Filter } from "lucide-react";
+import { Edit, Trash2, Search, Download, Plus, Filter,  FileText, } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   deleteReq,
@@ -50,8 +50,12 @@ const Approvals = () => {
       prev.includes(sno) ? prev.filter((id) => id !== sno) : [...prev, sno]
     );
   };
-  const onDelete = async (id) => {
+  const onDelete = async (e,id) => {
     console.log("Delete");
+    e.stopPropagation();
+    setUsers(users?.filter((person) => person?._id !== id));
+
+
     const response = await deleteReq(id);
     console.log(response);
   };
@@ -128,6 +132,12 @@ const Approvals = () => {
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
+                      Business Unit
+                    </th>
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Entity
                     </th>
                     <th
@@ -160,18 +170,8 @@ const Approvals = () => {
                     >
                       Department
                     </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      Cost Centre
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      Final Quote
-                    </th>
+                  
+                   
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
@@ -180,10 +180,11 @@ const Approvals = () => {
                     </th>
                     <th
                       scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium  text-white uppercase tracking-wider"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      View More
+                      PO Document
                     </th>
+                  
                     <th
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
@@ -195,7 +196,11 @@ const Approvals = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {users?.length > 0 ? (
                     users.map((user, index) => (
-                      <tr key={user.sno} className="hover:bg-gray-50">
+                      <tr key={user.sno} className="hover:bg-gray-50"  onClick={() =>
+                        navigate(
+                          `/req-list-table/preview-one-req/${user._id}`
+                        )
+                      } >
                         <td className="px-6 py-4">
                           <input
                             type="checkbox"
@@ -210,6 +215,10 @@ const Approvals = () => {
 
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.reqid}
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-500">
+                          {user.commercials.businessUnit||"NA"}
                         </td>
 
                         <td className="px-6 py-4 text-sm text-gray-500">
@@ -230,35 +239,32 @@ const Approvals = () => {
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.commercials.department}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
-                          {user.commercials.costCentre}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
-                          {user.supplies.totalValue}
-                        </td>
+                       
+                     
                         <td
                           className="px-6 py-4 text-sm text-gray-500"
-                          onClick={() =>
-                            navigate(
-                              `/req-list-table/preview-one-req/${user._id}`
-                            )
-                          }
+                     
                         >
                           {user.status || "Pending"}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                          <button
-                            className="text-blue-500 hover:text-blue-700"
-                            onClick={() =>
-                              navigate(
-                                `/req-list-table/preview-one-req/${user._id}`
-                              )
-                            }
-                          >
-                            View
-                          </button>
+                        <td className="px-6 py-4 text-sm text-gray-500">
+                          {user.status === "Approved" ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/req-list-table/invoice/${user._id}`);
+                              }}
+                              className="flex items-center text-blue-500 hover:text-blue-700"
+                            >
+                              <FileText className="h-5 w-5 mr-2" />
+                              View PO
+                            </button>
+                          ) : (
+                            "N/A"
+                          )}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center space-x-2 mt-2">
+                       
+                        <td className="px-6 py-4 text-sm text-gray-500 flex items-center space-x-2 mt-7">
                           <button className="text-blue-500 hover:text-blue-700">
                             <Edit className="h-5 w-5" />
                           </button>

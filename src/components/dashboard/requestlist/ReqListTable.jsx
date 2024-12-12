@@ -34,9 +34,11 @@ const ReqListTable = () => {
       } else if (role === "Employee") {
         // Fetch data for Employee role
         response = await getReqListEmployee(userId);
-      } else {
-        response = await getReqListHR();
-      }
+      } 
+      
+      // else {
+      //   response = await getReqListHR(userId);
+      // }
 
       if (response && response.data) {
         console.log(response);
@@ -61,37 +63,53 @@ const ReqListTable = () => {
       prev.includes(sno) ? prev.filter((id) => id !== sno) : [...prev, sno]
     );
   };
-  const onDelete = async (id) => {
-    console.log("Delete");
-    setUsers(users?.filter((person) => person?._id !== id));
 
+  const onDelete = async (e, id) => {
+    // Stop event propagation to prevent row click
+    e.stopPropagation();
+    
+    setUsers(users?.filter((person) => person?._id !== id));
     const response = await deleteReq(id);
     console.log(response);
   };
 
+  const onEdit = (e, user) => {
+    // Stop event propagation to prevent row click
+    e.stopPropagation();
+    
+    navigate(`/req-list-table/edit-req/${user._id}`);
+  };
+
   const renderActionColumn = (user) => {
-    if (role === "Admin" || role === "HR") {
+    if (role === "Employee") {
       return (
-        <td className="px-6 py-4 text-sm text-gray-500 flex items-center justify-center space-x-2 mt-6">
-          <button className="text-blue-500 hover:text-blue-700 " onClick={() => navigate(`/req-list-table/edit-req/${user._id}`)}>
+        <td className="px-6 py-4 text-sm text-gray-500 text-center">
+          <button 
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Request Edit
+          </button>
+        </td>
+      );
+    } else {
+      return (
+        <td 
+          className="px-6 py-4 text-sm text-gray-500 flex items-center justify-center space-x-2 mt-6"
+          // Prevent propagation on the entire cell
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            className="text-blue-500 hover:text-blue-700"
+            onClick={(e) => onEdit(e, user)}
+          >
             <Edit className="h-5 w-5" />
           </button>
           <button
             className="text-red-500 hover:text-red-700"
-            onClick={() => onDelete(user._id)}
+            onClick={(e) => onDelete(e, user._id)}
           >
             <Trash2 className="h-5 w-5" />
-          </button>
-        </td>
-      );
-    } else if (role === "Employee") {
-      return (
-        <td className="px-6 py-4 text-sm text-gray-500 text-center">
-          <button
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary"
-            onClick={() => navigate(`/req-list-table/edit-req/${user._id}`)}
-          >
-            Request Edit
           </button>
         </td>
       );
@@ -170,6 +188,12 @@ const ReqListTable = () => {
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
+                      Business Unit
+                    </th>
+                    <th
+                      scope="col"
+                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Entity
                     </th>
                     <th
@@ -206,18 +230,6 @@ const ReqListTable = () => {
                       scope="col"
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Cost Centre
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      Final Quote
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
                       Status
                     </th>
                     <th
@@ -225,12 +237,6 @@ const ReqListTable = () => {
                       className="sticky top-0 px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
                       PO Document
-                    </th>
-                    <th
-                      scope="col"
-                      className="sticky top-0 px-6 py-4 text-left text-xs font-medium  text-white uppercase tracking-wider"
-                    >
-                      View More
                     </th>
                     <th
                       scope="col"
@@ -243,8 +249,19 @@ const ReqListTable = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {users.length > 0 ? (
                     users.map((user, index) => (
-                      <tr key={user.sno} className="hover:bg-gray-50">
-                        <td className="px-6 py-4">
+                      <tr 
+                        key={user.sno} 
+                        className="hover:bg-gray-50 cursor-pointer" 
+                        onClick={() =>
+                          navigate(
+                            `/req-list-table/preview-one-req/${user._id}`
+                          )
+                        }
+                      >
+                        <td 
+                          className="px-6 py-4"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <input
                             type="checkbox"
                             checked={selectedUsers.includes(user.sno)}
@@ -258,6 +275,9 @@ const ReqListTable = () => {
 
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.reqid}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-500">
+                          {user.commercials.businessUnit||"NA"}
                         </td>
 
                         <td className="px-4 py-4 text-sm text-gray-500">
@@ -279,21 +299,15 @@ const ReqListTable = () => {
                           {user.commercials.department}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">
-                          {user.commercials.costCentre}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
-                          {user.supplies.totalValue}
-                        </td>
-                        <td
-                          className="px-6 py-4 text-sm text-gray-500"
-                          
-                        >
                           {user.status || "Pending"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500">
                           {user.status === "Approved" ? (
                             <button
-                              onClick={() => navigate(`/req-list-table/invoice/${user._id}`)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/req-list-table/invoice/${user._id}`);
+                              }}
                               className="flex items-center text-blue-500 hover:text-blue-700"
                             >
                               <FileText className="h-5 w-5 mr-2" />
@@ -304,18 +318,6 @@ const ReqListTable = () => {
                           )}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                          <button
-                            className="text-blue-500 hover:text-blue-700"
-                            onClick={() =>
-                              navigate(
-                                `/req-list-table/preview-one-req/${user._id}`
-                              )
-                            }
-                          >
-                            View
-                          </button>
-                        </td>
                         {renderActionColumn(user)}
                       </tr>
                     ))

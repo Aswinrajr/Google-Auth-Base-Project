@@ -6,12 +6,14 @@ import { getNewNotification } from '../../../api/service/adminServices';
 
 const TopBar = () => {
   const userId = localStorage.getItem("userId");
+  const user = JSON.parse(localStorage.getItem("user"));
   const role = localStorage.getItem("role");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [reqData, setReqData] = useState([]);
+  console.log("User data",user)
 
   useEffect(() => {
-    if (role !== "Employee") { // Only fetch notifications if the role is not "employee"
+    if (role !== "Employee") { 
       const fetchNotification = async () => {
         try {
           const response = await getNewNotification(userId);
@@ -55,7 +57,7 @@ const TopBar = () => {
             )}
           </div>
           <div className="bg-gray-100 rounded-full px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 cursor-pointer">
-            Account
+           {`${user.name} - ${role}`}
           </div>
           <MoreVertical className="text-gray-500 cursor-pointer" />
         </div>

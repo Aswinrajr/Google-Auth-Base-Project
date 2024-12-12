@@ -4,52 +4,26 @@ import { PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAllEntityData } from "../../../api/service/adminServices";
 import * as Yup from "yup";
-
-
-// const CommercialValidationSchema = Yup.object().shape({
-//   entity: Yup.string().required("Entity is required"),
-//   city: Yup.string().required("City is required"),
-//   site: Yup.string().required("Site is required"),
-//   department: Yup.string().required("Department is required"),
-//   amount: Yup.number()
-//     .required("Amount is required")
-//     .positive("Amount must be a positive number"),
-//   currency: Yup.string().required("Currency is required"),
-//   costCentre: Yup.string().required("Cost Centre is required"),
-//   paymentMode: Yup.string().required("Payment Mode is required"),
-//   paymentTerms: Yup.array()
-//     .of(
-//       Yup.object().shape({
-//         percentageTerm: Yup.number()
-//           .required("Percentage Term is required")
-//           .positive("Percentage Term must be a positive number")
-//           .max(100, "Percentage Term cannot exceed 100"),
-//         paymentTerm: Yup.string().required("Payment Term is required"),
-//         paymentMode: Yup.string().required("Payment Type is required"),
-//       })
-//     )
-//     .min(1, "At least one payment term is required"),
-//   billTo: Yup.string().required("Bill To address is required"),
-//   shipTo: Yup.string().required("Ship To address is required"),
-// });
-
+import { toast } from "react-toastify";
 
 const Commercials = ({ formData, setFormData, onNext }) => {
-
   const [localFormData, setLocalFormData] = useState({
-    
-    entity: formData.entity||"",
-    city:formData.city|| "",
-    site:formData.site||"",
-    department:formData.department|| "IT Web development",
-    amount:formData.amount|| "",
-    currency:formData.currency|| "USD",
-    costCentre:formData.costCentre|| "CT-ITDT-02",
-    paymentMode:formData.paymentMode|| "",
-    paymentTerms:formData.paymentTerms|| [{ percentageTerm: "", paymentTerm: "", paymentType: "" }],
-    billTo:formData.billTo|| "",
-    shipTo:formData.shipTo|| "",
-    isCreditCardSelected:formData.isCreditCardSelected|| false,
+    entity: formData.entity || "",
+    city: formData.city || "",
+    site: formData.site || "",
+    department: formData.department || "IT Web development",
+    amount: formData.amount || "",
+    currency: formData.currency || "USD",
+    costCentre: formData.costCentre || "CT-ITDT-02",
+    paymentMode: formData.paymentMode || "",
+    paymentTerms: formData.paymentTerms || [
+      { percentageTerm: "", paymentTerm: "", paymentType: "" },
+    ],
+    billTo: formData.billTo || "",
+    shipTo: formData.shipTo || "",
+    hod: formData.hod || "",
+    businessUnit: formData.businessUnit || "",
+    isCreditCardSelected: formData.isCreditCardSelected || false,
   });
   const [entities, setEntities] = useState([]);
   const [selectedEntityDetails, setSelectedEntityDetails] = useState(null);
@@ -125,6 +99,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
 
   const handlePaymentTermChange = (e, index) => {
     const { name, value } = e.target;
+    console.log("name", name, "value", value);
     const updatedPaymentTerms = [...localFormData.paymentTerms];
     updatedPaymentTerms[index] = {
       ...updatedPaymentTerms[index],
@@ -171,26 +146,19 @@ const Commercials = ({ formData, setFormData, onNext }) => {
     // const isValid = await validateForm();
     // if (isValid) {
     // }
-  
-    onNext();
-  };
 
-  // const validateForm = async () => {
-  //   try {
-  //     await CommercialValidationSchema.validate(localFormData, {
-  //       abortEarly: false,
-  //     });
-  //     setErrors({});
-  //     return true;
-  //   } catch (yupError) {
-  //     const errorMap = {};
-  //     yupError.inner.forEach((err) => {
-  //       errorMap[err.path] = err.message;
-  //     });
-  //     setErrors(errorMap);
-  //     return false;
-  //   }
-  // };
+    console.log(localFormData);
+    const totalSum = localFormData.paymentTerms.reduce((sum, term) => {
+      return sum + (parseFloat(term.percentageTerm) || 0);
+    }, 0);
+
+    if (totalSum !== 100) {
+      toast.error("Persentage term is not equal to 100");
+      return;
+    } else {
+      onNext();
+    }
+  };
 
   return (
     <div className="w-full mx-auto bg-white  shadow-2xl rounded-2xl overflow-hidden ">
@@ -201,7 +169,37 @@ const Commercials = ({ formData, setFormData, onNext }) => {
       </div>
 
       <div className="p-8 space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-4 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-primary mb-2">
+              Business Unit <span className="text-red-500">*</span>
+            </label>
+            <select
+              onChange={handleInputChange}
+              value={localFormData.businessUnit}
+              name="businessUnit"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+            >
+              <option value="">Select Business Unit</option>
+              <option value="Central">Central</option>
+              <option value="China">China</option>
+              <option value="EMEA">EMEA</option>
+              <option value="India-Rest">India : India-Rest</option>
+              <option value="India-North">India : North</option>
+              <option value="India-South">India : South</option>
+              <option value="SEA-IDN">SEA : SEA IDN</option>
+              <option value="SEA-MLY">SEA : SEA MLY</option>
+              <option value="SEA-Rest">SEA : SEA-Rest</option>
+              <option value="SMB">SMB</option>
+              <option value="UK">UK : UK</option>
+              <option value="USA">USA</option>
+            </select>
+
+            {errors.businessUnit && (
+              <p className="text-red-500 text-xs mt-1">{errors.businessUnit}</p>
+            )}
+          </div>
+
           <div>
             <label className="block text-sm font-semibold text-primary mb-2">
               Entity <span className="text-red-500">*</span>
@@ -243,9 +241,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               <p className="text-red-500 text-xs mt-1">{errors.city}</p>
             )}
           </div>
-        </div>
 
-        <div className="grid grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Site <span className="text-red-500">*</span>
@@ -262,7 +258,9 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               <p className="text-red-500 text-xs mt-1">{errors.site}</p>
             )}
           </div>
+        </div>
 
+        <div className="grid grid-cols-4 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Department <span className="text-red-500">*</span>
@@ -276,15 +274,86 @@ const Commercials = ({ formData, setFormData, onNext }) => {
               <option value="" disabled>
                 Select Department
               </option>
-              <option value="hr">Human Resources</option>
-              <option value="it">Information Technology</option>
-              <option value="finance">Finance</option>
-              <option value="marketing">Marketing</option>
+
+              <option value="Corporate:Corp">Corporate : Corp</option>
+              <option value="Corporate:Finance">Corporate : Finance</option>
+              <option value="Corporate:WorkPlaceSolutions">
+                Corporate : Work Place Solutions
+              </option>
+              <option value="CustomerSuccess:AccountManagement">
+                Customer Success : Account Management
+              </option>
+              <option value="CustomerSuccess:DataScience">
+                Customer Success : Data Science
+              </option>
+              <option value="CustomerSuccess:Implementation">
+                Customer Success : Implementation
+              </option>
+              <option value="CustomerSuccess:ProfServices">
+                Customer Success : Prof Services
+              </option>
+              <option value="CustomerSuccess:Solutions">
+                Customer Success : Solutions
+              </option>
+              <option value="HumanResource:PeoplePractice">
+                Human Resource : People Practice
+              </option>
+              <option value="HumanResource:TalentAcquisition">
+                Human Resource : Talent Acquisition
+              </option>
+              <option value="Infra:GatewaySMS">Infra : Gateway SMS</option>
+              <option value="Infra:InformationSecurity">
+                Infra : Information Security
+              </option>
+              <option value="Infra:InformationTechnology">
+                Infra : Information Technology
+              </option>
+              <option value="SalesMarketing:FieldSales">
+                Sales & Marketing : Field Sales
+              </option>
+              <option value="SalesMarketing:InsideSales">
+                Sales & Marketing : Inside Sales
+              </option>
+              <option value="SalesMarketing:Marketing">
+                Sales & Marketing : Marketing
+              </option>
+              <option value="SalesMarketing:PreSales">
+                Sales & Marketing : Pre-Sales
+              </option>
+              <option value="SalesMarketing:SalesOperations">
+                Sales & Marketing : Sales Operations
+              </option>
+              <option value="ServerCosts">Server Costs</option>
+              <option value="Technology:TechCore">
+                Technology : Tech-Core
+              </option>
+              <option value="Technology:TechProduct">
+                Technology : Tech-Product
+              </option>
             </select>
           </div>
+
           {errors.department && (
             <p className="text-red-500 text-xs mt-1">{errors.department}</p>
           )}
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              HOD <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="hod"
+              value={localFormData.hod}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300"
+              placeholder="Selct HOD"
+            />
+            {errors.hod && (
+              <p className="text-red-500 text-xs mt-1">{errors.hod}</p>
+            )}
+          </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 ">
               Payment Mode <span className="text-red-500">*</span>
@@ -316,7 +385,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
         <div className="space-y-4">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Percentage Amount
+              Payment Term
             </h3>
           </div>
 
@@ -393,6 +462,9 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         <option value="advance_60">
                           60 days credit period
                         </option>
+                        <option value="advance_60">
+                          90 days credit period
+                        </option>
                       </select>
                     </td>
 
@@ -414,7 +486,7 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         <option value="fullPayment">Full Payment</option>
                         <option value="advancePayment">Advance Payment</option>
                         <option value="deliveryPayment">
-                          Delivery Payment
+                          Payment on Delivary
                         </option>
                         <option value="partPayment">Part Payment</option>
                       </select>
@@ -425,10 +497,12 @@ const Commercials = ({ formData, setFormData, onNext }) => {
                         <button
                           type="button"
                           onClick={() => handleDeletePaymentTerm(index)}
-                          disabled={localFormData.isCreditCardSelected}
+                          disabled={
+                            localFormData.isCreditCardSelected || index === 0
+                          }
                           className={`flex items-center px-4 py-2 rounded-lg transition duration-300 
         ${
-          localFormData.isCreditCardSelected
+          localFormData.isCreditCardSelected || index === 0
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-red-500 text-white hover:bg-red-700"
         }`}
@@ -448,7 +522,12 @@ const Commercials = ({ formData, setFormData, onNext }) => {
             <button
               type="button"
               onClick={handleAddMorePaymentTerm}
-              className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition duration-300"
+              className={`${
+                localFormData.isCreditCardSelected
+                  ? "bg-gray-300 text-black"
+                  : "bg-primary text-white"
+              } flex items-center px-4 py-2   rounded-lg hover:bg-primary-dark transition duration-300 `}
+              disabled={localFormData.isCreditCardSelected}
             >
               <PlusCircle size={16} className="mr-2" />
               Add Payment Term
@@ -492,7 +571,6 @@ const Commercials = ({ formData, setFormData, onNext }) => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="mt-8 flex justify-end">
           <button
             type="button"

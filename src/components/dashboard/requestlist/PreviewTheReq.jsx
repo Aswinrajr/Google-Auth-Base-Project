@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   CheckCircle2,
-
   Package,
   DollarSign,
   ClipboardList,
@@ -9,6 +8,7 @@ import {
   PauseCircle,
   Send,
   File,
+  FileIcon,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -75,7 +75,6 @@ const PreviewTheReq = () => {
     }
   };
 
-
   const SectionNavigation = () => {
     const sections = [
       {
@@ -137,6 +136,45 @@ const PreviewTheReq = () => {
       </div>
     );
   };
+  const renderUploadedFiles = (uploadedFiles) => {
+    if (!uploadedFiles || Object.keys(uploadedFiles).length === 0) {
+      return <div className="text-gray-500">No files uploaded</div>;
+    }
+
+    return (
+      <div className="mt-4 space-y-2">
+        {Object.entries(uploadedFiles).map(
+          ([key, files]) =>
+            files &&
+            files.length > 0 && (
+              <div key={key} className="bg-gray-50 p-3 rounded-lg">
+                <h4 className="text-sm font-semibold text-gray-700 mb-2 capitalize">
+                  {key.replace(/([A-Z])/g, " $1").toLowerCase()}
+                </h4>
+                <div className="space-y-1">
+                  {files.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center text-sm text-gray-700"
+                    >
+                      <FileIcon className="mr-2 text-primary" size={16} />
+                      <a
+                        href={file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-primary underline"
+                      >
+                        View File {index + 1}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+        )}
+      </div>
+    );
+  };
 
   const renderSectionContent = () => {
     if (!request) return null;
@@ -154,46 +192,60 @@ const PreviewTheReq = () => {
             <h2 className="text-2xl font-bold text-primary border-b pb-3">
               Commercials Details
             </h2>
-            {request.commercials && (
-              <div className="grid md:grid-cols-2 gap-4">
-                {[
-                  {
-                    label: "Bill To",
-                    value: `${request.commercials.billTo}`,
-                  },
-                  { label: "Ship To", value: request.commercials.shipTo },
-                  { label: "City", value: request.commercials.city },
-                  {
-                    label: "Cost Centre",
-                    value: request.commercials.costCentre,
-                  },
-                  { label: "Currency", value: request.commercials.currency },
-                  {
-                    label: "Department",
-                    value: request.commercials.department,
-                  },
-                  { label: "Entity", value: request.commercials.entity },
-                  {
-                    label: "Payment Type",
-                    value: request.commercials.paymentType,
-                  },
-                ]
-                  .filter((item) => item.value)
-                  .map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between p-3 rounded-lg"
-                    >
-                      <span className="text-gray-600 font-medium">
-                        {item.label}
-                      </span>
-                      <span className="text-gray-800 font-semibold">
-                        {item.value}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            )}
+            {request.commercials &&
+              Object.values(request.commercials).some((value) => value) && (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {[
+                    { label: "Amount", value: request.commercials.amount },
+                    { label: "Bill To", value: request.commercials.billTo },
+                    {
+                      label: "Business Unit",
+                      value: request.commercials.businessUnit,
+                    },
+                    { label: "City", value: request.commercials.city },
+                    {
+                      label: "Cost Centre",
+                      value: request.commercials.costCentre,
+                    },
+                    { label: "Currency", value: request.commercials.currency },
+                    {
+                      label: "Department",
+                      value: request.commercials.department,
+                    },
+                    { label: "Entity", value: request.commercials.entity },
+                    {
+                      label: "Head of Department",
+                      value: request.commercials.hod,
+                    },
+                    {
+                      label: "Credit Card Selected",
+                      value: request.commercials.isCreditCardSelected
+                        ? "Yes"
+                        : "No",
+                    },
+                    {
+                      label: "Payment Mode",
+                      value: request.commercials.paymentMode,
+                    },
+                    { label: "Ship To", value: request.commercials.shipTo },
+                    { label: "Site", value: request.commercials.site },
+                  ]
+                    .filter((item) => item.value)
+                    .map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between p-3 rounded-lg"
+                      >
+                        <span className="text-gray-600 font-medium">
+                          {item.label}
+                        </span>
+                        <span className="text-gray-800 font-semibold">
+                          {item.value}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
 
             {request.commercials?.paymentTerms?.length > 0 && (
               <div className="mt-6">
@@ -237,99 +289,75 @@ const PreviewTheReq = () => {
             <h2 className="text-2xl font-bold text-primary border-b pb-3">
               Procurements Details
             </h2>
-            {request.procurements && (
-              <div className="grid md:grid-cols-2 gap-4">
-                {[
-                  { label: "Vendor", value: request.procurements.vendor },
-                  {
-                    label: "Quotation Number",
-                    value: request.procurements.quotationNumber,
-                  },
-                  {
-                    label: "Quotation Date",
-                    value: request.procurements.quotationDate
-                      ? formatDateToDDMMYY(request.procurements.quotationDate)
-                      : "N/A",
-                  },
-                  {
-                    label: "Po ExpiryDate",
-                    value: request.procurements.poExpiryDate
-                      ? formatDateToDDMMYY(request.procurements.poExpiryDate)
-                      : "N/A",
-                  },
-                  {
-                    label: "Po Validity From",
-                    value: request.procurements.poValidityFrom
-                      ? formatDateToDDMMYY(request.procurements.poValidityFrom)
-                      : "N/A",
-                  },
-                  {
-                    label: "Po Validity To",
-                    value: request.procurements.poValidityTo
-                      ? formatDateToDDMMYY(request.procurements.poValidityTo)
-                      : "N/A",
-                  },
-                  {
-                    label: "Final Quotation",
-                    value: request.procurements.quotationCopy, 
-                    isLink: true, 
-                  },
-                ]
-                  .filter((item) => item.value)
-                  .map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <span className="text-gray-600 font-medium">
-                        {item.label}
-                      </span>
-                      <span className="text-gray-800 font-semibold">
-                        {item.isLink ? (
-                          <a
-                            href={item.value}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline hover:text-blue-800"
-                          >
-                            View Document
-                          </a>
-                        ) : (
-                          item.value
-                        )}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            )}
+            {request.procurements &&
+              Object.values(request.procurements).some((value) => value) && (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {[
+                    request.procurements.vendor && {
+                      label: "Vendor ID",
+                      value: request.procurements.vendor,
+                    },
+                    request.procurements.quotationNumber && {
+                      label: "Quotation Number",
+                      value: request.procurements.quotationNumber,
+                    },
+                    request.procurements.quotationDate && {
+                      label: "Quotation Date",
+                      value: formatDateToDDMMYY(
+                        request.procurements.quotationDate
+                      ),
+                    },
+                    request.procurements.servicePeriod && {
+                      label: "Service Period",
+                      value: request.procurements.servicePeriod,
+                    },
+                    request.procurements.poValidFrom && {
+                      label: "PO Valid From",
+                      value: formatDateToDDMMYY(
+                        request.procurements.poValidFrom
+                      ),
+                    },
+                    request.procurements.poValidTo && {
+                      label: "PO Valid To",
+                      value: formatDateToDDMMYY(request.procurements.poValidTo),
+                    },
+                  ]
+                    .filter(Boolean) // Ensures we only include valid objects
+                    .map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between p-3 bg-gray-50 rounded-lg"
+                      >
+                        <span className="text-gray-600 font-medium">
+                          {item.label}
+                        </span>
+                        <span className="text-gray-800 font-semibold">
+                          {item.value}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
 
-            {request.procurements?.competitiveQuotations?.length > 0 ? (
+            {request.procurements?.uploadedFiles && (
               <div className="mt-6">
                 <h3 className="text-xl font-semibold text-primary mb-4">
-                  Competitive Quotations
+                  Uploaded Files
                 </h3>
                 <div className="bg-white shadow-md rounded-lg p-4">
-                  <ul className="space-y-2">
-                    {request.procurements.competitiveQuotations.map(
-                      (fileUrl, index) => (
-                        <li key={index} className="flex items-center space-x-2">
-                          <a
-                            href={fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline hover:text-blue-800"
-                          >
-                            {`Comptative Quaotation ${index + 1}`}
-                          </a>
-                        </li>
-                      )
-                    )}
-                  </ul>
+                  {Object.keys(request.procurements.uploadedFiles).length >
+                  0 ? (
+                    <div className="text-green-600 flex items-center mb-4">
+                      <CheckCircle2 className="mr-2" size={20} />
+                      Files uploaded successfully
+                    </div>
+                  ) : (
+                    <div className="text-gray-500 flex items-center">
+                      No files uploaded
+                    </div>
+                  )}
+                  {renderUploadedFiles(request.procurements.uploadedFiles)}
                 </div>
-              </div>
-            ) : (
-              <div className="text-gray-500 flex items-center">
-                No files uploaded
               </div>
             )}
           </div>
@@ -338,62 +366,80 @@ const PreviewTheReq = () => {
       case "Product/Serivces":
         return (
           <div className="p-6 space-y-6">
-            <h2 className="text-2xl font-bold text-primary border-b pb-3">
-              Supplies Details
-            </h2>
+          <h2 className="text-2xl font-bold text-primary border-b pb-3">
+            Supplies Details
+          </h2>
 
-            {request.supplies?.totalValue !== undefined && (
-              <div className="p-3 bg-gray-50 rounded-lg flex justify-between">
-                <span className="text-gray-600 font-medium">Total Value</span>
-                <span className="text-gray-800 font-semibold">
-                  {request.supplies.totalValue}
-                </span>
-              </div>
-            )}
+          {request.supplies?.totalValue !== undefined && (
+            <div className="p-3 bg-gray-50 rounded-lg flex justify-between">
+              <span className="text-gray-600 font-medium">Total Value</span>
+              <span className="text-gray-800 font-semibold">
+                {request.supplies.totalValue}
+              </span>
+            </div>
+          )}
 
-            {request.supplies?.services?.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-xl font-semibold text-primary mb-4">
-                  Services
-                </h3>
-                <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-primary/10">
-                      <tr>
-                        <th className="p-3 text-left text-primary">
-                          Product Name
-                        </th>
-                        <th className="p-3 text-left text-primary">Quantity</th>
-                        <th className="p-3 text-left text-primary">Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {request.supplies.services.map((service, index) => (
+          {request.supplies?.services?.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold text-primary mb-4">
+                Services
+              </h3>
+              <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-primary/10">
+                    <tr>
+                      <th className="p-3 text-left text-primary">
+                        Product Name
+                      </th>
+                      <th className="p-3 text-left text-primary">
+                        Description
+                      </th>
+                      <th className="p-3 text-left text-primary">Quantity</th>
+                      <th className="p-3 text-left text-primary">Price</th>
+                      <th className="p-3 text-left text-primary">Tax (%)</th>
+                      <th className="p-3 text-left text-primary">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {request.supplies.services.map((service, index) => {
+                      // Calculate the total for each service
+                      const quantity = parseFloat(service.quantity) || 0;
+                      const price = parseFloat(service.price) || 0;
+                      const tax = parseFloat(service.tax) || 0;
+                      const total = quantity * price * (1 + tax / 100);
+
+                      return (
                         <tr key={index} className="border-b hover:bg-gray-50">
                           <td className="p-3">
                             {service.productName || "N/A"}
                           </td>
+                          <td className="p-3">
+                            {service.productDescription || "N/A"}
+                          </td>
                           <td className="p-3">{service.quantity || "N/A"}</td>
                           <td className="p-3">{service.price || "N/A"}</td>
+                          <td className="p-3">{service.tax || "N/A"}</td>
+                          <td className="p-3 font-semibold">
+                            {total.toFixed(2) || "N/A"}
+                          </td>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-            )}
+            </div>
+          )}
 
-            {request.supplies?.remarks && (
-              <div className="mt-6">
-                <h3 className="text-xl font-semibold text-primary mb-4">
-                  Remarks
-                </h3>
-                <p className="p-3 bg-gray-50 rounded-lg text-gray-800">
-                  {request.supplies.remarks}
-                </p>
-              </div>
-            )}
-          </div>
+          {request.supplies?.remarks && (
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold text-primary mb-4">
+                Remarks
+              </h3>
+              <p>{request.supplies.remarks}</p>
+            </div>
+          )}
+        </div>
         );
 
       default:
@@ -418,7 +464,6 @@ const PreviewTheReq = () => {
       </div>
 
       <div className="bg-white p-4 flex justify-end items-end border-t shadow-md">
-        
         <div className="flex space-x-4">
           <button
             className={`px-6 py-2 rounded-lg flex items-center ${
@@ -426,7 +471,7 @@ const PreviewTheReq = () => {
                 ? "bg-red-600 text-white hover:bg-red-700"
                 : "bg-red-400 text-gray-300 cursor-not-allowed"
             }`}
-            disabled={!isDisplay} 
+            disabled={!isDisplay}
           >
             <XCircle className="mr-2" /> Reject
           </button>
@@ -436,7 +481,7 @@ const PreviewTheReq = () => {
                 ? "bg-yellow-600 text-white hover:bg-yellow-700"
                 : "bg-yellow-400 text-gray-300 cursor-not-allowed"
             }`}
-            disabled={!isDisplay} 
+            disabled={!isDisplay}
           >
             <PauseCircle className="mr-2" /> Hold
           </button>
@@ -447,7 +492,7 @@ const PreviewTheReq = () => {
                 ? "bg-primary text-white hover:bg-primary/90"
                 : "bg-primary text-gray-300 cursor-not-allowed"
             }`}
-            disabled={!isDisplay} 
+            disabled={!isDisplay}
           >
             <CheckCircle2 className="mr-2" />
             Submit

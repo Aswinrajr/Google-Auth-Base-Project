@@ -29,8 +29,25 @@ const Invoice = ({ formData, onSubmit }) => {
   }, []);
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-7xl mx-auto p-3">
-      <header className="py-6 px-6 flex justify-between items-center">
+    <div className="relative bg-white shadow-lg rounded-lg overflow-hidden max-w-7xl mx-auto p-3">
+      {/* Diagonal Watermark */}
+      <div
+        className="absolute inset-0 pointer-events-none z-10 overflow-hidden"
+        style={{
+          transform: "rotate(-45deg)",
+          transformOrigin: "center",
+        }}
+      >
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500 border-gray-100 font-extrabold text-6xl opacity-30"
+          
+        >
+          INTERNAL USE  ONLY
+        </div>
+      </div>
+
+      {/* Rest of the existing Invoice component */}
+      <header className="py-6 px-6 flex justify-between items-center relative z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img
@@ -67,7 +84,7 @@ const Invoice = ({ formData, onSubmit }) => {
         </div>
 
         <div className="text-right">
-          <h1 className="text-2xl font-bold">Purchase Order</h1>
+          <h1 className="text-2xl font-bold">Purchase Order Request</h1>
           <span className="font-medium block">
             Invoice No. {`#${invoiceData?.reqid}`}
           </span>
@@ -80,9 +97,10 @@ const Invoice = ({ formData, onSubmit }) => {
         </div>
       </header>
 
+      {/* Rest of the component remains the same as in the original code */}
       <div className="p-6 grid grid-cols-2 gap-6 mb-3">
-        <div className="p-2 border-2 border-solid border-black">
-          <h2 className="text-lg font-medium mb-2">Bill to</h2>
+        <div className="p-2 border border-solid border-gray-300 bg-gray-100">
+          <h2 className="text-lg font-bold mb-2">Bill to</h2>
           <address className="not-italic">
             <div className="font-medium">
               {invoiceData?.commercials?.billTo}
@@ -90,9 +108,9 @@ const Invoice = ({ formData, onSubmit }) => {
           </address>
         </div>
 
-        <div className="text-right p-2 border-2 border-solid border-black">
+        <div className="text-right p-2 border border-solid border-gray-300 bg-gray-100">
           {" "}
-          <h2 className="text-lg font-medium mb-2">Ship To</h2>
+          <h2 className="text-lg  font-bold mb-2">Ship To</h2>
           <address className="not-italic">
             <div className="font-medium">
               {invoiceData?.commercials?.shipTo}
@@ -101,21 +119,21 @@ const Invoice = ({ formData, onSubmit }) => {
         </div>
       </div>
 
+      {/* Remaining code is exactly the same as the original component */}
       <div className="p-6 grid grid-cols-2 gap-6 mb-3">
         <div className="p-2">
- 
           <div className="space-y-4">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-gray-800 mb-2">
-                Overall Payment Term: 
+                Overall Payment Term:
                 <span className="text-gray-600 ml-2">
                   {invoiceData?.commercials?.paymentTerm}
                 </span>
               </h3>
-              
+
               {invoiceData?.commercials?.paymentTerms?.map((terms) => (
-                <div 
-                  key={terms._id} 
+                <div
+                  key={terms._id}
                   className="border-l-4 border-blue-500 pl-4 py-2 mb-3 bg-white shadow-sm"
                 >
                   <div className="grid grid-cols-2 gap-2">
@@ -128,16 +146,14 @@ const Invoice = ({ formData, onSubmit }) => {
                       <p className="text-gray-800">{terms.paymentType}</p>
                     </div>
                     <div>
-                      <strong className="text-gray-600">Percentage Term:</strong>
+                      <strong className="text-gray-600">
+                        Percentage Term:
+                      </strong>
                       <p className="text-gray-800">{terms.percentageTerm}%</p>
                     </div>
-                   
                   </div>
                 </div>
               ))}
-
-
-              
             </div>
           </div>
         </div>
@@ -175,7 +191,7 @@ const Invoice = ({ formData, onSubmit }) => {
               <td className="p-3 text-right">{service.quantity}</td>
               <td className="p-3 text-right">Qty</td>
               <td className="p-3 text-right">
-                 {parseFloat(service.price).toFixed(2)}
+                {parseFloat(service.price).toFixed(2)}
               </td>
               <td className="p-3 text-right">
                 {" "}
@@ -191,7 +207,9 @@ const Invoice = ({ formData, onSubmit }) => {
       <div className="p-6 space-y-2">
         <div className="flex justify-between border-t pt-4">
           <p className="text-gray-600 font-medium">Total</p>
-          <p className="font-bold text-2xl">{invoiceData?.supplies?.totalValue}</p>
+          <p className="font-bold text-2xl">
+            {invoiceData?.supplies?.totalValue}
+          </p>
         </div>
       </div>
 

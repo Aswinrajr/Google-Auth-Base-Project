@@ -112,7 +112,7 @@ const ChatComments = ({ reqId }) => {
                   <p>{msg.message}</p>
                   {msg.topic && (
                     <span className="text-xs text-primary mt-1 block">
-                      Topic: {msg.topic}
+                      Tag to: {msg.topic}
                     </span>
                   )}
                 </div>
@@ -137,7 +137,7 @@ const ChatComments = ({ reqId }) => {
             onChange={(e) => setActiveChatTopic(e.target.value || null)}
             className="p-2 border rounded-lg"
           >
-            <option value="">Select Topic</option>
+            <option value="">Select Department</option>
             {chatTopics.map((topic, index) => (
               <option key={index} value={topic}>
                 {topic}
